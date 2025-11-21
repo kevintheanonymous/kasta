@@ -1,0 +1,35 @@
+<?php
+return [
+    'GET' => [
+        '/'                        => ['ControleurAuth', 'afficherAccueil'],
+        '/accueil'                 => ['ControleurAuth', 'afficherAccueil'],
+        '/inscription'             => ['ControleurAuth', 'afficherInscriptionPartie1'],
+        '/inscription-partie2'     => ['ControleurAuth', 'afficherInscriptionPartie2'],
+        '/inscription-partie3'     => ['ControleurAuth', 'afficherInscriptionPartie3'],
+        '/connexion'               => ['ControleurAuth', 'afficherConnexion'],
+        '/deconnexion'             => ['ControleurAuth', 'deconnexion'],
+        '/admin/dashboard'         => ['ControleurAdmin', 'afficherDashboard'],
+        '/admin/tableau_de_bord'   => ['ControleurAdmin', 'afficherDashboard'],
+        '/admin/valider'           => ['ControleurAdmin', 'refuserMembre'],
+        '/admin/refuser'           => ['ControleurAdmin', 'afficherDashboard'],
+        '/membre/tableau_de_bord'  => ['ControleurMembre', 'afficherTableauDeBord'],
+        '/membre/evenements'       => ['ControleurMembre', 'afficherEvenements'],
+        '/membre/profil'           => ['ControleurMembre', 'afficherProfil'],
+        '/admin_event_sportif'    => ['ControleurEvenement', 'afficherCreationSportif'],
+        '/admin_event_associatif' => ['ControleurEvenement', 'afficherCreationAssociatif'],
+    ],
+    'POST' => [
+        '/inscription'             => ['ControleurAuth', 'traiterInscriptionPartie1'],
+        '/inscription-partie2'     => ['ControleurAuth', 'traiterInscriptionPartie2'],
+        '/inscription-partie3'     => ['ControleurAuth', 'traiterInscriptionPartie3'],
+        '/connexion'               => ['ControleurAuth', 'traiterConnexion'],
+        '/admin/valider'           => ['ControleurAdmin', 'validerMembre'],
+        '/admin/refuser'           => ['ControleurAdmin', 'refuserMembre'],
+        '/admin/rendre_gestionnaire'=> ['ControleurAdmin', 'rendreGestionnaire'],
+        '/evenement/creer' => ['ControleurEvenement', 'traiterFormulaireEvenement'],
+        '/creneau/creer'   => ['ControleurCreneau', 'traiterFormulaireCreneau'],
+        '/admin_event_sportif_traiter' => ['ControleurEvenement', 'traiterCreationSportif'],
+        '/admin_event_associatif_traiter' => ['ControleurEvenement', 'traiterCreationAssociatif'],
+        
+    ],
+];

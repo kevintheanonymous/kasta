@@ -1,0 +1,65 @@
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+table, th, td {
+  border:1px solid black;
+}
+
+h1 {
+  margin-left: 1%;  
+}
+
+/*CODE POUR LA TABLE*/
+
+table {
+    border-collapse: collapse;
+    margin-left: 1%;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    box-shadow: 0 0 2% rgba(0, 0, 0, 0.15);
+}
+
+table thead tr {
+    background-color: #df6d1b;
+    color: #ffffff;
+    text-align: left;
+    padding: 12px 15px;
+}
+
+table thead th {
+    padding: 12px 15px;
+}
+
+table td {
+    padding: 1.2% 1.5%;
+    text-align: center;
+}
+
+table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+table tbody tr:nth-of-type(even) {    /*Seulement pour les colonnes paires (donc le "even")*/
+    background-color: #ffcc8b71;
+}
+
+/*Code pour les boutons*/
+
+#supprimer{
+  color: #ffffff;
+  background-color: #f44336;
+  padding: 3.5% 10%;
+  border: none;
+  margin-top: 5%;
+
+  
+}
+
+#accepter{
+  color: #ffffff;
+  background-color: #04AA6D;
+  padding: 3.5% 10%;
+  border: none;
+}

@@ -1,0 +1,202 @@
+body{
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/*HAUT DE LA PAGE: NAVIGATION + H1*/
+
+nav {
+  border-bottom: 0.5px solid black;
+}
+
+#membre a{
+  padding: 14px 4px;
+  margin: 0;
+}
+
+#logo {
+  display: flex;              
+  align-items: left; 
+  margin-left : 20px;   
+}
+
+#logo a { 
+  padding :14px 1px;
+}
+
+#connexion a {
+  color : #FF6624;
+}
+
+#CROSSFIT a {
+  color : #FF6624;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #F7F6F6;
+  font-size: 1.15rem;
+}
+
+ul li {
+  float: right;
+}
+
+ul li a {
+  display: block;
+  color: #1464F6;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul li a:hover {
+  font-size: 1.25rem;
+}
+
+h1 {
+  margin-top: 2%;
+  margin-bottom: 0.2%;
+  margin-left: 1.5%;
+}
+
+/*LE FORMULAIRE*/
+
+form {
+  border-radius: 5px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2,1fr); /*Quand on met "1f", on dit qu'on veut diviser les choses par le nombre d'élements (dans notre cas 2). */ 
+  gap: 20px;
+}
+
+
+label {
+  display: block;
+  position: relative;
+  min-height: 80px;
+  margin-bottom: 10px;
+}
+
+
+
+/*PARTIE POUR LES BOUTONS*/
+
+#voirmdp, #voirmdp2 {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-40%); 
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: clamp(14px, 1.2vw, 18px);
+  color: #333;
+  padding: 0;
+}
+
+label span {
+  position: absolute;  
+  top: 90%;           
+  left: 0;
+  right: 0;
+  min-height: 1.2em;
+  font-size: 0.95em;
+
+}
+
+.error-texte {
+  font-size: 0.95em;
+  color: #d42a13;        
+}
+.invalid {
+  border: 2px solid #e74c3c !important;
+  background-color: #fdf2f2;
+}
+
+.valid {
+  border: 2px solid #27ae60 !important;
+  background-color: #f0f9f4;
+}
+.valid-texte { 
+  color: #15ba13;
+  min-height: 1.20em; 
+  font-size: 0.95em; 
+}
+
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+
+
+input[type=submit] {
+  font-weight: bold;
+  grid-column: span 2; 
+  background-color: #08bd32;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #0d800b;
+}
+input[type="submit"].modification {
+    font-weight: bold;
+    grid-column: span 2;
+    background-color: #3443e7;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type="submit"].modification:hover {
+    background-color: #0f388c;
+}
+
+
+
+input[type=reset] {
+  font-weight: bold;
+  grid-column: span 2;
+  background-color: #d42a13;
+  color: white;
+  cursor: pointer; 
+}
+
+input[type=reset]:hover {
+  background-color: #991706;
+}
+
+.avatar {
+  width: 200px ;
+  height: 200px;
+  object-fit: cover ;
+  border-radius: 50%;
+}
+.upload-label {
+  margin-left: 30px;
+  margin-top: 10px;
+  color: #1464F6;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.upload-label:hover {
+  color: #FF6624;
+}
+
