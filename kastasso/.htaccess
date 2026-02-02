@@ -1,0 +1,25 @@
+# ===========================================
+# SÉCURITÉ: Protection des fichiers sensibles
+# ===========================================
+
+# Bloquer l'accès aux fichiers sensibles
+<FilesMatch "^\.env|\.env\..*|composer\.(json|lock)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Bloquer l'accès direct aux dossiers sensibles
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Bloquer l'accès aux dossiers app/, config/, vendor/, scripts/
+    RewriteRule ^(app|config|vendor|scripts)/ - [F,L]
+    
+    # Rediriger la racine vers public/
+    RewriteRule ^$ public/ [L]
+
+    # Rediriger tout le reste vers public/ sauf si c'est déjà un fichier ou dossier existant
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

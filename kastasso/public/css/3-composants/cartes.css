@@ -1,0 +1,408 @@
+/* =========================================
+   CARDS - UNIFIED CARD COMPONENTS
+   Consistent card styling across all pages
+   ========================================= */
+
+/* =========================================
+   BASE CARD
+   ========================================= */
+.card {
+    background: var(--white, #fff);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0, 0, 0, 0.08));
+    transition: all var(--transition-normal, 300ms ease);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.12));
+}
+
+/* Card variants */
+.card-elevated {
+    box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.12));
+}
+
+.card-bordered {
+    box-shadow: none;
+    border: 1px solid var(--gray-200, #e9ecef);
+}
+
+.card-interactive {
+    cursor: pointer;
+}
+
+.card-interactive:hover {
+    transform: translateY(-4px);
+}
+
+/* =========================================
+   CARD SECTIONS
+   ========================================= */
+.card-header {
+    padding: var(--spacing-lg, 1.5rem) var(--spacing-xl, 2rem);
+    border-bottom: 1px solid var(--gray-200, #e9ecef);
+    background: var(--gray-50, #f8f9fa);
+}
+
+.card-body {
+    padding: var(--spacing-xl, 2rem);
+}
+
+.card-footer {
+    padding: var(--spacing-lg, 1.5rem) var(--spacing-xl, 2rem);
+    border-top: 1px solid var(--gray-200, #e9ecef);
+    background: var(--gray-50, #f8f9fa);
+}
+
+/* Compact card padding */
+.card-compact .card-header,
+.card-compact .card-footer {
+    padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+}
+
+.card-compact .card-body {
+    padding: var(--spacing-lg, 1.5rem);
+}
+
+/* =========================================
+   CARD TITLE
+   ========================================= */
+.card-title {
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--gray-900, #212529);
+    margin: 0 0 var(--spacing-sm, 0.5rem) 0;
+}
+
+.card-subtitle {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--gray-600, #6c757d);
+    margin: 0;
+}
+
+/* =========================================
+   SECTION CARD (Dashboard sections)
+   ========================================= */
+.section-card {
+    background: var(--white, #fff);
+    padding: var(--spacing-xl, 2rem);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0, 0, 0, 0.08));
+    margin-bottom: var(--spacing-xl, 2rem);
+    animation: fadeInUp 0.3s ease;
+}
+
+.section-card-title {
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--gray-800, #333);
+    margin: 0 0 var(--spacing-lg, 1.5rem) 0;
+    padding-bottom: var(--spacing-md, 1rem);
+    border-bottom: 2px solid var(--gray-200, #e9ecef);
+}
+
+.section-card-title-centered {
+    text-align: center;
+    display: inline-block;
+    width: 100%;
+}
+
+/* =========================================
+   STATS CARD
+   ========================================= */
+.stats-card {
+    background: var(--white, #fff);
+    border-radius: var(--border-radius-lg, 12px);
+    padding: var(--spacing-lg, 1.5rem);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0, 0, 0, 0.08));
+    text-align: center;
+    transition: all var(--transition-normal, 300ms ease);
+}
+
+.stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.12));
+}
+
+.stats-card-value {
+    font-size: var(--font-size-3xl, 2rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--primary-color, #2c3e50);
+    margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.stats-card-label {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--gray-600, #6c757d);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Stats card color variants */
+.stats-card-primary .stats-card-value {
+    color: var(--primary-color, #2c3e50);
+}
+
+.stats-card-success .stats-card-value {
+    color: var(--success-color, #27ae60);
+}
+
+.stats-card-warning .stats-card-value {
+    color: var(--warning-color, #f39c12);
+}
+
+.stats-card-danger .stats-card-value {
+    color: var(--danger-color, #e74c3c);
+}
+
+.stats-card-info .stats-card-value {
+    color: var(--accent-color, #3498db);
+}
+
+/* =========================================
+   EVENT CARD
+   ========================================= */
+.event-card {
+    background: var(--white, #fff);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0, 0, 0, 0.08));
+    overflow: hidden;
+    transition: all var(--transition-normal, 300ms ease);
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.12));
+}
+
+.event-card-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.event-card-body {
+    padding: var(--spacing-lg, 1.5rem);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card-title {
+    font-size: var(--font-size-lg, 1.125rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--gray-900, #212529);
+    margin: 0 0 var(--spacing-sm, 0.5rem) 0;
+}
+
+.event-card-date {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--accent-color, #3498db);
+    font-weight: var(--font-weight-semibold, 600);
+    margin-bottom: var(--spacing-sm, 0.5rem);
+}
+
+.event-card-location {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--gray-600, #6c757d);
+    margin-bottom: var(--spacing-md, 1rem);
+}
+
+.event-card-description {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--gray-700, #495057);
+    line-height: 1.5;
+    flex: 1;
+    margin-bottom: var(--spacing-md, 1rem);
+}
+
+.event-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md, 1rem);
+    padding-top: var(--spacing-md, 1rem);
+    border-top: 1px solid var(--gray-200, #e9ecef);
+    margin-top: auto;
+}
+
+/* =========================================
+   PROFILE CARD
+   ========================================= */
+.profile-card {
+    background: var(--white, #fff);
+    padding: var(--spacing-2xl, 2.5rem);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.12));
+    max-width: 700px;
+    width: 100%;
+    margin: var(--spacing-xl, 2rem) auto;
+    animation: fadeInUp 0.4s ease;
+}
+
+.profile-card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: var(--spacing-lg, 1.5rem);
+    margin-bottom: var(--spacing-lg, 1.5rem);
+    border-bottom: 1px solid var(--gray-200, #e9ecef);
+}
+
+.profile-card-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary-color, #2c3e50);
+    box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.12));
+    margin-bottom: var(--spacing-md, 1rem);
+    transition: all var(--transition-normal, 300ms ease);
+}
+
+.profile-card-avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-card-name {
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--gray-900, #212529);
+    margin: 0;
+}
+
+/* =========================================
+   WELCOME CARD
+   ========================================= */
+.welcome-card {
+    background: var(--white, #fff);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.12));
+    padding: var(--spacing-2xl, 2.5rem);
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.welcome-card-title {
+    color: var(--primary-color, #2c3e50);
+    font-size: var(--font-size-2xl, 1.5rem);
+    font-weight: var(--font-weight-bold, 700);
+    margin: 0 0 var(--spacing-md, 1rem) 0;
+}
+
+.welcome-card-text {
+    color: var(--gray-600, #6c757d);
+    font-size: var(--font-size-base, 1rem);
+    margin: 0 0 var(--spacing-lg, 1.5rem) 0;
+}
+
+.welcome-card-actions {
+    display: flex;
+    gap: var(--spacing-md, 1rem);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* =========================================
+   DANGER ZONE CARD
+   ========================================= */
+.danger-zone {
+    margin-top: var(--spacing-2xl, 2.5rem);
+    padding: var(--spacing-lg, 1.5rem);
+    border: 1px solid var(--danger-color, #e74c3c);
+    background-color: var(--danger-light, #f8d7da);
+    border-radius: var(--border-radius-md, 8px);
+    text-align: center;
+}
+
+.danger-zone-title {
+    color: var(--danger-color, #e74c3c);
+    margin: 0 0 var(--spacing-md, 1rem) 0;
+    font-size: var(--font-size-lg, 1.125rem);
+}
+
+.danger-zone-text {
+    color: var(--danger-text, #721c24);
+    margin: 0 0 var(--spacing-md, 1rem) 0;
+    font-size: var(--font-size-sm, 0.875rem);
+}
+
+/* =========================================
+   RESPONSIVE CARDS
+   ========================================= */
+@media (max-width: 768px) {
+    .card-body {
+        padding: var(--spacing-lg, 1.5rem);
+    }
+    
+    .card-header,
+    .card-footer {
+        padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+    }
+    
+    .section-card {
+        padding: var(--spacing-lg, 1.5rem);
+        margin-bottom: var(--spacing-lg, 1.5rem);
+    }
+    
+    .profile-card {
+        padding: var(--spacing-xl, 2rem);
+    }
+    
+    .profile-card-avatar {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .welcome-card {
+        padding: var(--spacing-xl, 2rem);
+    }
+    
+    .welcome-card-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .welcome-card-actions .btn {
+        width: 100%;
+    }
+    
+    .event-card-image {
+        height: 150px;
+    }
+    
+    .event-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .event-card-footer .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-body {
+        padding: var(--spacing-md, 1rem);
+    }
+    
+    .section-card {
+        padding: var(--spacing-md, 1rem);
+    }
+    
+    .profile-card {
+        padding: var(--spacing-lg, 1.5rem);
+    }
+    
+    .welcome-card {
+        padding: var(--spacing-lg, 1.5rem);
+    }
+    
+    .event-card-body {
+        padding: var(--spacing-md, 1rem);
+    }
+}

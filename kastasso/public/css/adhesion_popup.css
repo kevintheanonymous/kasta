@@ -1,0 +1,113 @@
+/* styles popup avertissement adhesion */
+
+#popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+#popup-adhesion {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+#popup-adhesion h2 {
+    color: #ff9800;
+    margin-top: 0;
+}
+
+#popup-adhesion p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 20px 0;
+}
+
+#popup-adhesion .popup-warning {
+    font-weight: bold;
+    color: #d32f2f;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.popup-btn {
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 48px;
+    min-width: 120px;
+}
+
+.popup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-btn-non {
+    background: #0288d1;
+    color: white;
+}
+
+.popup-btn-oui {
+    background: #d32f2f;
+    color: white;
+}
+
+/* Responsive popup */
+@media (max-width: 768px) {
+    #popup-overlay {
+        padding: 0.5rem;
+        align-items: flex-end;
+    }
+    
+    #popup-adhesion {
+        padding: 20px;
+        border-radius: 16px 16px 0 0;
+        max-height: 85vh;
+        width: 100%;
+        max-width: none;
+    }
+    
+    #popup-adhesion h2 {
+        font-size: 1.25rem;
+    }
+    
+    #popup-adhesion p {
+        font-size: 0.95rem;
+    }
+    
+    .popup-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .popup-btn {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+}

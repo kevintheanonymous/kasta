@@ -1,0 +1,527 @@
+/* ==========================================
+   INSCRIPTION PAGE - CLEAN STYLING
+   ========================================== */
+
+/* Main Container */
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+/* Page Title */
+main > h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+/* Form Container */
+main > form {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+}
+
+/* Fieldset */
+fieldset {
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--white);
+}
+
+/* Legend */
+legend {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    padding: 0 0.5rem;
+}
+
+/* Labels */
+fieldset > label {
+    display: block;
+    margin-bottom: 1.25rem;
+    color: var(--gray-700);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* Inputs */
+fieldset input[type="text"],
+fieldset input[type="email"],
+fieldset input[type="tel"],
+fieldset input[type="password"],
+fieldset select,
+fieldset textarea {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 0.4rem;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    color: var(--gray-800);
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+fieldset input:focus,
+fieldset select:focus,
+fieldset textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background-color: var(--white);
+}
+
+fieldset textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Field Hint */
+.field-hint {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+}
+
+/* Validation Messages */
+span[id^="message_"] {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--danger-color);
+    font-weight: 500;
+}
+
+/* Password Toggle Button */
+.password-input-wrapper {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    margin-top: 0.4rem;
+}
+
+fieldset .password-input-wrapper input[type="password"],
+fieldset .password-input-wrapper input[type="text"] {
+    margin-top: 0 !important;
+    padding-right: 50px !important;
+    width: 100% !important;
+}
+
+fieldset .password-toggle,
+.password-toggle {
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    color: var(--gray-500);
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* État invalide - Rouge */
+fieldset input.invalid,
+fieldset input.is-invalid,
+fieldset select.invalid,
+fieldset select.is-invalid,
+fieldset textarea.invalid,
+fieldset textarea.is-invalid {
+    border-color: var(--danger-color);
+    background-color: #fef2f2;
+}
+
+/* État valide - Vert */
+fieldset input.valid,
+fieldset input.is-valid,
+fieldset select.valid,
+fieldset select.is-valid,
+fieldset textarea.valid,
+fieldset textarea.is-valid {
+    border-color: var(--success-color);
+    background-color: #f0fdf4;
+}
+
+/* Message d'erreur - Rouge */
+.error-texte,
+.field-message.error {
+    color: var(--danger-color);
+}
+
+/* Message de succès - Vert */
+.valid-texte,
+.field-message.valid,
+.field-message.success {
+    color: var(--success-color);
+}
+
+/* Barre de force du mot de passe */
+.password-strength {
+    height: 4px;
+    background: var(--gray-300);
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-bar.weak {
+    width: 25%;
+    background-color: var(--danger-color);
+}
+
+.password-strength-bar.fair {
+    width: 50%;
+    background-color: var(--warning-color);
+}
+
+.password-strength-bar.good {
+    width: 75%;
+    background-color: #22c55e;
+}
+
+.password-strength-bar.strong {
+    width: 100%;
+    background-color: var(--success-color);
+}
+
+.password-strength-text {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    color: var(--gray-600);
+}
+
+/* Photo Section */
+.photo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.avatar-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--gray-300);
+    background-color: var(--gray-200);
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Prévisualisation de l'image uploadée */
+.image-preview {
+    position: relative;
+    max-width: 300px;
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.image-preview img {
+    display: block;
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.image-preview .remove-image {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.image-preview .remove-image:hover {
+    background: rgba(200, 35, 51, 1);
+    transform: scale(1.1);
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--gray-100);
+    color: var(--primary-color);
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.upload-label:hover {
+    background: var(--gray-200);
+}
+
+#photo-upload {
+    display: none;
+}
+
+/* Adhesion Section */
+.adhesion-info {
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.adhesion-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+}
+
+.btn-download-adhesion,
+.btn-deposer-adhesion {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-download-adhesion {
+    background: var(--gray-100);
+    color: var(--primary-color);
+    border: 1px solid var(--gray-300);
+}
+
+.btn-download-adhesion:hover {
+    background: var(--gray-200);
+}
+
+.btn-deposer-adhesion {
+    background: var(--accent-color);
+    color: var(--white);
+}
+
+.btn-deposer-adhesion:hover {
+    background: var(--info-dark);
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+.file-status {
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: var(--success-color);
+}
+
+.adhesion-warning {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* Submit Button */
+input[type="submit"],
+#submit {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    color: var(--white);
+    background: var(--primary-color);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+input[type="submit"]:hover {
+    background: var(--primary-dark);
+}
+
+input[type="submit"]:disabled {
+    background: var(--gray-400);
+    cursor: not-allowed;
+}
+
+/* Alerts */
+main > .alert {
+    max-width: 800px;
+    margin: 0 auto 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+main > .alert-danger {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+main > .alert-danger p {
+    margin: 0.25rem 0;
+}
+
+main > .alert-success {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+/* Login Link Footer */
+.form-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-300);
+    color: var(--gray-600);
+    font-size: 0.95rem;
+}
+
+.form-footer a {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Success State */
+.auth-wrapper {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.inscription-success-container {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    min-height: auto !important;
+    display: block !important;
+}
+
+.inscription-success-container h1 {
+    color: var(--success-color);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.inscription-success-container p {
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.inscription-success-container .btn-primary {
+    display: inline-block !important;
+    padding: 12px 24px !important;
+    background: var(--primary-color);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    min-height: auto !important;
+    height: auto !important;
+    width: auto !important;
+    aspect-ratio: unset !important;
+    flex: none !important;
+}
+
+.inscription-success-container .btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    main {
+        padding: 1.5rem 1rem;
+    }
+    
+    main > h1 {
+        font-size: 1.5rem;
+    }
+    
+    main > form {
+        padding: 1.5rem;
+    }
+    
+    fieldset {
+        padding: 1.25rem;
+    }
+    
+    .adhesion-actions {
+        flex-direction: column;
+    }
+    
+    .btn-download-adhesion,
+    .btn-deposer-adhesion {
+        width: 100%;
+        text-align: center;
+    }
+}
+

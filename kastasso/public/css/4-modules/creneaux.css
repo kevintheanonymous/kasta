@@ -1,0 +1,246 @@
+/* MODULE CRÉNEAUX - TOUT CE QUI CONCERNE LES CRÉNEAUX */
+
+/* section complete de creneau */
+.creneau-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+/* header avec infos du creneau */
+.creneau-header {
+    background: linear-gradient(135deg, #f6f7fb 0%, #eef6fd 100%);
+    padding: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.creneau-header h2 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* badge du type de creneau */
+.creneau-type {
+    font-size: 0.9rem;
+    padding: 0.4em 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+}
+
+/* variantes de types */
+.creneau-type.preparation {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.creneau-type.jour_j {
+    background: #d4edda;
+    color: #155724;
+}
+
+.creneau-type.rangement {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+/* horaires */
+.creneau-horaires {
+    color: #666;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* commentaire */
+.creneau-commentaire {
+    color: #555;
+    margin: 0.5rem 0 0 0;
+    font-size: 0.95rem;
+}
+
+/* nombre d'inscrits */
+.creneau-nb-inscrits {
+    margin: 0.75rem 0 0 0;
+    color: #1e90ff;
+    font-size: 1rem;
+}
+
+/* carte de creneau pour l'inscription */
+.creneau-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.creneau-card:hover {
+    border-color: #1e90ff;
+}
+
+.creneau-card.inscrit {
+    border-color: #28a745;
+    background: #f8fff8;
+}
+
+.creneau-info {
+    flex: 1;
+}
+
+.creneau-datetime {
+    font-weight: bold;
+    margin: 0.25rem 0;
+}
+
+.creneau-inscrits {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.creneau-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.creneau-checkbox {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* message si aucun creneau */
+.no-creneaux {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+/* postes disponibles pour ce creneau */
+.postes-disponibles {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background-color: #f0f8ff;
+    border-left: 3px solid #007bff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.postes-disponibles strong {
+    color: #007bff;
+}
+
+/* conteneur de selection de poste */
+.preference-poste-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.preference-poste-container label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.select-poste {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    min-height: 44px;
+}
+
+.select-poste:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* formulaire de presences */
+.form-presences-creneau .btn-primary svg {
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.form-actions-right {
+    text-align: right;
+    margin-top: 1rem;
+    padding: 0 1rem 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .creneau-header {
+        padding: 1rem;
+    }
+
+    .creneau-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .creneau-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .creneau-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .creneau-checkbox {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+
+    .select-poste {
+        font-size: 16px;
+        padding: 0.75rem;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .creneau-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .creneau-header {
+        padding: 0.75rem;
+    }
+
+    .creneau-header h2 {
+        font-size: 1rem;
+    }
+
+    .creneau-type {
+        font-size: 0.8rem;
+    }
+
+    .creneau-card {
+        padding: 0.75rem;
+    }
+}

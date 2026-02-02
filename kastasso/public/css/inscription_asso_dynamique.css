@@ -1,0 +1,426 @@
+/* Styles pour le formulaire dynamique d'inscription aux événements associatifs */
+
+.participant-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.membre-principal {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f1f8fe 100%);
+    border: 2px solid #2196f3;
+}
+
+.participant-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.accompagnateur {
+    position: relative;
+    border: 1px solid #dee2e6;
+}
+
+.participant-info {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    min-height: 44px;
+}
+
+.form-group input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.participant-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    min-width: 150px;
+}
+
+.btn-calculer {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-height: 44px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.btn-calculer:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.btn-calculer:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-calculer.calculated {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.tarif-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    min-width: 120px;
+}
+
+/* Style spécial pour le tarif du membre principal (auto-calculé) */
+.tarif-membre-principal {
+    min-width: 280px;
+    padding: 15px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border: 1px solid #4caf50;
+}
+
+.tarif-loading {
+    color: #666;
+    font-style: italic;
+}
+
+.tarif-loading.error {
+    color: #dc3545;
+}
+
+.tarif-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.tarif-raison {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+    text-align: center;
+}
+
+.tarif-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.tarif-montant {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.tarif-montant.calculated {
+    color: #28a745;
+}
+
+.btn-supprimer {
+    padding: 8px 12px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.btn-supprimer:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+.accompagnateurs-section {
+    margin-bottom: 30px;
+}
+
+.accompagnateurs-section h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.info-text {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+#accompagnateurs-container {
+    margin-bottom: 20px;
+}
+
+.btn-ajouter {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+    min-height: 44px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.btn-ajouter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.recapitulatif-tarif {
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #ffc107;
+    margin-bottom: 25px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.total-montant {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #666;
+}
+
+.total-montant.calculated {
+    color: #28a745;
+}
+
+.btn-submit {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(33, 150, 243, 0.4);
+}
+
+.btn-submit:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+    .participant-section {
+        padding: 15px;
+    }
+
+    .participant-row {
+        flex-direction: column;
+        padding: 12px;
+    }
+
+    .participant-info {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group input {
+        font-size: 16px;
+        padding: 0.875rem;
+        min-height: 44px;
+    }
+
+    .participant-actions {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .btn-calculer,
+    .btn-supprimer,
+    .btn-ajouter,
+    .btn-submit {
+        min-height: 50px;
+    }
+
+    .total-row {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .recapitulatif-tarif {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .participant-section {
+        padding: 10px;
+    }
+
+    .participant-row {
+        padding: 10px;
+    }
+
+    .participant-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-calculer,
+    .btn-supprimer,
+    .btn-ajouter,
+    .btn-submit {
+        width: 100%;
+    }
+
+    .tarif-display {
+        width: 100%;
+    }
+}
+
+
+/* ============================================================================
+   SECTION HELLOASSO - Paiement en ligne (couleurs vives pour attirer l'attention)
+   ============================================================================ */
+
+.helloasso-section {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    color: white;
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+    border: 3px solid #ff4500;
+    position: relative;
+    overflow: hidden;
+}
+
+.helloasso-section::before {
+    content: "💳";
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+.helloasso-section h3 {
+    color: white;
+    margin: 0 0 12px 0;
+    font-size: 1.3rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.helloasso-info {
+    margin: 0 0 15px 0;
+    opacity: 0.95;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.btn-helloasso {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: white;
+    color: #ff6b35;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-helloasso:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    background: #fff5f0;
+}
+
+.icon-helloasso {
+    flex-shrink: 0;
+}
+
+#nb-personnes-helloasso {
+    font-weight: 700;
+    background: #d32f2f;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 1rem;
+    animation: pulse-attention 2s infinite;
+}
+
+@keyframes pulse-attention {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}

@@ -1,0 +1,663 @@
+/* ============================================================================
+   STYLES POUR LES PAGES CRUD (Create, Read, Update, Delete) DE L'ADMIN
+   ============================================================================
+
+   NOTE: Les composants réutilisables (boutons, badges, alertes, tableaux)
+   ont été déplacés dans les fichiers suivants:
+   - 3-composants/boutons.css - tous les .btn
+   - 3-composants/badges.css - tous les .badge
+   - 3-composants/alertes.css - tous les .alert
+   - 3-composants/tableaux.css - tous les .admin-table, .table
+   - 1-base/utilitaires.css - .text-center, .text-muted, etc.
+
+   Ce fichier contient uniquement les styles spécifiques aux pages CRUD.
+   ============================================================================ */
+
+
+/* ============================================================================
+   CONTAINERS ET WRAPPERS
+   ============================================================================ */
+
+.admin-container {
+    max-width: var(--max-width-xl, 1200px);
+    margin: var(--spacing-xl, 2rem) auto;
+    padding: 0 var(--spacing-md, 1rem);
+}
+
+/* Wrapper pour centrer et limiter la largeur des tableaux */
+.table-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+
+/* ============================================================================
+   EN-TÊTES ET BARRES D'ACTIONS
+   ============================================================================ */
+
+.header-actions, .actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl, 2rem);
+    gap: var(--spacing-md, 1rem);
+    flex-wrap: wrap;
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-md, 1rem);
+}
+
+
+/* ============================================================================
+   FORMULAIRES ADMIN
+   ============================================================================ */
+
+.admin-form {
+    background: var(--white, white);
+    padding: var(--spacing-xl, 2rem);
+    border-radius: var(--border-radius-md, 8px);
+    box-shadow: var(--shadow-md, 0 1px 3px rgba(0,0,0,0.1));
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeInUp var(--transition-normal, 0.3s ease);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.form-row {
+    display: flex;
+    gap: var(--spacing-md, 1rem);
+}
+
+.half {
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-sm, 0.5rem);
+    font-weight: var(--font-weight-medium, 500);
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--spacing-sm, 0.75rem);
+    border: 1px solid var(--gray-400, #ddd);
+    border-radius: var(--border-radius-sm, 4px);
+    font-size: var(--font-size-base, 1rem);
+    box-sizing: border-box;
+    transition: border-color var(--transition-fast, 0.15s ease),
+                box-shadow var(--transition-fast, 0.15s ease);
+    min-height: 44px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color, #1e90ff);
+    box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md, 1rem);
+    margin-top: var(--spacing-xl, 2rem);
+}
+
+/* Formulaires inline (pour les boutons de suppression dans les tableaux) */
+.inline-form {
+    display: inline;
+}
+
+/* Petits textes d'aide dans les formulaires */
+.form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--gray-600, #6c757d);
+}
+
+.required {
+    color: var(--danger-color, #dc3545);
+}
+
+
+/* ============================================================================
+   COLONNE ACTIONS DANS LES TABLEAUX
+   ============================================================================ */
+
+.td-actions {
+    white-space: normal !important;
+    overflow: visible !important;
+    padding: 0.75rem 0.5rem !important;
+}
+
+.actions-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.btn-action svg {
+    flex-shrink: 0;
+}
+
+.btn-action:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+}
+
+.btn-action:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ============================================================================
+   BADGES DE NIVEAU DE POSTE (spécifique à la page postes)
+   ============================================================================ */
+
+.badge-niveau {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: var(--border-radius-lg, 12px);
+    font-size: var(--font-size-sm, 0.85rem);
+    font-weight: var(--font-weight-semibold, 600);
+    text-align: center;
+}
+
+.niveau-1 {
+    background-color: var(--accent-color, #3498db);
+    color: var(--white, #ffffff);
+}
+
+.niveau-2 {
+    background-color: var(--secondary-color, #e67e22);
+    color: var(--white, #ffffff);
+}
+
+.niveau-3 {
+    background-color: var(--primary-color, #2c3e50);
+    color: var(--white, #ffffff);
+}
+
+
+/* ============================================================================
+   TABLEAUX SPÉCIFIQUES
+   ============================================================================ */
+
+/* Tableau des catégories */
+.table-categories {
+    table-layout: fixed;
+}
+
+.table-categories .col-libelle {
+    width: 50%;
+    text-align: left;
+    padding-left: 1.5rem;
+}
+
+.table-categories .col-actions {
+    width: 50%;
+    text-align: center;
+}
+
+/* Tableau des postes */
+.table-postes {
+    table-layout: fixed;
+}
+
+.table-postes .col-libelle {
+    width: 40%;
+    text-align: left;
+    padding-left: 1.5rem;
+}
+
+.table-postes .col-niveau {
+    width: 30%;
+    text-align: center;
+}
+
+.table-postes .col-actions {
+    width: 30%;
+    text-align: center;
+}
+
+
+/* ============================================================================
+   CRÉNEAUX DYNAMIQUES (spécifique à la page créneaux)
+   ============================================================================ */
+
+.slot-row {
+    margin-bottom: 1rem;
+}
+
+.slot-row .remove-slot {
+    margin-top: 0.75rem;
+}
+
+.slot-actions {
+    margin-top: var(--spacing-md, 1rem);
+    display: flex;
+    justify-content: flex-end;
+}
+
+
+/* ============================================================================
+   CHECKBOX GROUP (pour sélection des postes)
+   ============================================================================ */
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs, 0.25rem);
+    background: var(--gray-100, #f8f9fa);
+    border: 1px solid var(--gray-400, #dee2e6);
+    border-radius: var(--border-radius-sm, 4px);
+    padding: var(--spacing-sm, 0.5rem);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm, 0.5rem);
+    padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem);
+    cursor: pointer;
+    font-weight: var(--font-weight-normal, 400);
+    font-size: var(--font-size-sm, 0.9rem);
+    color: var(--gray-800, #333);
+}
+
+.checkbox-item:hover {
+    background: var(--gray-200, #e9ecef);
+    border-radius: var(--border-radius-sm, 4px);
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--primary-color, #2c3e50);
+    flex-shrink: 0;
+}
+
+#add-slot {
+    margin-top: 0.75rem;
+}
+
+
+/* ============================================================================
+   FORMULAIRE D'AJOUT DE REGIMES ALIMENTAIRES
+   ============================================================================ */
+
+.add-form-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.add-form-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.add-form-card .card-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    border-bottom: none;
+}
+
+.add-form-card .card-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-form-card .card-body {
+    padding: 1.5rem;
+}
+
+.form-group-inline {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.form-group-inline .form-control {
+    flex: 1;
+    border-radius: 8px;
+}
+
+
+/* ============================================================================
+   MODIFICATION INLINE DES REGIMES
+   ============================================================================ */
+
+.edit-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.form-control-inline {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #1e90ff;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    min-width: 200px;
+}
+
+.form-control-inline:focus {
+    outline: none;
+    border-color: #4facfe;
+    box-shadow: 0 0 0 3px rgba(31, 144, 255, 0.2);
+}
+
+.btn-inline {
+    padding: 0.4rem 0.6rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-inline-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-inline-success:hover {
+    background-color: #218838;
+    transform: scale(1.1);
+}
+
+.btn-inline-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-inline-cancel:hover {
+    background-color: #5a6268;
+    transform: scale(1.1);
+}
+
+
+/* ============================================================================
+   UTILITAIRES SPÉCIFIQUES
+   ============================================================================ */
+
+.card-spaced {
+    margin-top: 1.5rem;
+}
+
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .admin-container {
+        margin: var(--spacing-md, 1rem) auto;
+        padding: 0 var(--spacing-sm, 0.5rem);
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .header-actions, .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm, 0.5rem);
+    }
+
+    /* Formulaires */
+    .admin-form {
+        padding: var(--spacing-lg, 1.5rem);
+    }
+    
+    /* Checkbox group improvements */
+    .checkbox-group {
+        max-height: none;
+    }
+    
+    .checkbox-item {
+        padding: var(--spacing-sm, 0.5rem);
+        min-height: 44px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Form inline */
+    .form-group-inline {
+        flex-direction: column;
+        gap: var(--spacing-sm, 0.5rem);
+    }
+    
+    .form-group-inline .btn {
+        width: 100%;
+    }
+    
+    /* Edit form inline */
+    .edit-form {
+        flex-direction: column;
+        gap: var(--spacing-sm, 0.5rem);
+    }
+    
+    .form-control-inline {
+        min-width: 100%;
+    }
+    
+    .edit-form .btn-inline {
+        width: 100%;
+        padding: 0.75rem;
+        min-height: 44px;
+    }
+    
+    /* Actions in header */
+    .actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .actions .btn {
+        width: 100%;
+    }
+    
+    /* Transformation des tableaux en cartes */
+    .table-categories, 
+    .table-postes, 
+    .table-wrapper table {
+        display: block;
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .table-categories thead, 
+    .table-postes thead, 
+    .table-wrapper thead {
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+    }
+
+    .table-categories tbody, 
+    .table-postes tbody, 
+    .table-wrapper tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .table-categories tr, 
+    .table-postes tr, 
+    .table-wrapper tr {
+        display: block;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+        border: 1px solid #eee;
+        overflow: hidden;
+    }
+
+    .table-categories td, 
+    .table-postes td, 
+    .table-wrapper td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        padding: 1rem;
+        position: relative;
+        padding-left: 45%;
+        border-bottom: 1px solid #f0f0f0;
+        min-height: 44px;
+        width: 100%;
+        box-sizing: border-box;
+        gap: 0.5rem;
+    }
+
+    /* Labels génériques via CSS content */
+    .table-categories td::before, 
+    .table-postes td::before,
+    .table-wrapper td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        font-weight: 600;
+        color: var(--primary-color, #1e90ff);
+        text-align: left;
+        width: 40%;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Labels spécifiques : Catégories */
+    .table-categories td:nth-of-type(1)::before { content: "Libellé"; }
+    .table-categories td:nth-of-type(2)::before { content: ""; }
+
+    /* Labels spécifiques : Postes */
+    .table-postes td:nth-of-type(1)::before { content: "Libellé"; }
+    .table-postes td:nth-of-type(2)::before { content: "Niveau"; }
+    .table-postes td:nth-of-type(3)::before { content: ""; }
+
+    /* Style spécifique pour la colonne actions */
+    .table-categories td:last-child, 
+    .table-postes td:last-child,
+    .table-wrapper td:last-child {
+        justify-content: center;
+        padding-left: 1rem;
+        background: #fcfcfc;
+        border-bottom: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .table-categories td:last-child::before,
+    .table-postes td:last-child::before,
+    .table-wrapper td:last-child::before {
+        display: none;
+    }
+
+    .actions-buttons {
+        width: 100%;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .actions-buttons .btn {
+        flex: 1;
+        justify-content: center;
+        min-height: 44px;
+    }
+    
+    .actions-buttons form {
+        flex: 1;
+        display: flex;
+    }
+    
+    .actions-buttons form button,
+    .actions-buttons form .btn {
+        width: 100%;
+    }
+    
+    /* Add form card responsive */
+    .add-form-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .add-form-card .card-header {
+        padding: 1rem;
+    }
+    
+    .add-form-card .card-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-container {
+        padding: 0 var(--spacing-xs, 0.25rem);
+    }
+    .admin-form {
+        padding: var(--spacing-md, 1rem);
+    }
+    
+    .table-categories td,
+    .table-postes td,
+    .table-wrapper td {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+    }
+    
+    .actions-buttons .btn {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}

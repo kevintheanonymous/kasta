@@ -1,0 +1,117 @@
+/**
+ * Styles pour la page des inscrits aux créneaux
+ * Utilise les variables CSS globales
+ * NOTE: Les composants communs (boutons, badges, alertes, tableaux, créneaux)
+ * sont maintenant dans les fichiers 3-composants/ et 4-modules/
+ */
+
+.admin-container {
+    max-width: var(--max-width-xl, 1200px);
+    margin: var(--spacing-xl, 2rem) auto;
+    padding: 0 var(--spacing-md, 1rem);
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl, 2rem);
+    gap: var(--spacing-md, 1rem);
+}
+
+.header-actions .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm, 0.5rem);
+    justify-content: flex-end;
+}
+
+/* Informations de l'événement */
+.event-info {
+    background: var(--gray-100, #f8f9fa);
+    padding: var(--spacing-md, 1rem);
+    border-radius: var(--border-radius-md, 8px);
+    margin-top: var(--spacing-md, 1rem);
+}
+
+.event-info p {
+    margin: var(--spacing-sm, 0.5rem) 0;
+    text-align: left;
+}
+
+.nb-inscrits-total {
+    margin-top: var(--spacing-md, 1rem) !important;
+    padding-top: var(--spacing-md, 1rem);
+    border-top: 2px solid var(--gray-400, #dee2e6);
+}
+
+/* Section participants */
+.participants-section {
+    background: var(--white, white);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 2px 8px rgba(0,0,0,0.1));
+    margin-bottom: var(--spacing-xl, 2rem);
+    overflow: hidden;
+    padding: var(--spacing-lg, 1.5rem);
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        margin: var(--spacing-md, 1rem) auto;
+        padding: 0 var(--spacing-sm, 0.5rem);
+    }
+
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-md, 1rem);
+    }
+
+    .header-actions .actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .header-actions .actions .btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .event-info {
+        padding: var(--spacing-sm, 0.75rem);
+    }
+
+    .participants-section {
+        padding: var(--spacing-md, 1rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-container {
+        padding: 0 var(--spacing-xs, 0.25rem);
+    }
+
+    .event-info {
+        padding: var(--spacing-sm, 0.5rem);
+        font-size: var(--font-size-sm, 0.9rem);
+    }
+
+    .participants-section {
+        padding: var(--spacing-sm, 0.75rem);
+    }
+
+    .header-actions .actions .btn {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+        min-height: 44px;
+    }
+
+    .header-actions .actions .btn svg {
+        flex-shrink: 0;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+    }
+}

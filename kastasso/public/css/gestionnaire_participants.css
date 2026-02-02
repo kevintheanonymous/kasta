@@ -1,0 +1,190 @@
+/* Styles pour la page des participants inscrits aux événements associatifs */
+
+.participants-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.event-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.event-info p {
+    margin: 0.5rem 0;
+    text-align: left;
+}
+
+.nb-inscrits-total {
+    margin-top: 1rem !important;
+    padding-top: 1rem;
+    border-top: 2px solid #dee2e6;
+}
+
+.badge-primary {
+    background: #007bff;
+    color: white;
+    border: none;
+}
+
+.badge-success {
+    background: #28a745;
+    color: white;
+    border: none;
+}
+
+.badge-warning {
+    background: #ffc107;
+    color: #212529;
+    border: none;
+}
+
+/* Utilitaires supplémentaires */
+.badge-large {
+    font-size: 1.1em;
+    padding: 0.5em 0.8em;
+}
+
+.btn-with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-centered {
+    text-align: center;
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.actions-centered {
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+/* ============================================================================
+   RESPONSIVE : MODE CARTES POUR TABLEAU PARTICIPANTS
+   ============================================================================ */
+@media (max-width: 768px) {
+    .participants-section {
+        padding: 1rem;
+        background: transparent; /* Fond transparent car les cartes auront leur propre fond */
+        box-shadow: none;
+    }
+
+    .event-info {
+        padding: 0.75rem;
+    }
+
+    .alert-centered {
+        margin: 1.5rem auto;
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .badge-large {
+        font-size: 1em;
+        padding: 0.4em 0.7em;
+    }
+
+    /* Transformation du tableau en cartes */
+    .admin-table, 
+    .admin-table tbody, 
+    .admin-table tr, 
+    .admin-table td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .admin-table thead {
+        display: none; /* Cache les en-têtes */
+    }
+
+    .admin-table tbody tr {
+        background: white;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 0.5rem 0;
+        border: 1px solid #e0e0e0;
+    }
+
+    .admin-table td {
+        text-align: right;
+        padding: 0.8rem 1rem;
+        position: relative;
+        padding-left: 40%; /* Espace pour le label */
+        border-bottom: 1px solid #f0f0f0;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .admin-table td:last-child {
+        border-bottom: none;
+        justify-content: center;
+        padding-left: 1rem;
+        background: #fcfcfc;
+    }
+
+    /* Labels automatiques via CSS */
+    .admin-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: 35%;
+        text-align: left;
+        font-weight: 600;
+        color: #1e90ff;
+        font-size: 0.85rem;
+    }
+
+    /* Définition manuelle des labels si data-label n'est pas dans le HTML */
+    .admin-table td:nth-of-type(1)::before { content: "Nom"; }
+    .admin-table td:nth-of-type(2)::before { content: "Prénom"; }
+    .admin-table td:nth-of-type(3)::before { content: "Email"; }
+    .admin-table td:nth-of-type(4)::before { content: "Téléphone"; }
+    .admin-table td:nth-of-type(5)::before { content: "Date"; }
+    .admin-table td:nth-of-type(6)::before { content: "Accompagnateurs"; }
+    .admin-table td:nth-of-type(7)::before { content: "Paiement"; }
+
+    /* Ajustement bouton paiement */
+    .admin-table td:nth-of-type(7) {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .participants-section {
+        padding: 0;
+    }
+
+    .event-info {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .event-info p {
+        margin: 0.35rem 0;
+    }
+
+    .btn-with-icon {
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+}

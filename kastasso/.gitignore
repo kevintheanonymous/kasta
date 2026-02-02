@@ -1,0 +1,35 @@
+# Fichiers de configuration sensibles
+.env
+*.env.local
+*.env.*.local
+!.env.example
+
+# Dépendances
+/vendor/
+
+# Fichiers uploadés par les utilisateurs
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Logs
+*.log
+/logs/
+
+# Cache
+/cache/
+*.cache
+
+# IDE et éditeurs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Fichiers de build
+/node_modules/
+/.dist/

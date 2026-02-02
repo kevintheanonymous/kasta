@@ -1,0 +1,84 @@
+/* Styles pour la page des bénévoles inscrits aux événements sportifs */
+/* NOTE: Les composants communs (boutons, badges, alertes, tableaux, créneaux)
+ * sont maintenant dans les fichiers 3-composants/ et 4-modules/
+ */
+
+/* infos de l'evenement - specifique gestionnaire */
+.event-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.event-info p {
+    margin: 0.5rem 0;
+    text-align: left;
+}
+
+.nb-inscrits-total {
+    margin-top: 1rem !important;
+    padding-top: 1rem;
+    border-top: 2px solid #dee2e6;
+}
+
+/* utilitaires specifiques gestionnaire */
+.alert-centered {
+    text-align: center;
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.text-centered-italic {
+    text-align: center;
+    padding: 1.5rem;
+    font-style: italic;
+}
+
+.submit-presences-container {
+    text-align: right;
+    margin-top: 1rem;
+    padding: 0 1rem 1rem;
+}
+
+.icon-inline {
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.actions-centered {
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .event-info {
+        padding: 0.75rem;
+    }
+
+    .submit-presences-container {
+        text-align: center;
+        padding: 0 0.5rem 0.75rem;
+    }
+
+    .alert-centered {
+        margin: 1.5rem auto;
+        padding: 1rem;
+    }
+
+    .text-centered-italic {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .event-info {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .event-info p {
+        margin: 0.35rem 0;
+    }
+}

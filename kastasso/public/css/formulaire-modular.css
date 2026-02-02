@@ -1,0 +1,27 @@
+/* ==========================================================================
+   FORMULAIRE.CSS (modulaire) - Point d'entrée principal
+   Importe tous les modules de styles pour les formulaires
+   
+   Architecture modulaire :
+   - _base.css         : Container, structure de base, animations
+   - _inputs.css       : Champs de saisie (text, email, password, select, textarea)
+   - _fieldsets.css    : Groupes de champs avec légendes
+   - _buttons.css      : Boutons de soumission et secondaires
+   - _checkboxes.css   : Cases à cocher personnalisées
+   - _file-upload.css  : Upload de fichiers et photos
+   - _alerts.css       : Alertes, messages d'erreur/succès
+   - _auth.css         : Pages d'authentification (connexion, inscription)
+   - _password-toggle.css : Bouton afficher/masquer mot de passe
+   - _responsive.css   : Adaptations responsives et thème sombre
+   ========================================================================== */
+
+@import url('./forms/_base.css');
+@import url('./forms/_inputs.css');
+@import url('./forms/_fieldsets.css');
+@import url('./forms/_buttons.css');
+@import url('./forms/_checkboxes.css');
+@import url('./forms/_file-upload.css');
+@import url('./forms/_alerts.css');
+@import url('./forms/_auth.css');
+@import url('./forms/_password-toggle.css');
+@import url('./forms/_responsive.css');

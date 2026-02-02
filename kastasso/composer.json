@@ -1,0 +1,16 @@
+{
+    "name": "kastasso/kastasso",
+    "description": "Application de gestion d'association de crossfit",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "phpmailer/phpmailer": "^6.9",
+        "tecnickcom/tcpdf": "^6.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Models\\": "app/models/",
+            "App\\Controleurs\\": "app/controleurs/"
+        }
+    }
+}

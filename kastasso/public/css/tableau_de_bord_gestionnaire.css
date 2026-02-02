@@ -1,0 +1,342 @@
+/* css tableau de bord gestionnaire */
+
+/* body */
+body {
+    font-family: var(--font-family, 'Montserrat', sans-serif);
+    background: var(--gray-200, #f6f7fb);
+    color: var(--gray-800, #333);
+    margin: 0;
+    padding: 0;
+}
+
+/* container */
+.gestion-container {
+    max-width: 1000px;
+    margin: var(--spacing-2xl, 40px) auto;
+    padding: var(--spacing-lg, 20px);
+}
+
+p {
+    text-align: center;
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color, #1e90ff);
+    font-size: var(--font-size-3xl, 2.2rem);
+    margin-bottom: var(--spacing-sm, 10px);
+    animation: fadeInUp var(--transition-normal, 0.3s ease);
+}
+
+.welcome-text {
+    text-align: center;
+    font-size: var(--font-size-lg, 1.1rem);
+    color: var(--gray-600, #666);
+    margin-bottom: var(--spacing-2xl, 40px);
+}
+
+/* cartes actions */
+.quick-actions {
+    background: var(--white, white);
+    padding: var(--spacing-2xl, 40px);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(30, 144, 255, 0.08));
+    text-align: center;
+    margin-bottom: var(--spacing-2xl, 40px);
+    animation: fadeInUp var(--transition-normal, 0.3s ease);
+}
+
+.quick-actions h2 {
+    color: var(--gray-800, #333);
+    font-size: var(--font-size-2xl, 1.5rem);
+    margin-bottom: var(--spacing-xl, 30px);
+    border-bottom: 2px solid var(--gray-300, #f0f0f0);
+    padding-bottom: var(--spacing-md, 15px);
+    display: inline-block;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--spacing-md, 15px);
+    justify-items: center;
+}
+
+/* boutons */
+.actions .btn {
+    min-width: 180px;
+}
+
+.btn-orange {
+    background-color: var(--secondary-color, #ff6347);
+    color: var(--white, white);
+}
+
+.btn-orange:hover {
+    background-color: var(--secondary-dark, #e55336);
+    transform: translateY(-1px);
+}
+
+/* stats */
+.section {
+    background: var(--white, white);
+    padding: var(--spacing-xl, 30px);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0,0,0,0.05));
+    margin-bottom: var(--spacing-xl, 30px);
+    animation: fadeInUp var(--transition-normal, 0.3s ease);
+    animation-delay: 0.1s;
+    animation-fill-mode: backwards;
+}
+
+.section-title {
+    font-size: var(--font-size-xl, 1.4rem);
+    color: var(--gray-700, #444);
+    margin-bottom: var(--spacing-lg, 20px);
+    text-align: center;
+}
+
+.stats-section {
+    background: var(--white, white);
+    padding: var(--spacing-xl, 30px);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 4px 15px rgba(0,0,0,0.05));
+    text-align: center;
+}
+
+.stats-section h2 {
+    font-size: var(--font-size-xl, 1.4rem);
+    color: var(--gray-700, #444);
+    margin-bottom: var(--spacing-lg, 20px);
+}
+
+.stats-content {
+    font-size: var(--font-size-lg, 1.1rem);
+    color: var(--gray-700, #555);
+    line-height: var(--line-height-relaxed, 1.6);
+}
+
+.stats-content strong {
+    color: var(--primary-color, #1e90ff);
+    font-size: var(--font-size-xl, 1.3rem);
+}
+
+.admin-events-list {
+    font-size: var(--font-size-lg, 1.1rem);
+    color: var(--gray-700, #555);
+}
+
+.admin-events-list strong {
+    color: var(--primary-color, #1e90ff);
+    font-size: var(--font-size-xl, 1.3rem);
+}
+
+/* actions tableaux */
+.actions-cell {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.3rem !important;
+}
+
+.btn-sm {
+    padding: 8px 12px;
+    font-size: var(--font-size-xs, 0.75rem);
+    margin: 0;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 44px;
+    min-width: 44px;
+    line-height: 1.2;
+    border-radius: var(--border-radius-md, 8px);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold, 600);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-info {
+    background-color: var(--info-color, #17a2b8);
+    color: var(--white, white);
+}
+
+.btn-info:hover {
+    background-color: var(--info-dark, #138496);
+}
+
+.btn-warning {
+    background-color: var(--warning-color, #ffc107);
+    color: var(--gray-800, #333);
+}
+
+.form-inline {
+    display: inline-block;
+    margin: 0;
+}
+
+/* inscription events */
+.inscription-events-section {
+    margin-top: 2rem;
+}
+
+.section-title-inscription {
+    margin-bottom: 1rem;
+    color: var(--gray-800, #333);
+    font-size: var(--font-size-2xl, 1.5rem);
+}
+
+/* btn disabled */
+.btn-disabled,
+.btn.btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ============================================================================
+   RESPONSIVE : MODE CARTES POUR TABLEAU ÉVÉNEMENTS
+   ============================================================================ */
+@media (max-width: 768px) {
+    .gestion-container {
+        margin: var(--spacing-lg, 20px) auto;
+        padding: var(--spacing-md, 15px);
+    }
+
+    .actions-grid {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 300px;
+        min-height: 50px;
+    }
+
+    h1 {
+        font-size: var(--font-size-2xl, 1.8rem);
+    }
+
+    .quick-actions {
+        padding: var(--spacing-lg, 20px);
+    }
+
+    .section, .stats-section {
+        padding: var(--spacing-lg, 20px);
+    }
+
+    /* Transformation tableau en cartes */
+    .admin-events-list table,
+    .admin-events-list tbody,
+    .admin-events-list tr,
+    .admin-events-list td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .admin-events-list thead {
+        display: none;
+    }
+
+    .admin-events-list tr {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+        padding: 0;
+        border: 1px solid #eee;
+        overflow: hidden;
+    }
+
+    .admin-events-list td {
+        text-align: right;
+        padding: 0.8rem 1rem;
+        position: relative;
+        padding-left: 45%;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 40px;
+        word-break: break-word; /* Évite que les longs textes débordent */
+    }
+
+    .admin-events-list td:last-child {
+        border-bottom: none;
+        background: #fcfcfc;
+        justify-content: center;
+        padding-left: 1rem;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Labels */
+    .admin-events-list td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        top: 0;
+        bottom: 0;
+        width: 40%;
+        display: flex;
+        align-items: center;
+        text-align: left;
+        font-weight: 700;
+        color: var(--primary-color, #1e90ff);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    
+    /* Boutons actions full width sur mobile */
+    .actions-cell {
+        width: 100%;
+    }
+    
+    .actions-cell .btn-sm,
+    .actions-buttons .btn {
+        justify-content: center;
+        padding: 10px;
+        min-height: 44px;
+        width: 100%;
+    }
+    
+    .actions-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        width: 100%;
+        gap: 8px;
+        max-width: 320px;
+    }
+    
+    /* Participants button spans full width */
+    .actions-buttons .btn-success {
+        grid-column: span 2;
+    }
+    
+    .actions-buttons form {
+        width: 100%;
+        display: flex;
+    }
+    
+    .actions-buttons form button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .gestion-container {
+        padding: var(--spacing-sm, 10px);
+    }
+    .btn {
+        min-width: 100%;
+        font-size: 0.95rem;
+    }
+}

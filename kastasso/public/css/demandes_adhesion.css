@@ -1,0 +1,269 @@
+/**
+ * Styles page demandes adhésion admin/gestionnaire
+ * Utilise les variables CSS globales
+ */
+
+/* Modal refus adhésion */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: var(--z-modal, 9999);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+
+.modal-content {
+    background-color: var(--white, #fff);
+    margin: 10% auto;
+    padding: var(--spacing-xl, 2rem);
+    border-radius: var(--border-radius-md, 8px);
+    max-width: 500px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg, 0 4px 20px rgba(0, 0, 0, 0.2));
+    position: relative;
+}
+
+.modal-content h2 {
+    color: var(--primary-color, #2c3e50);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    padding-right: 2rem;
+}
+
+.modal-content p {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.modal-content label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--gray-700, #444);
+}
+
+.close {
+    color: var(--gray-500, #aaa);
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color var(--transition-fast, 0.15s ease);
+    line-height: 1;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--gray-800, #333);
+}
+
+/* Textarea modal */
+#motif_refus_adhesion {
+    width: 100%;
+    padding: var(--spacing-sm, 0.5rem);
+    border: 1px solid var(--gray-400, #ddd);
+    border-radius: var(--border-radius-sm, 4px);
+    margin-top: var(--spacing-sm, 0.5rem);
+    font-family: var(--font-family, inherit);
+    resize: vertical;
+    transition: border-color var(--transition-fast, 0.15s ease),
+                box-shadow var(--transition-fast, 0.15s ease);
+}
+
+#motif_refus_adhesion:focus {
+    outline: none;
+    border-color: var(--primary-color, #2c3e50);
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+/* Boutons modal */
+.modal-buttons {
+    margin-top: var(--spacing-lg, 1.5rem);
+    display: flex;
+    gap: var(--spacing-sm, 0.5rem);
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* Modal responsive */
+@media (max-width: 768px) {
+    .modal {
+        padding: 0.5rem;
+        align-items: flex-end;
+    }
+    
+    .modal[style*="display: block"] {
+        display: flex !important;
+    }
+    
+    .modal-content {
+        margin: 0;
+        border-radius: var(--border-radius-lg, 12px) var(--border-radius-lg, 12px) 0 0;
+        width: 100%;
+        max-width: none;
+        max-height: 85vh;
+        padding: var(--spacing-lg, 1.5rem);
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+    }
+    
+    .modal-buttons .btn {
+        width: 100%;
+    }
+    
+    #motif_refus_adhesion {
+        font-size: 16px; /* Prevents iOS zoom */
+    }
+}
+
+/* Badge compte en attente */
+.badge-warning {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: var(--warning-color, #ffc107);
+    color: var(--gray-900, #212529);
+    border-radius: var(--border-radius-sm, 4px);
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: var(--font-weight-semibold, 600);
+    margin-left: var(--spacing-sm, 0.5rem);
+}
+
+/* Info compte bloqué */
+.compte-bloque-info {
+    color: var(--warning-color, #ffc107);
+    font-weight: var(--font-weight-medium, 500);
+    text-align: center;
+}
+
+.compte-bloque-info small {
+    font-size: var(--font-size-sm, 0.85rem);
+}
+
+/* Flex gap pour les boutons d'action */
+.flex-gap-5 {
+    display: flex;
+    gap: var(--spacing-xs, 0.25rem);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+
+/* ============================================================================
+   RESPONSIVE : MODE CARTES
+   ============================================================================ */
+@media (max-width: 768px) {
+    /* 1. Reset de la structure tableau */
+    .table-dashboard, 
+    .table-dashboard tbody, 
+    .table-dashboard tr, 
+    .table-dashboard td {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .table-dashboard thead {
+        display: none !important;
+    }
+
+    /* 2. Style des cartes (lignes) */
+    .table-dashboard tr {
+        margin-bottom: 1.5rem;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        background: #fff;
+        overflow: hidden;
+    }
+
+    /* 3. Style des cellules */
+    .table-dashboard td {
+        padding: 14px 15px 14px 115px !important;
+        position: relative !important;
+        text-align: left !important;
+        border-bottom: 1px solid #eee;
+        min-height: 48px;
+        word-break: break-word;
+    }
+
+    /* 4. Labels des colonnes (Pseudo-éléments) */
+    .table-dashboard td::before {
+        content: attr(data-label) !important;
+        position: absolute !important;
+        left: 15px !important;
+        top: 14px !important;
+        transform: none !important;
+        width: 90px !important;
+        font-weight: 700 !important;
+        color: var(--primary-color, #1e90ff) !important;
+        font-size: 0.7rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px;
+    }
+
+    /* Fallback CSS si data-label manquant */
+    .table-dashboard td:nth-of-type(1)::before { content: "Nom" !important; }
+    .table-dashboard td:nth-of-type(2)::before { content: "Prénom" !important; }
+    .table-dashboard td:nth-of-type(3)::before { content: "Email" !important; }
+    .table-dashboard td:nth-of-type(4)::before { content: "Date" !important; }
+    .table-dashboard td:nth-of-type(5)::before { content: "Fichier" !important; }
+
+    /* 5. Colonne Actions spécifique */
+    .table-dashboard td:last-child {
+        display: block !important;
+        border-bottom: none;
+        background: #f8f9fa;
+        padding: 1rem 15px !important;
+    }
+    
+    .table-dashboard td:last-child::before {
+        display: none !important;
+        content: "" !important;
+    }
+    
+    /* Boutons dans la cellule actions */
+    .table-dashboard td:last-child .flex-gap-5,
+    .table-dashboard td:last-child .compte-bloque-info {
+        display: flex !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+    
+    .compte-bloque-info {
+        padding: 0.5rem 0 !important;
+    }
+
+    /* Ajustement des boutons */
+    .flex-gap-5 {
+        width: 100%;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .flex-gap-5 form {
+        flex: 0 0 auto;
+        display: flex;
+    }
+
+    .flex-gap-5 .btn-sm,
+    .flex-gap-5 form .btn-sm {
+        min-width: 100px;
+        justify-content: center;
+        min-height: 44px;
+        flex: 0 0 auto;
+        font-size: 0.95rem;
+    }
+}

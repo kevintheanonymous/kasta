@@ -1,0 +1,163 @@
+/* CLASSES UTILITAIRES - À UTILISER PARTOUT */
+
+/* ============================================================================
+   IMAGES RESPONSIVE (Prevent overflow)
+   ============================================================================ */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Aspect ratio containers */
+.img-cover {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.img-contain {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+/* ============================================================================
+   TEXTE
+   ============================================================================ */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-primary { color: var(--primary-color, #1e90ff); }
+.text-secondary { color: var(--secondary-color, #6c757d); }
+.text-success { color: var(--success-color, #28a745); }
+.text-warning { color: var(--warning-color, #ffc107); }
+.text-danger { color: var(--danger-color, #dc3545); }
+.text-muted {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+
+/* Truncate text with ellipsis */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Word break for long text */
+.text-break {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* ============================================================================
+   FLEXBOX
+   ============================================================================ */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+.gap-4 { gap: 1.5rem; }
+.flex-gap-5 { display: flex; gap: 0.25rem; }
+
+/* Flex grow/shrink */
+.flex-1 { flex: 1; }
+.flex-auto { flex: auto; }
+.flex-none { flex: none; }
+
+/* ============================================================================
+   ESPACEMENT
+   ============================================================================ */
+.m-0 { margin: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+
+.p-0 { padding: 0; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.p-4 { padding: 1.5rem; }
+
+/* ============================================================================
+   VISIBILITÉ ET RESPONSIVE
+   ============================================================================ */
+.hidden { display: none !important; }
+.invisible { visibility: hidden; }
+
+/* Hide on mobile (< 768px) */
+@media (max-width: 767px) {
+    .hide-mobile { display: none !important; }
+}
+
+/* Hide on tablet and up (>= 768px) */
+@media (min-width: 768px) {
+    .hide-desktop { display: none !important; }
+    .show-mobile-only { display: none !important; }
+}
+
+/* Show only on mobile */
+@media (max-width: 767px) {
+    .show-mobile-only { display: block !important; }
+}
+
+/* ============================================================================
+   FORMULAIRES INLINE
+   ============================================================================ */
+.form-inline { display: inline-block; margin: 0; }
+.form-inline-block { display: inline-block; }
+
+/* ============================================================================
+   TOUCH TARGETS (Accessibility)
+   ============================================================================ */
+/* Ensure minimum 44px touch targets on interactive elements */
+@media (max-width: 768px) {
+    a.touch-target,
+    button.touch-target,
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ============================================================================
+   CONTAINER UTILITIES
+   ============================================================================ */
+.container-fluid {
+    width: 100%;
+    padding-left: var(--spacing-md, 1rem);
+    padding-right: var(--spacing-md, 1rem);
+}
+
+.container-narrow {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Full width on mobile */
+@media (max-width: 768px) {
+    .w-full-mobile {
+        width: 100% !important;
+    }
+}

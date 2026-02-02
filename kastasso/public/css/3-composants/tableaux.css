@@ -1,0 +1,267 @@
+/* TABLEAUX - COMPOSANT RÉUTILISABLE */
+
+/* structure de base pour tous les tableaux */
+.admin-table,
+table.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.admin-table th,
+.admin-table td,
+table.table th,
+table.table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.admin-table th,
+table.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #1e90ff;
+    white-space: nowrap;
+}
+
+.admin-table tbody tr:hover,
+table.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* colonnes avec largeurs et alignements specifiques */
+.admin-table th.col-checkbox,
+.admin-table td.col-checkbox {
+    width: 50px;
+    text-align: center;
+}
+
+.admin-table th.col-status,
+.admin-table td.col-status,
+.admin-table th.col-center,
+.admin-table td.col-center {
+    text-align: center;
+}
+
+/* actions dans les cellules de tableau */
+.actions-cell,
+.td-actions {
+    white-space: normal !important;
+    overflow: visible !important;
+    padding: 0.75rem 0.5rem !important;
+}
+
+.actions-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* styles pour les postes */
+.table-postes {
+    table-layout: fixed;
+}
+
+/* wrapper pour scroll horizontal mobile */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* ============================================================================
+   RESPONSIVE TABLE - CARD VIEW PATTERN
+   ============================================================================
+   On mobile, tables transform into stacked cards where each row becomes a card
+   and each cell displays its column label using CSS ::before pseudo-elements.
+   
+   For best results, add data-label attributes to <td> elements in HTML:
+   <td data-label="Nom">John Doe</td>
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Transform table to block display */
+    .admin-table,
+    table.table {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+    
+    .admin-table thead,
+    table.table thead {
+        position: absolute !important;
+        left: -9999px !important;
+        top: -9999px !important;
+    }
+    
+    .admin-table tbody,
+    table.table tbody {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    /* Each row becomes a card */
+    .admin-table tbody tr,
+    table.table tbody tr {
+        display: block !important;
+        background: #fff !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        margin-bottom: 1rem !important;
+        border: 1px solid #e0e0e0 !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+    
+    /* Each cell: block with padding-left for label space */
+    .admin-table td,
+    table.table td {
+        display: block !important;
+        position: relative !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 14px 15px 14px 130px !important;
+        min-height: 48px !important;
+        border: none !important;
+        border-bottom: 1px solid #f0f0f0 !important;
+        text-align: left !important;
+        font-size: 0.95rem !important;
+        line-height: 1.4 !important;
+        color: #333 !important;
+        background: #fff !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
+    
+    .admin-table td:last-child,
+    table.table td:last-child {
+        border-bottom: none !important;
+    }
+    
+    /* Label via ::before - absolute positioned left */
+    .admin-table td::before,
+    table.table td::before {
+        content: attr(data-label);
+        position: absolute !important;
+        left: 12px !important;
+        top: 14px !important;
+        width: 110px !important;
+        font-weight: 700 !important;
+        color: #1e90ff !important;
+        text-transform: uppercase !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.3px !important;
+        line-height: 1.4 !important;
+        text-align: left !important;
+    }
+    
+    /* Actions cell - special styling, no label */
+    .admin-table td.td-actions,
+    table.table td.td-actions {
+        padding: 12px 15px 12px 130px !important;
+        text-align: left !important;
+        background: #f8f9fa !important;
+    }
+    
+    .admin-table td.td-actions::before,
+    table.table td.td-actions::before {
+        display: none !important;
+    }
+    
+    /* Actions buttons layout */
+    .actions-buttons {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        width: auto !important;
+    }
+    
+    /* Icon-only buttons (small) stay in a row */
+    .actions-buttons .btn-sm,
+    .actions-cell .btn-sm {
+        flex: 0 0 auto !important;
+        min-width: 44px !important;
+        max-width: none !important;
+        min-height: 44px !important;
+        padding: 8px !important;
+        justify-content: center !important;
+    }
+    
+    /* Full text buttons can wrap */
+    .actions-buttons .btn:not(.btn-sm),
+    .actions-buttons button:not(.btn-sm) {
+        flex: 1 1 45% !important;
+        min-width: 100px !important;
+        max-width: 150px !important;
+        min-height: 44px !important;
+        justify-content: center !important;
+    }
+    
+    .actions-buttons form {
+        flex: 0 0 auto !important;
+        display: flex !important;
+    }
+    
+    .actions-buttons form button,
+    .actions-buttons form .btn {
+        width: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-table td,
+    table.table td {
+        padding: 12px 10px 12px 115px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .admin-table td::before,
+    table.table td::before {
+        width: 100px !important;
+        font-size: 0.7rem !important;
+        left: 10px !important;
+    }
+    
+    /* Icon-only buttons remain side by side */
+    .actions-buttons .btn-sm,
+    .actions-cell .btn-sm {
+        flex: 0 0 auto !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        padding: 8px !important;
+    }
+    
+    /* Only full-text buttons stack */
+    .actions-buttons .btn:not(.btn-sm),
+    .actions-buttons button:not(.btn-sm) {
+        flex: 1 1 100% !important;
+        max-width: none !important;
+        min-height: 48px !important;
+    }
+    
+    .actions-buttons form:has(.btn-sm) {
+        flex: 0 0 auto !important;
+    }
+    
+    .actions-buttons form:not(:has(.btn-sm)) {
+        flex: 1 1 100% !important;
+        max-width: none !important;
+    }
+}

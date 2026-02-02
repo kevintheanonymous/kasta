@@ -1,0 +1,159 @@
+/* =========================================
+   ALERTS - NOTIFICATION COMPONENTS
+   Consistent alert styling using design tokens
+   ========================================= */
+
+.alert {
+    padding: var(--spacing-md, 1rem) var(--spacing-2xl, 3rem) var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+    border-radius: var(--border-radius-md, 8px);
+    margin-bottom: var(--spacing-md, 1rem);
+    position: relative;
+    animation: fadeInUp 0.3s ease;
+    border-width: 1px;
+    border-style: solid;
+    font-size: var(--font-size-sm, 0.875rem);
+    line-height: 1.5;
+}
+
+/* Close button */
+.alert-close {
+    position: absolute !important;
+    top: 50% !important;
+    right: 0.75rem !important;
+    transform: translateY(-50%) !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    font-size: 1rem !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    opacity: 0.7;
+    transition: all var(--transition-fast, 150ms ease);
+    width: 28px !important;
+    height: 28px !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: inherit !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    border-radius: 50% !important;
+}
+
+.alert-close:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-50%) scale(1.1) !important;
+}
+
+/* =========================================
+   ALERT VARIANTS
+   Using semantic colors from design system
+   ========================================= */
+
+.alert-success {
+    background-color: var(--success-light, #d4edda);
+    color: var(--success-text, #155724);
+    border-color: var(--success-color, #27ae60);
+}
+
+.alert-danger,
+.alert-error {
+    background-color: var(--danger-light, #f8d7da);
+    color: var(--danger-text, #721c24);
+    border-color: var(--danger-color, #e74c3c);
+}
+
+.alert-warning {
+    background-color: var(--warning-light, #fff3cd);
+    color: var(--warning-text, #856404);
+    border-color: var(--warning-color, #f39c12);
+}
+
+.alert-info {
+    background-color: var(--accent-light, #d1ecf1);
+    color: var(--accent-text, #0c5460);
+    border-color: var(--accent-color, #3498db);
+}
+
+/* Neutral/default alert */
+.alert-default {
+    background-color: var(--gray-100, #f5f7fa);
+    color: var(--gray-700, #495057);
+    border-color: var(--gray-300, #dee2e6);
+}
+
+/* =========================================
+   ALERT ANIMATIONS
+   ========================================= */
+
+.alert.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================
+   ALERT WITH ICON
+   ========================================= */
+
+.alert-with-icon {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm, 0.75rem);
+}
+
+.alert-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-title {
+    font-weight: var(--font-weight-semibold, 600);
+    margin-bottom: 0.25rem;
+}
+
+/* =========================================
+   RESPONSIVE ALERTS
+   ========================================= */
+
+@media (max-width: 768px) {
+    .alert {
+        padding: var(--spacing-sm, 0.75rem) var(--spacing-md, 1rem);
+        padding-right: 2.5rem;
+        font-size: var(--font-size-sm, 0.875rem);
+    }
+
+    .alert-close {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 1.25rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .alert {
+        padding: var(--spacing-sm, 0.75rem);
+        padding-right: 2.5rem;
+        font-size: var(--font-size-xs, 0.8rem);
+    }
+}

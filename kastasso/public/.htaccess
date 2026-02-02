@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    Options -MultiViews
+    RewriteEngine On
+
+    # Si ce n'est pas un fichier ou un dossier réel (comme css, js, images)
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    
+    # On redirige vers index.php en passant le chemin en paramètre
+    RewriteRule ^(.*)$ index.php?path=/$1 [QSA,L]
+</IfModule>
