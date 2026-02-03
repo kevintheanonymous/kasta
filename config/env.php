@@ -14,8 +14,11 @@ class Env {
             $path = dirname(__DIR__) . '/.env';
         }
 
+        // Si le fichier .env n'existe pas, utiliser les variables d'environnement système
+        // (utile pour Railway, Heroku, etc.)
         if (!file_exists($path)) {
-            throw new Exception("Fichier .env introuvable à : $path");
+            self::$loaded = true;
+            return;
         }
 
         $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);

@@ -1,0 +1,46 @@
+{
+    auto_https off
+    admin off
+    persist_config off
+    
+    servers {
+        trusted_proxies static private_ranges
+    }
+}
+
+:{$PORT:8080} {
+    root * /app/public
+    encode zstd gzip
+    
+    # Enable PHP
+    php_server
+    
+    # Handle clean URLs (front controller pattern)
+    try_files {path} {path}/ /index.php?{query}
+    
+    # Security headers
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        -Server
+    }
+    
+    # Cache static assets
+    @static {
+        path *.css *.js *.ico *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2
+    }
+    header @static Cache-Control "public, max-age=31536000"
+    
+    # Deny access to sensitive files
+    @blocked {
+        path /.env /.git/* /composer.* /config/*
+    }
+    respond @blocked 403
+    
+    # Logging
+    log {
+        output stdout
+        format console
+    }
+}
