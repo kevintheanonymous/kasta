@@ -3,38 +3,19 @@
     admin off
     
     frankenphp {
-        worker /app/public/index.php
+        num_threads 1
     }
 }
 
 :{$PORT:8080} {
     root * /app/public
-    encode zstd gzip
+    encode gzip
     
-    # Serve static files directly
-    @static {
-        file
-        path *.css *.js *.ico *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2 *.pdf
-    }
-    handle @static {
-        file_server
-    }
+    # Try to serve files directly, fallback to PHP
+    try_files {path} {path}/ /index.php?{query}
     
-    # Handle all other requests with PHP
-    handle {
-        php_server
-    }
+    # Execute PHP without worker mode
+    php
     
-    # Security headers
-    header {
-        X-Content-Type-Options "nosniff"
-        X-Frame-Options "SAMEORIGIN"
-        -Server
-    }
-    
-    # Logging
-    log {
-        output stdout
-        format console
-    }
+    file_server
 }
