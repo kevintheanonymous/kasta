@@ -1,10 +1,19 @@
 <?php
+// Afficher les erreurs en dev pour debug
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 // Configuration sécurisée des sessions AVANT session_start()
 $isProduction = false; // Sera mis à jour après chargement de l'env
 
+// Vérifier les variables d'environnement système d'abord (Railway)
+if (getenv('APP_ENV') === 'production') {
+    $isProduction = true;
+}
+
 // Chargement anticipé de l'environnement pour les paramètres de session
 $envPath = dirname(__DIR__) . '/.env';
-if (file_exists($envPath)) {
+if (!$isProduction && file_exists($envPath)) {
     $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         if (strpos(trim($line), '#') === 0 || strpos($line, '=') === false) continue;
