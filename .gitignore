@@ -4,12 +4,14 @@
 *.env.*.local
 !.env.example
 
-# Dépendances
+# Dependances
 /vendor/
 
-# Fichiers uploadés par les utilisateurs
+# Fichiers uploades par les utilisateurs
 /public/uploads/*
 !/public/uploads/.gitkeep
+/uploads/adhesions/*
+/uploads/templates/*
 
 # Logs
 *.log
@@ -19,17 +21,20 @@
 /cache/
 *.cache
 
-# IDE et éditeurs
+# IDE et editeurs
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 
-# Système
+# Systeme
 .DS_Store
 Thumbs.db
 
 # Fichiers de build
 /node_modules/
 /.dist/
+
+# Base de donnees init/backup
+/db-init/

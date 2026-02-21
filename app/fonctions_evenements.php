@@ -309,27 +309,212 @@ function traiterSuppressionEvenement(string $redirectUrlBase): void
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         return;
     }
-    
+
     // check csrf
     validerCSRFOuRediriger($redirectUrlBase);
-    
+
     $type = $_POST['type'] ?? 'sport';
     $id = (int)($_POST['id_event'] ?? 0);
     $raison = $_POST['raison_suppression'] ?? '';
-    
+
     // Notification des inscrits avant suppression
     require_once __DIR__ . '/services/EmailService.php';
     $nbEmailsEnvoyes = EmailService::notifierAnnulationEvent($id, $type, $raison);
-    
+
     if (supprimerEvenement($id, $type)) {
         $_SESSION['success'] = "Événement supprimé avec succès";
-        
+
         if ($nbEmailsEnvoyes > 0) {
             $_SESSION['success'] .= " - {$nbEmailsEnvoyes} email(s) d'annulation envoyé(s)";
         }
     } else {
         $_SESSION['errors'] = ["Erreur lors de la suppression de l'événement"];
     }
-    
+
     rediriger($redirectUrlBase . '&type=' . $type);
+}
+
+
+// --- Fonctions partagees pour la visualisation des inscrits ---
+
+function afficherBenevolesPourEvenement(string $redirectBase, string $vuePath): void
+{
+    $idEvent = (int)($_GET['id'] ?? 0);
+    if ($idEvent === 0) {
+        $_SESSION['errors'] = ["ID événement manquant"];
+        rediriger($redirectBase . '&type=sport');
+    }
+
+    $event = EvenementSport::findById($idEvent);
+    if (!$event) {
+        $_SESSION['errors'] = ["Événement sportif introuvable"];
+        rediriger($redirectBase . '&type=sport');
+    }
+
+    $nombreInscrits = Participation::obtenirNombreInscritsEvenement($idEvent);
+    $inscritsData = Participation::obtenirInscritsPourEvenement($idEvent);
+
+    $creneauxAvecInscrits = [];
+    foreach ($inscritsData as $ligne) {
+        $idCreneau = $ligne['Id_creneau'];
+        if (!isset($creneauxAvecInscrits[$idCreneau])) {
+            $creneauxAvecInscrits[$idCreneau] = [
+                'id_creneau' => $idCreneau,
+                'type' => $ligne['type_creneau'],
+                'date' => $ligne['Date_creneau'],
+                'heure_debut' => $ligne['Heure_Debut'],
+                'heure_fin' => $ligne['Heure_Fin'],
+                'commentaire' => $ligne['commentaire_creneau'],
+                'benevoles' => []
+            ];
+        }
+        if ($ligne['Id_Membre'] !== null) {
+            $postesPreferences = Participation::getPostesLibellesFromJson($ligne['Preference_Poste']);
+            $creneauxAvecInscrits[$idCreneau]['benevoles'][] = [
+                'id_membre' => $ligne['Id_Membre'],
+                'nom' => $ligne['Nom'],
+                'prenom' => $ligne['Prenom'],
+                'mail' => $ligne['Mail'],
+                'telephone' => $ligne['Telephone'],
+                'date_inscription' => $ligne['Date_inscription'],
+                'presence' => $ligne['Presence'],
+                'preferences_postes' => $postesPreferences
+            ];
+        }
+    }
+
+    $creneaux = array_values($creneauxAvecInscrits);
+    require __DIR__ . '/vues/' . $vuePath;
+}
+
+function afficherParticipantsPourEvenement(string $redirectBase, string $vuePath): void
+{
+    $idEvent = (int)($_GET['id'] ?? 0);
+    if ($idEvent === 0) {
+        $_SESSION['errors'] = ["ID événement manquant"];
+        rediriger($redirectBase . '&type=asso');
+    }
+
+    $event = EvenementAsso::findById($idEvent);
+    if (!$event) {
+        $_SESSION['errors'] = ["Événement associatif introuvable"];
+        rediriger($redirectBase . '&type=asso');
+    }
+
+    $nombreInscrits = Participation::obtenirNombreInscritsEvenementAsso($idEvent);
+    $participants = Participation::obtenirInscritsPourEvenementAsso($idEvent);
+
+    require __DIR__ . '/vues/' . $vuePath;
+}
+
+function genererPDFParticipantsSport(string $redirectBase): void
+{
+    require_once __DIR__ . '/services/PDFService.php';
+
+    $idEvent = (int)($_GET['id'] ?? 0);
+    if ($idEvent === 0) {
+        $_SESSION['errors'] = ["ID événement manquant"];
+        rediriger($redirectBase . '&type=sport');
+    }
+
+    $evenement = EvenementSport::findById($idEvent);
+    if (!$evenement) {
+        $_SESSION['errors'] = ["Événement sportif introuvable"];
+        rediriger($redirectBase . '&type=sport');
+    }
+
+    $participants = EvenementSport::obtenirParticipantsAvecRegimes($idEvent);
+    PDFService::genererPDFParticipants($evenement, $participants);
+}
+
+function genererPDFParticipantsAsso(string $redirectBase): void
+{
+    require_once __DIR__ . '/services/PDFService.php';
+
+    $idEvent = (int)($_GET['id'] ?? 0);
+    if ($idEvent === 0) {
+        $_SESSION['errors'] = ["ID événement manquant"];
+        rediriger($redirectBase . '&type=asso');
+    }
+
+    $evenement = EvenementAsso::findById($idEvent);
+    if (!$evenement) {
+        $_SESSION['errors'] = ["Événement associatif introuvable"];
+        rediriger($redirectBase . '&type=asso');
+    }
+
+    $participants = EvenementAsso::obtenirParticipantsAvecRegimes($idEvent);
+    PDFService::genererPDFParticipantsAsso($evenement, $participants);
+}
+
+function traiterMarquerPresences(string $redirectDefault): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        rediriger($redirectDefault);
+        exit;
+    }
+
+    if (!verifierTokenCSRF()) {
+        $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
+        rediriger($redirectDefault);
+        exit;
+    }
+
+    $idCreneau = (int)($_POST['id_creneau'] ?? 0);
+    $presences = $_POST['presences'] ?? [];
+    $retourUrl = validerUrlRetour($_POST['retour_url'] ?? $redirectDefault);
+
+    if ($idCreneau === 0) {
+        $_SESSION['errors'] = ['ID créneau manquant'];
+        rediriger($retourUrl);
+        exit;
+    }
+
+    $creneau = Creneau::findById($idCreneau);
+    if (!$creneau) {
+        $_SESSION['errors'] = ['Créneau introuvable'];
+        rediriger($retourUrl);
+        exit;
+    }
+
+    $inscrits = Participation::getInscritsCreneaux($idCreneau);
+    $presencesAMarquer = [];
+    foreach ($inscrits as $inscrit) {
+        $idMembre = $inscrit['Id_Membre'];
+        $presencesAMarquer[$idMembre] = isset($presences[$idMembre]) ? 1 : 0;
+    }
+
+    $resultat = Participation::marquerPresencesMasse($idCreneau, $presencesAMarquer);
+    if ($resultat['success']) {
+        $_SESSION['success'] = "Présences enregistrées avec succès ({$resultat['updated']} mise(s) à jour)";
+    } else {
+        $_SESSION['errors'] = $resultat['errors'];
+    }
+
+    rediriger($retourUrl);
+    exit;
+}
+
+function traiterModifierPaiement(string $redirectBase): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        rediriger($redirectBase);
+    }
+
+    if (!verifierTokenCSRF()) {
+        $_SESSION['errors'] = ['Token de sécurité invalide.'];
+        rediriger($redirectBase);
+        exit;
+    }
+
+    $idMembre = (int)($_POST['id_membre'] ?? 0);
+    $idEvent = (int)($_POST['id_event'] ?? 0);
+    $nouveauStatut = (int)($_POST['nouveau_statut'] ?? 0);
+
+    if ($idMembre && $idEvent) {
+        Participation::updatePaiement($idMembre, $idEvent, $nouveauStatut);
+        $_SESSION['success'] = "Statut de paiement mis à jour.";
+    }
+
+    rediriger($redirectBase . '/participants&id=' . $idEvent);
 }

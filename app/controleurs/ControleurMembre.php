@@ -524,6 +524,21 @@ class ControleurMembre
             }
         }
 
+            // Validation des accompagnateurs
+            if (!empty($accompagnateursData)) {
+                foreach ($accompagnateursData as &$acc) {
+                    $acc['nom'] = trim(htmlspecialchars($acc['nom'] ?? '', ENT_QUOTES, 'UTF-8'));
+                    $acc['prenom'] = trim(htmlspecialchars($acc['prenom'] ?? '', ENT_QUOTES, 'UTF-8'));
+                    $acc['email'] = filter_var($acc['email'] ?? '', FILTER_SANITIZE_EMAIL);
+                    $acc['tarif'] = isset($acc['tarif']) ? max(0, (float)$acc['tarif']) : 0;
+                    if (empty($acc['nom']) || empty($acc['prenom'])) {
+                        $_SESSION['errors'] = ["Chaque accompagnateur doit avoir un nom et un prénom."];
+                        rediriger('/membre/inscription_asso&id=' . $idEvent);
+                    }
+                }
+                unset($acc);
+            }
+
         // verifier si c'est une mise a jour ou une creation
         $inscriptionExistante = Participation::getInscriptionEventAsso($userId, $idEvent);
 
@@ -792,6 +807,21 @@ class ControleurMembre
     {
         self::verifierMembre();
 
+        // Verification que la requete vient du meme domaine
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        if (empty($origin) && empty($referer)) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Requête non autorisée']);
+            exit;
+        }
+        if (!empty($origin) && parse_url($origin, PHP_URL_HOST) !== $host) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Requête non autorisée']);
+            exit;
+        }
+
         // lit les donnees JSON envoyees
         $json = file_get_contents('php://input');
         $data = json_decode($json, true);
@@ -925,7 +955,7 @@ public static function traiterContact(): void
         ";
 
         // Email de destination
-        $emailDestination = 'kidusbiniammanunited@gmail.com';
+        $emailDestination = Env::get('CONTACT_EMAIL') ?: 'contact@kastasso.fr';
         
         try {
             require_once __DIR__ . '/../services/EmailService.php';

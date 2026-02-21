@@ -202,80 +202,71 @@ class ControleurAuth {
                 rediriger('/connexion');
             }
 
+            // Verification rate limiting
+            if (!self::verifierRateLimit('login_' . $email)) {
+                $_SESSION['errors'] = ["Trop de tentatives. Veuillez patienter avant de réessayer."];
+                rediriger('/connexion');
+            }
+
+            // SECURITE: Toujours verifier les deux tables pour eviter les timing attacks
             $result = Membre::connexion($email, $mdp);
+            $resultAdmin = Admin::connexion($email, $mdp);
 
             if ($result['success']) {
                 $membre = $result['data'];
-                
+
                 // Vérification du statut du compte
                 if ($membre['statut_compte'] !== 'valide') {
                     $_SESSION['errors'] = ["Votre compte est en attente de validation ou a été refusé."];
                     rediriger('/connexion');
                 }
 
-                // SÉCURITÉ: Régénérer l'ID de session pour prévenir la session fixation
+                self::resetRateLimit('login_' . $email);
                 session_regenerate_id(true);
 
-                // Connexion réussie
                 $_SESSION['user'] = [
                     'id' => $membre['id_membre'],
                     'nom' => $membre['nom'],
                     'prenom' => $membre['prenom'],
-                    'role' => $membre['gestionnaire'] ? 'admin' : 'membre'
+                    'role' => $membre['gestionnaire'] ? 'gestionnaire' : 'membre'
                 ];
-                
-                // on met l'id dans la session (pour les anciennes parties du code qui en ont besoin)
+
                 $_SESSION['user_id'] = $membre['id_membre'];
-                
-                // le type d'user pour le controleur admin
                 $_SESSION['user_type'] = $membre['gestionnaire'] ? 'gestionnaire' : 'membre';
-                
-                // le nom pour l'afficher dans l'interface
                 $_SESSION['user_name'] = $membre['prenom'] . ' ' . $membre['nom'];
-                
                 $_SESSION['is_member'] = true;
-                
-                // on demarre le timer pour le timeout de session
                 $_SESSION['derniere_activite'] = time();
 
-                // on redirige selon le role
                 if ($membre['gestionnaire']) {
                     rediriger('/gestionnaire/tableau_de_bord');
                 } else {
                     rediriger('/membre/tableau_de_bord');
                 }
                 exit();
-            } else {
-                // si c'est pas un membre on essaye en tant qu'admin
-                $resultAdmin = Admin::connexion($email, $mdp);
-                
-                if ($resultAdmin['success']) {
-                    $admin = $resultAdmin['data'];
-                    
-                    // SÉCURITÉ: Régénérer l'ID de session pour prévenir la session fixation
-                    session_regenerate_id(true);
-                    
-                    // c'est un admin qui se connecte
-                    $_SESSION['user'] = [
-                        'id' => $admin['id_admin'],
-                        'nom' => $admin['identifiant'], // Ou autre champ pertinent
-                        'prenom' => 'Admin',
-                        'role' => 'admin'
-                    ];
-                    
-                    $_SESSION['user_id'] = $admin['id_admin'];
-                    $_SESSION['user_type'] = 'admin';
-                    $_SESSION['user_name'] = 'Administrateur';
-                    
-                    // pareil on demarre le timer
-                    $_SESSION['derniere_activite'] = time();
+            } elseif ($resultAdmin['success']) {
+                $admin = $resultAdmin['data'];
 
-                    rediriger('/admin/tableau_de_bord');
-                }
+                self::resetRateLimit('login_' . $email);
+                session_regenerate_id(true);
 
-                $_SESSION['errors'] = [$result['message']]; // Ou un message générique
-                rediriger('/connexion');
+                $_SESSION['user'] = [
+                    'id' => $admin['id_admin'],
+                    'nom' => $admin['identifiant'],
+                    'prenom' => 'Admin',
+                    'role' => 'admin'
+                ];
+
+                $_SESSION['user_id'] = $admin['id_admin'];
+                $_SESSION['user_type'] = 'admin';
+                $_SESSION['user_name'] = 'Administrateur';
+                $_SESSION['derniere_activite'] = time();
+
+                rediriger('/admin/tableau_de_bord');
             }
+
+            self::incrementerRateLimit('login_' . $email);
+            $_SESSION['errors'] = ['Identifiants incorrects'];
+            rediriger('/connexion');
         }
     }
 
@@ -393,7 +384,7 @@ class ControleurAuth {
                 $_SESSION['errors'] = ["Erreur de sécurité : requête invalide. Veuillez réessayer."];
                 rediriger('/connexion');
             }
-            
+
             $token = $_POST['token'] ?? '';
             $mdp = $_POST['mot_de_passe'] ?? '';
             $confmdp = $_POST['confirmer_mdp'] ?? '';
@@ -408,7 +399,13 @@ class ControleurAuth {
                 rediriger('/reinitialisation_mdp&token=' . $token);
             }
 
-            // on regarde si c'est un membre ou un admin qui reset
+            // Validation de la complexite du mot de passe
+            $erreursMdp = self::validerComplexiteMotDePasse($mdp);
+            if (!empty($erreursMdp)) {
+                $_SESSION['errors'] = $erreursMdp;
+                rediriger('/reinitialisation_mdp&token=' . $token);
+            }
+
             $membre = Membre::verifyResetToken($token);
             $admin = Admin::verifyResetToken($token);
 
@@ -427,5 +424,65 @@ class ControleurAuth {
             $_SESSION['errors'] = ["Une erreur est survenue ou le lien a expiré."];
             rediriger('/connexion');
         }
+    }
+
+    private static function validerComplexiteMotDePasse(string $mdp): array
+    {
+        $erreurs = [];
+        if (strlen($mdp) < 8) {
+            $erreurs[] = "Le mot de passe doit contenir au moins 8 caractères.";
+        }
+        if (!preg_match('/[A-Z]/', $mdp)) {
+            $erreurs[] = "Le mot de passe doit contenir au moins une majuscule.";
+        }
+        if (!preg_match('/[a-z]/', $mdp)) {
+            $erreurs[] = "Le mot de passe doit contenir au moins une minuscule.";
+        }
+        if (!preg_match('/[0-9]/', $mdp)) {
+            $erreurs[] = "Le mot de passe doit contenir au moins un chiffre.";
+        }
+        if (!preg_match('/[^A-Za-z0-9]/', $mdp)) {
+            $erreurs[] = "Le mot de passe doit contenir au moins un caractère spécial.";
+        }
+        return $erreurs;
+    }
+
+    // Rate limiting via session
+    private static function verifierRateLimit(string $cle): bool
+    {
+        $maxTentatives = (int) (Env::get('RATE_LIMIT_MAX_ATTEMPTS') ?: 5);
+        $fenetre = (int) (Env::get('RATE_LIMIT_WINDOW_SECONDS') ?: 900);
+
+        $rateLimits = $_SESSION['rate_limits'] ?? [];
+        if (!isset($rateLimits[$cle])) {
+            return true;
+        }
+
+        $entry = $rateLimits[$cle];
+        if (time() - $entry['premier_essai'] > $fenetre) {
+            unset($_SESSION['rate_limits'][$cle]);
+            return true;
+        }
+
+        return $entry['tentatives'] < $maxTentatives;
+    }
+
+    private static function incrementerRateLimit(string $cle): void
+    {
+        if (!isset($_SESSION['rate_limits'])) {
+            $_SESSION['rate_limits'] = [];
+        }
+        if (!isset($_SESSION['rate_limits'][$cle])) {
+            $_SESSION['rate_limits'][$cle] = [
+                'tentatives' => 0,
+                'premier_essai' => time()
+            ];
+        }
+        $_SESSION['rate_limits'][$cle]['tentatives']++;
+    }
+
+    private static function resetRateLimit(string $cle): void
+    {
+        unset($_SESSION['rate_limits'][$cle]);
     }
 }

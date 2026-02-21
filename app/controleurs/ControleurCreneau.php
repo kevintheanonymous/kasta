@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../fonctions_evenements.php';
 require_once __DIR__ . '/../models/Creneau.php';
 require_once __DIR__ . '/../models/EvenementSport.php';
 require_once __DIR__ . '/../models/Participation.php';
@@ -279,59 +280,6 @@ class ControleurCreneau {
     //Traite un formulaire avec des checkboxes pour chaque bénévole
     public static function marquerPresences() {
         self::verifierAdmin();
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/admin/events');
-            exit;
-        }
-
-        // Vérification CSRF
-        if (!verifierTokenCSRF()) {
-            $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
-            rediriger('/admin/events');
-            exit;
-        }
-
-        $idCreneau = (int)($_POST['id_creneau'] ?? 0);
-        $idEvent = (int)($_POST['id_event'] ?? 0);
-        $presences = $_POST['presences'] ?? [];
-        $retourUrl = $_POST['retour_url'] ?? '/admin/events';
-
-        if ($idCreneau === 0) {
-            $_SESSION['errors'] = ['ID créneau manquant'];
-            rediriger($retourUrl);
-            exit;
-        }
-
-        // Vérifier que le créneau existe
-        $creneau = Creneau::findById($idCreneau);
-        if (!$creneau) {
-            $_SESSION['errors'] = ['Créneau introuvable'];
-            rediriger($retourUrl);
-            exit;
-        }
-
-        // Récupérer tous les inscrits du créneau
-        $inscrits = Participation::getInscritsCreneaux($idCreneau);
-
-        // Construire le tableau de présences : 1 si coché, 0 sinon
-        $presencesAMarquer = [];
-        foreach ($inscrits as $inscrit) {
-            $idMembre = $inscrit['Id_Membre'];
-            // Si la checkbox est cochée, elle sera dans le tableau $presences
-            $presencesAMarquer[$idMembre] = isset($presences[$idMembre]) ? 1 : 0;
-        }
-
-        // Marquer les présences en masse
-        $resultat = Participation::marquerPresencesMasse($idCreneau, $presencesAMarquer);
-
-        if ($resultat['success']) {
-            $_SESSION['success'] = "Présences enregistrées avec succès ({$resultat['updated']} mise(s) à jour)";
-        } else {
-            $_SESSION['errors'] = $resultat['errors'];
-        }
-
-        rediriger($retourUrl);
-        exit;
+        traiterMarquerPresences('/admin/events');
     }
 }

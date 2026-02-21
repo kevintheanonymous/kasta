@@ -91,17 +91,24 @@ class FileUploadService
         ];
     }
 
-    // supprime une photo de profil du serveur
     public static function deletePhoto(string $photoPath): bool
     {
         if (empty($photoPath)) {
             return false;
         }
 
-        $fullPath = __DIR__ . '/../../public/' . $photoPath;
+        // Protection contre le path traversal
+        $photoPath = basename($photoPath);
+        $fullPath = __DIR__ . '/../../public/uploads/' . $photoPath;
+        $realPath = realpath($fullPath);
+        $allowedDir = realpath(__DIR__ . '/../../public/uploads');
 
-        if (file_exists($fullPath) && is_file($fullPath)) {
-            return unlink($fullPath);
+        if ($realPath === false || $allowedDir === false || strpos($realPath, $allowedDir) !== 0) {
+            return false;
+        }
+
+        if (is_file($realPath)) {
+            return unlink($realPath);
         }
 
         return false;
@@ -184,17 +191,24 @@ class FileUploadService
         ];
     }
 
-    // supprimer formulaire adhesion
     public static function deleteFormulaireAdhesion(string $filePath): bool
     {
         if (empty($filePath)) {
             return false;
         }
 
-        $fullPath = __DIR__ . '/../../' . $filePath;
+        // Protection contre le path traversal
+        $fileName = basename($filePath);
+        $fullPath = __DIR__ . '/../../uploads/adhesions/' . $fileName;
+        $realPath = realpath($fullPath);
+        $allowedDir = realpath(__DIR__ . '/../../uploads/adhesions');
 
-        if (file_exists($fullPath) && is_file($fullPath)) {
-            return unlink($fullPath);
+        if ($realPath === false || $allowedDir === false || strpos($realPath, $allowedDir) !== 0) {
+            return false;
+        }
+
+        if (is_file($realPath)) {
+            return unlink($realPath);
         }
 
         return false;

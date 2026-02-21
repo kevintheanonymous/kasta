@@ -48,12 +48,21 @@ class Env {
         self::$loaded = true;
     }
 
-    // recupere une variable d'environnement
     public static function get($key, $default = null) {
         if (!self::$loaded) {
             self::load();
         }
 
-        return $_ENV[$key] ?? getenv($key) ?: $default;
+        // Priorite: $_ENV > getenv() > default
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+            return $_ENV[$key];
+        }
+
+        $envValue = getenv($key);
+        if ($envValue !== false && $envValue !== '') {
+            return $envValue;
+        }
+
+        return $default;
     }
 }

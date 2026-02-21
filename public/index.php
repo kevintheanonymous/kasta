@@ -1,38 +1,52 @@
 <?php
-// Afficher les erreurs en dev pour debug
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+// Configuration securisee des sessions AVANT session_start()
+$isProduction = false;
+$isDebug = false;
 
-// Configuration sécurisée des sessions AVANT session_start()
-$isProduction = false; // Sera mis à jour après chargement de l'env
-
-// Vérifier les variables d'environnement système d'abord (Railway)
+// Variables d'environnement systeme (Railway/Heroku)
 if (getenv('APP_ENV') === 'production') {
     $isProduction = true;
 }
+if (getenv('APP_DEBUG') === 'true') {
+    $isDebug = true;
+}
 
-// Chargement anticipé de l'environnement pour les paramètres de session
+// Chargement anticipe de l'environnement pour les parametres de session
 $envPath = dirname(__DIR__) . '/.env';
-if (!$isProduction && file_exists($envPath)) {
+if (file_exists($envPath)) {
     $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         if (strpos(trim($line), '#') === 0 || strpos($line, '=') === false) continue;
         list($name, $value) = explode('=', $line, 2);
-        if (trim($name) === 'APP_ENV' && trim(trim($value), '"\'') === 'production') {
+        $name = trim($name);
+        $value = trim(trim($value), '"\'');
+        if ($name === 'APP_ENV' && $value === 'production') {
             $isProduction = true;
-            break;
+        }
+        if ($name === 'APP_DEBUG' && $value === 'true') {
+            $isDebug = true;
         }
     }
 }
 
-// Configuration sécurisée des cookies de session
+// Erreurs : affichage uniquement en mode debug hors production
+if ($isDebug && !$isProduction) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+}
+
+// Configuration securisee des cookies de session
 session_set_cookie_params([
-    'lifetime' => 0,                    // Expire à la fermeture du navigateur
+    'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => $isProduction,          // HTTPS uniquement en production
-    'httponly' => true,                 // Inaccessible via JavaScript
-    'samesite' => 'Strict'              // Protection CSRF supplémentaire
+    'secure' => $isProduction,
+    'httponly' => true,
+    'samesite' => 'Strict'
 ]);
 
 session_start();
@@ -43,19 +57,27 @@ $root = dirname(__DIR__);
 require_once $root . '/config/env.php';
 Env::load();
 
-// SÉCURITÉ: Forçage HTTPS en production
-// Ne s'active que si APP_ENV=production dans le .env
+// SECURITE: En-tetes de securite HTTP
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+if ($isProduction) {
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'none'");
+}
+
+// SECURITE: Forcage HTTPS en production
 if (Env::get('APP_ENV') === 'production') {
-    // Vérifier si la connexion n'est pas déjà en HTTPS
-    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 || $_SERVER['SERVER_PORT'] == 443
                 || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
-    
+
     if (!$isHttps) {
-        // Redirection permanente (301) vers HTTPS
         $httpsUrl = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         header('Location: ' . $httpsUrl, true, 301);
-        exit('Redirection vers HTTPS...');
+        exit;
     }
 }
 
@@ -71,7 +93,6 @@ require_once $root . '/app/controleurs/ControleurGestionnaire.php';
 require_once $root . '/app/controleurs/ControleurDocument.php';
 require_once $root . '/app/controleurs/ControleurRegimeAlimentaire.php';
 
-// on charge les models pour pas avoir d'erreur "class not found"
 require_once $root . '/app/models/BaseDeDonnees.php';
 require_once $root . '/app/models/Membre.php';
 require_once $root . '/app/models/Admin.php';
@@ -85,7 +106,7 @@ require_once $root . '/app/models/Participation.php';
 
 $routes = require $root . '/config/routes.php';
 
-// gestion de l'url pour supporter les sous-dossiers (genre /mon-projet/)
+// Gestion de l'URL pour supporter les sous-dossiers
 if (isset($_GET['path'])) {
     $uri = $_GET['path'];
 } else {
@@ -94,16 +115,12 @@ if (isset($_GET['path'])) {
     $scriptDir = str_replace('\\', '/', dirname($scriptName));
     $projectDir = str_replace('\\', '/', dirname($scriptDir));
 
-    // si l'url commence par le dossier public
     if (strpos($uri, $scriptDir) === 0) {
         $uri = substr($uri, strlen($scriptDir));
-    } 
-    // sinon si elle commence par la racine du projet
-    elseif (strpos($uri, $projectDir) === 0) {
+    } elseif (strpos($uri, $projectDir) === 0) {
         $uri = substr($uri, strlen($projectDir));
     }
 
-    // si c'est juste /index.php on considere que c'est la racine
     if ($uri === '/index.php') {
         $uri = '/';
     }
@@ -120,7 +137,6 @@ if (isset($map[$uri])) {
         echo 'Route mal configurée.';
         exit;
     }
-    // Appel de méthode statique
     $controller::$action();
 } else {
     http_response_code(404);

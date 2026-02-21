@@ -8,43 +8,41 @@ class Membre
         try {
             $pdo = BaseDeDonnees::getConnexion();
             $sql = "INSERT INTO membre (
-    Prenom, Nom, Sexe, Mail, Mot_de_passe, Telephone, Url_Photo_Profil,
-    Taille_Teeshirt, Taille_Pull, Adherent, Url_Adhesion,
-    Statut_compte, Date_statut_compte, Message_statut_compte, Commentaire_Alimentaire,
-    regime_alimentaire_id, Gestionnaire
-) VALUES (
-    :prenom, :nom, :sexe, :mail, :mdp, :telephone, :url_photo,
-    :taille_teeshirt, :taille_pull, :adherent, :url_adhesion,
-    :statut, :date_statut, :message_statut, :commentaire_alim,
-    :regime_id, 0
-)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-    ':prenom'           => $data['prenom'],
-    ':nom'              => $data['nom'],
-    ':sexe'             => $data['sexe'] ?? null,
-    ':mail'             => $data['mail'],
-    ':mdp'              => password_hash($data['mdp'], PASSWORD_DEFAULT),
-    ':telephone'        => $data['telephone'],
-    ':url_photo'        => $data['url_photo'] ?? null,
-    ':taille_teeshirt'  => $data['taille_teeshirt'] ?? null,
-    ':taille_pull'      => $data['taille_pull'] ?? null,
-    ':adherent'         => (int) ($data['adherent'] ?? 0),
-    ':url_adhesion'     => $data['url_adhesion'] ?? '',
-    ':statut'           => 'en_attente',
-    ':date_statut'      => date('Y-m-d H:i:s'),
-    ':message_statut'   => 'Votre demande a bien été enregistrée',
-    ':commentaire_alim' => $data['commentaire_alim'] ?? '',
-    ':regime_id'        => !empty($data['regime_id']) ? (int)$data['regime_id'] : null,
-]);
-
+                        Prenom, Nom, Sexe, Mail, Mot_de_passe, Telephone, Url_Photo_Profil,
+                        Taille_Teeshirt, Taille_Pull, Adherent, Url_Adhesion,
+                        Statut_compte, Date_statut_compte, Message_statut_compte, Commentaire_Alimentaire,
+                        regime_alimentaire_id, Gestionnaire
+                    ) VALUES (
+                        :prenom, :nom, :sexe, :mail, :mdp, :telephone, :url_photo,
+                        :taille_teeshirt, :taille_pull, :adherent, :url_adhesion,
+                        :statut, :date_statut, :message_statut, :commentaire_alim,
+                        :regime_id, 0
+                    )";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':prenom'           => $data['prenom'],
+                ':nom'              => $data['nom'],
+                ':sexe'             => $data['sexe'] ?? null,
+                ':mail'             => $data['mail'],
+                ':mdp'              => password_hash($data['mdp'], PASSWORD_DEFAULT),
+                ':telephone'        => $data['telephone'],
+                ':url_photo'        => $data['url_photo'] ?? null,
+                ':taille_teeshirt'  => $data['taille_teeshirt'] ?? null,
+                ':taille_pull'      => $data['taille_pull'] ?? null,
+                ':adherent'         => (int) ($data['adherent'] ?? 0),
+                ':url_adhesion'     => $data['url_adhesion'] ?? '',
+                ':statut'           => 'en_attente',
+                ':date_statut'      => date('Y-m-d H:i:s'),
+                ':message_statut'   => 'Votre demande a bien été enregistrée',
+                ':commentaire_alim' => $data['commentaire_alim'] ?? '',
+                ':regime_id'        => !empty($data['regime_id']) ? (int)$data['regime_id'] : null,
+            ]);
 
             return ['success' => true, 'id' => (int) $pdo->lastInsertId()];
-        }catch (Throwable $e) {
-    error_log('Membre::ajouterMembre error: ' . $e->getMessage());
-    return ['success' => false, 'message' => $e->getMessage()]; 
-}
-
+        } catch (Throwable $e) {
+            error_log('Membre::ajouterMembre error: ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.'];
+        }
     }
 
     public static function emailExiste(string $mail): bool
@@ -79,49 +77,50 @@ class Membre
         }
     }
 
-public static function connexion(string $mail, string $mdp): array
-{
-    try {
-        $pdo = BaseDeDonnees::getConnexion();
-        $sql = "SELECT Id_Membre,
-                       Prenom,
-                       Nom,
-                       Mail,
-                       Mot_de_passe,
-                       Gestionnaire,
-                       Statut_compte
-                FROM membre
-                WHERE Mail = :mail
-                LIMIT 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':mail' => $mail]);
-        $row = $stmt->fetch();
+    public static function connexion(string $mail, string $mdp): array
+    {
+        try {
+            $pdo = BaseDeDonnees::getConnexion();
+            $sql = "SELECT Id_Membre,
+                           Prenom,
+                           Nom,
+                           Mail,
+                           Mot_de_passe,
+                           Gestionnaire,
+                           Statut_compte
+                    FROM membre
+                    WHERE Mail = :mail
+                    LIMIT 1";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':mail' => $mail]);
+            $row = $stmt->fetch();
 
-        if (!$row || !password_verify($mdp, $row['Mot_de_passe'])) {
-            return ['success' => false, 'message' => 'Identifiants incorrects'];
+            if (!$row || !password_verify($mdp, $row['Mot_de_passe'])) {
+                return ['success' => false, 'message' => 'Identifiants incorrects'];
+            }
+
+            return [
+                'success' => true,
+                'data' => [
+                    'id_membre'     => (int)$row['Id_Membre'],
+                    'prenom'        => $row['Prenom'],
+                    'nom'           => $row['Nom'],
+                    'mail'          => $row['Mail'],
+                    'gestionnaire'  => (bool)$row['Gestionnaire'],
+                    'statut_compte' => $row['Statut_compte'] ?? 'en_attente',
+                ],
+            ];
+        } catch (Throwable $e) {
+            error_log('Membre::connexion error: ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Erreur de connexion'];
         }
-
-        return [
-            'success' => true,
-            'data' => [
-                'id_membre'     => (int)$row['Id_Membre'],
-                'prenom'        => $row['Prenom'],
-                'nom'           => $row['Nom'],
-                'mail'          => $row['Mail'],
-                'gestionnaire'  => (bool)$row['Gestionnaire'],
-                'statut_compte' => $row['Statut_compte'] ?? 'en_attente',
-            ],
-        ];
-    } catch (Throwable $e) {
-        error_log('Membre::connexion error: ' . $e->getMessage());
-        return ['success' => false, 'message' => 'Erreur de connexion'];
     }
-}
+
     public static function getMembresEnAttente(): array
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT *
+            $sql = "SELECT Id_Membre, Prenom, Nom, Mail, Telephone, Sexe, Taille_Teeshirt, Taille_Pull, Statut_compte, Date_statut_compte, Message_statut_compte, Gestionnaire, Adherent, Url_Photo_Profil, Url_Adhesion, Commentaire_Alimentaire, regime_alimentaire_id, Statut_adhesion
                     FROM membre
                     WHERE Statut_compte = 'en_attente'
                     ORDER BY Date_statut_compte DESC";
@@ -137,7 +136,7 @@ public static function connexion(string $mail, string $mdp): array
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT *
+            $sql = "SELECT Id_Membre, Prenom, Nom, Mail, Telephone, Sexe, Taille_Teeshirt, Taille_Pull, Statut_compte, Date_statut_compte, Message_statut_compte, Gestionnaire, Adherent, Url_Photo_Profil, Url_Adhesion, Commentaire_Alimentaire, regime_alimentaire_id, Statut_adhesion, Date_demande_adhesion, Date_validation_adhesion, Message_adhesion
                     FROM membre
                     WHERE Id_Membre = :id
                     LIMIT 1";
@@ -189,23 +188,24 @@ public static function connexion(string $mail, string $mdp): array
     }
 
     public static function mettreGestionnaire(int $id, int $valeur): bool
-{
-    try {
-        $pdo = BaseDeDonnees::getConnexion();
-        $sql = "UPDATE membre SET Gestionnaire = :valeur WHERE Id_Membre = :id";
-        $stmt = $pdo->prepare($sql);
-        $success = $stmt->execute([':valeur' => $valeur, ':id' => $id]);
-        return $success && $stmt->rowCount() === 1;
-    } catch (Throwable $e) {
-        error_log("Exception: " . $e->getMessage());
-        return false;
+    {
+        try {
+            $pdo = BaseDeDonnees::getConnexion();
+            $sql = "UPDATE membre SET Gestionnaire = :valeur WHERE Id_Membre = :id";
+            $stmt = $pdo->prepare($sql);
+            $success = $stmt->execute([':valeur' => $valeur, ':id' => $id]);
+            return $success && $stmt->rowCount() === 1;
+        } catch (Throwable $e) {
+            error_log("Exception: " . $e->getMessage());
+            return false;
+        }
     }
-}
+
     public static function getTousLesMembres(): array
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT * FROM membre ORDER BY Nom, Prenom";
+            $sql = "SELECT Id_Membre, Prenom, Nom, Mail, Telephone, Sexe, Statut_compte, Gestionnaire, Adherent, Url_Photo_Profil, Statut_adhesion FROM membre ORDER BY Nom, Prenom";
             $stmt = $pdo->query($sql);
             return $stmt->fetchAll() ?: [];
         } catch (Throwable $e) {
@@ -213,6 +213,7 @@ public static function connexion(string $mail, string $mdp): array
             return [];
         }
     }
+
     public static function devenirAdherent(int $id): bool
     {
         try {
@@ -230,7 +231,7 @@ public static function connexion(string $mail, string $mdp): array
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT * FROM membre WHERE Mail = :mail LIMIT 1";
+            $sql = "SELECT Id_Membre, Prenom, Nom, Mail, Telephone, Sexe, Statut_compte, Gestionnaire, Adherent FROM membre WHERE Mail = :mail LIMIT 1";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':mail' => $email]);
             $row = $stmt->fetch();
@@ -246,12 +247,12 @@ public static function connexion(string $mail, string $mdp): array
         try {
             $pdo = BaseDeDonnees::getConnexion();
             $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
-            
-            $sql = "UPDATE membre 
-                    SET token_reset = :token, 
-                        token_reset_expires = :expires 
+
+            $sql = "UPDATE membre
+                    SET token_reset = :token,
+                        token_reset_expires = :expires
                     WHERE Mail = :email";
-            
+
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':token' => $token,
@@ -270,14 +271,14 @@ public static function connexion(string $mail, string $mdp): array
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT * FROM membre 
-                    WHERE token_reset = :token 
+            $sql = "SELECT Id_Membre, Prenom, Nom, Mail FROM membre
+                    WHERE token_reset = :token
                     AND token_reset_expires > NOW()";
-            
+
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':token' => $token]);
             $user = $stmt->fetch();
-            
+
             return $user ?: null;
         } catch (Throwable $e) {
             error_log('Membre::verifyResetToken error: ' . $e->getMessage());
@@ -289,12 +290,12 @@ public static function connexion(string $mail, string $mdp): array
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "UPDATE membre 
+            $sql = "UPDATE membre
                     SET Mot_de_passe = :mdp,
                         token_reset = NULL,
                         token_reset_expires = NULL
                     WHERE token_reset = :token";
-            
+
             $stmt = $pdo->prepare($sql);
             return $stmt->execute([
                 ':mdp' => password_hash($newPassword, PASSWORD_DEFAULT),
@@ -305,20 +306,21 @@ public static function connexion(string $mail, string $mdp): array
             return false;
         }
     }
+
     public static function updateMembre(int $id, array $data): bool
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "UPDATE membre SET 
-                    Nom = :nom, 
-                    Prenom = :prenom, 
-                    Mail = :mail, 
+            $sql = "UPDATE membre SET
+                    Nom = :nom,
+                    Prenom = :prenom,
+                    Mail = :mail,
                     Telephone = :telephone,
                     Taille_Teeshirt = :taille_teeshirt,
                     Taille_Pull = :taille_pull,
                     Commentaire_Alimentaire = :commentaire_alim,
                     regime_alimentaire_id = :regime_id";
-            
+
             $params = [
                 ':nom' => $data['nom'],
                 ':prenom' => $data['prenom'],
@@ -337,7 +339,7 @@ public static function connexion(string $mail, string $mdp): array
             }
 
             $sql .= " WHERE Id_Membre = :id";
-            
+
             $stmt = $pdo->prepare($sql);
             return $stmt->execute($params);
         } catch (Throwable $e) {
@@ -345,7 +347,7 @@ public static function connexion(string $mail, string $mdp): array
             return false;
         }
     }
-    
+
     public static function changerMotDePasse(int $id, string $nouveauMdp): bool
     {
         try {
@@ -358,7 +360,7 @@ public static function connexion(string $mail, string $mdp): array
             return false;
         }
     }
-    
+
     public static function supprimerMembre(int $id): bool
     {
         try {
@@ -396,7 +398,7 @@ public static function connexion(string $mail, string $mdp): array
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT *
+            $sql = "SELECT Id_Membre, Prenom, Nom, Mail, Telephone, Url_Adhesion, Statut_adhesion, Date_demande_adhesion, Url_Photo_Profil
                     FROM membre
                     WHERE Statut_adhesion = 'en_attente'
                     AND Statut_compte != 'refuse'

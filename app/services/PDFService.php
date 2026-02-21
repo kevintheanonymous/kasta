@@ -56,9 +56,13 @@ class PDFService
         ];
     }
 
-    // genere PDF participants sport
-    public static function genererPDFParticipants($evenement, $participants)
+    // genere PDF participants (sport ou asso)
+    public static function genererPDFParticipants($evenement, $participants, string $type = 'sport')
     {
+        // Déterminer le champ ID et le préfixe du nom de fichier selon le type
+        $idField = ($type === 'asso') ? 'id_event_asso' : 'id_event_sport';
+        $fichierPrefixe = ($type === 'asso') ? 'participants_evenement_asso_' : 'participants_evenement_';
+
         // Création de l'objet TCPDF
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -93,7 +97,7 @@ class PDFService
             $html .= '<p style="text-align: center; font-size: 16px; color: #999; margin-top: 50px;">Aucun participant inscrit à cet événement.</p>';
 
             $pdf->writeHTML($html, true, false, true, false, '');
-            $pdf->Output('participants_evenement_' . $evenement['id_event_sport'] . '_' . date('Y-m-d') . '.pdf', 'D');
+            $pdf->Output($fichierPrefixe . $evenement[$idField] . '_' . date('Y-m-d') . '.pdf', 'D');
             exit;
         }
 
@@ -101,19 +105,25 @@ class PDFService
         $categories = self::organiserParCategories($participants);
 
         // Construction du HTML du PDF
-        $html = self::construireHTMLPDF($evenement, $participants, $categories);
+        $html = self::construireHTMLPDF($evenement, $participants, $categories, $type);
 
         // Écrire le HTML dans le PDF
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Générer et envoyer le PDF
-        $nomFichier = 'participants_evenement_' . $evenement['id_event_sport'] . '_' . date('Y-m-d') . '.pdf';
+        $nomFichier = $fichierPrefixe . $evenement[$idField] . '_' . date('Y-m-d') . '.pdf';
         $pdf->Output($nomFichier, 'D'); // 'D' = Download
         exit;
     }
 
-    // construit le HTML du PDF
-    private static function construireHTMLPDF($evenement, $participants, $categories)
+    // wrapper backward-compatible pour asso
+    public static function genererPDFParticipantsAsso($evenement, $participants)
+    {
+        return self::genererPDFParticipants($evenement, $participants, 'asso');
+    }
+
+    // construit le HTML du PDF (sport ou asso)
+    private static function construireHTMLPDF($evenement, $participants, $categories, string $type = 'sport')
     {
         $html = '';
 
@@ -137,7 +147,7 @@ class PDFService
 
             foreach ($categories['restrictions'] as $restriction => $participants) {
                 $html .= '<h3 style="color: #c0392b; margin-top: 15px;">' . htmlspecialchars($restriction) . ' (' . count($participants) . ' participant' . (count($participants) > 1 ? 's' : '') . ')</h3>';
-                $html .= self::construireTableauParticipants($participants);
+                $html .= self::construireTableauParticipants($participants, $type);
                 $html .= '<br>';
             }
         }
@@ -149,7 +159,7 @@ class PDFService
 
             foreach ($categories['preferences'] as $preference => $participants) {
                 $html .= '<h3 style="color: #229954; margin-top: 15px;">' . htmlspecialchars($preference) . ' (' . count($participants) . ' participant' . (count($participants) > 1 ? 's' : '') . ')</h3>';
-                $html .= self::construireTableauParticipants($participants);
+                $html .= self::construireTableauParticipants($participants, $type);
                 $html .= '<br>';
             }
         }
@@ -163,7 +173,7 @@ class PDFService
             $html .= '<h2 style="color: #9b59b6; background-color: #f5eef8; padding: 8px; border-left: 4px solid #9b59b6;">Régimes alimentaires déclarés</h2>';
             $html .= '<br>';
             $html .= '<p><strong>' . count($participantsAvecRegime) . ' participant' . (count($participantsAvecRegime) > 1 ? 's' : '') . '</strong> avec un régime alimentaire déclaré</p>';
-            $html .= self::construireTableauParticipantsAvecRegime($participantsAvecRegime);
+            $html .= self::construireTableauParticipantsAvecRegime($participantsAvecRegime, $type);
             $html .= '<br>';
         }
 
@@ -172,7 +182,7 @@ class PDFService
             $html .= '<h2 style="color: #7f8c8d; background-color: #ecf0f1; padding: 8px; border-left: 4px solid #7f8c8d;">Sans contrainte alimentaire</h2>';
             $html .= '<br>';
             $html .= '<p><strong>' . count($categories['sans_regime']) . ' participant' . (count($categories['sans_regime']) > 1 ? 's' : '') . '</strong> sans restriction ni préférence</p>';
-            $html .= self::construireTableauParticipants($categories['sans_regime']);
+            $html .= self::construireTableauParticipants($categories['sans_regime'], $type);
             $html .= '<br>';
         }
 
@@ -191,9 +201,13 @@ class PDFService
         return $html;
     }
 
-    // tableau HTML participants
-    private static function construireTableauParticipants($participants)
+    // tableau HTML participants (sport ou asso)
+    private static function construireTableauParticipants($participants, string $type = 'sport')
     {
+        if ($type === 'asso') {
+            return self::construireTableauParticipantsAssoInterne($participants);
+        }
+
         $html = '<table border="1" cellpadding="6" cellspacing="0" width="100%">';
         $html .= '<tr bgcolor="#3498db" style="color: white;">';
         $html .= '<th align="left" width="13%"><strong>Nom</strong></th>';
@@ -209,7 +223,7 @@ class PDFService
             $html .= '<td align="left" valign="top">' . htmlspecialchars($participant['prenom']) . '</td>';
             $html .= '<td align="left" valign="top" style="font-size: 8px;">' . htmlspecialchars($participant['mail']) . '</td>';
             $html .= '<td align="center" valign="top">' . htmlspecialchars($participant['telephone'] ?? '-') . '</td>';
-            
+
             // Formater les créneaux pour meilleure lisibilité (un par ligne)
             $creneaux = $participant['creneaux'] ?? '-';
             if ($creneaux !== '-') {
@@ -222,7 +236,7 @@ class PDFService
             } else {
                 $html .= '<td align="center" valign="top">-</td>';
             }
-            
+
             $html .= '</tr>';
         }
 
@@ -231,9 +245,45 @@ class PDFService
         return $html;
     }
 
-    // tableau HTML participants avec colonne régime alimentaire
-    private static function construireTableauParticipantsAvecRegime($participants)
+    // tableau HTML participants asso (interne)
+    private static function construireTableauParticipantsAssoInterne($participants)
     {
+        $html = '<table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">';
+        $html .= '<thead>';
+        $html .= '<tr style="background-color: #3498db; color: white;">';
+        $html .= '<th style="width: 20%;"><strong>Nom</strong></th>';
+        $html .= '<th style="width: 20%;"><strong>Prénom</strong></th>';
+        $html .= '<th style="width: 25%;"><strong>Email</strong></th>';
+        $html .= '<th style="width: 18%;"><strong>Téléphone</strong></th>';
+        $html .= '<th style="width: 17%;"><strong>Accompagnateurs</strong></th>';
+        $html .= '</tr>';
+        $html .= '</thead>';
+        $html .= '<tbody>';
+
+        foreach ($participants as $participant) {
+            $html .= '<tr>';
+            $html .= '<td>' . htmlspecialchars($participant['nom']) . '</td>';
+            $html .= '<td>' . htmlspecialchars($participant['prenom']) . '</td>';
+            $html .= '<td style="font-size: 9px;">' . htmlspecialchars($participant['mail']) . '</td>';
+            $html .= '<td>' . htmlspecialchars($participant['telephone'] ?? '-') . '</td>';
+            $nb_invites = $participant['nb_invites'] ?? 0;
+            $html .= '<td style="text-align: center;">' . $nb_invites . ' accompagnateur' . ($nb_invites > 1 ? 's' : '') . '</td>';
+            $html .= '</tr>';
+        }
+
+        $html .= '</tbody>';
+        $html .= '</table>';
+
+        return $html;
+    }
+
+    // tableau HTML participants avec colonne régime alimentaire (sport ou asso)
+    private static function construireTableauParticipantsAvecRegime($participants, string $type = 'sport')
+    {
+        if ($type === 'asso') {
+            return self::construireTableauParticipantsAvecRegimeAssoInterne($participants);
+        }
+
         $html = '<table border="1" cellpadding="6" cellspacing="0" width="100%">';
         $html .= '<tr bgcolor="#9b59b6" style="color: white;">';
         $html .= '<th align="left" width="12%"><strong>Nom</strong></th>';
@@ -251,7 +301,7 @@ class PDFService
             $html .= '<td align="left" valign="top" style="font-size: 8px;">' . htmlspecialchars($participant['mail']) . '</td>';
             $html .= '<td align="center" valign="top">' . htmlspecialchars($participant['telephone'] ?? '-') . '</td>';
             $html .= '<td align="center" valign="top" style="font-weight: bold; color: #9b59b6;">' . htmlspecialchars($participant['regime_alimentaire']) . '</td>';
-            
+
             $creneaux = $participant['creneaux'] ?? '-';
             if ($creneaux !== '-') {
                 $creneauxArray = explode(' | ', $creneaux);
@@ -263,7 +313,7 @@ class PDFService
             } else {
                 $html .= '<td align="center" valign="top">-</td>';
             }
-            
+
             $html .= '</tr>';
         }
 
@@ -272,8 +322,8 @@ class PDFService
         return $html;
     }
 
-    // tableau HTML participants asso avec colonne régime alimentaire
-    private static function construireTableauParticipantsAvecRegimeAsso($participants)
+    // tableau HTML participants asso avec colonne régime alimentaire (interne)
+    private static function construireTableauParticipantsAvecRegimeAssoInterne($participants)
     {
         $html = '<table border="1" cellpadding="6" cellspacing="0" width="100%">';
         $html .= '<tr bgcolor="#9b59b6" style="color: white;">';
@@ -317,173 +367,6 @@ class PDFService
             $html .= '</tr>';
         }
 
-        $html .= '</table>';
-
-        return $html;
-    }
-
-    // genere PDF participants asso
-    public static function genererPDFParticipantsAsso($evenement, $participants)
-    {
-        // Création de l'objet TCPDF
-        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        // Métadonnées du document
-        $pdf->SetCreator('Kastasso');
-        $pdf->SetAuthor('Admin Kastasso');
-        $pdf->SetTitle('Liste participants - ' . $evenement['titre']);
-        $pdf->SetSubject('Participants avec régimes alimentaires');
-
-        // Configuration
-        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-        $pdf->SetMargins(15, 15, 15);
-        $pdf->SetAutoPageBreak(TRUE, 15);
-        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-        // Supprimer header et footer par défaut
-        $pdf->setPrintHeader(false);
-        $pdf->setPrintFooter(false);
-
-        // Police UTF-8 pour gérer les accents
-        $pdf->SetFont('helvetica', '', 10);
-
-        // Ajouter une page
-        $pdf->AddPage();
-
-        // Si aucun participant
-        if (empty($participants)) {
-            $html = '<h1 style="text-align: center; color: #666;">Liste des participants</h1>';
-            $html .= '<h2 style="text-align: center; color: #333;">' . htmlspecialchars($evenement['titre']) . '</h2>';
-            $html .= '<p style="text-align: center;"><strong>Date de génération:</strong> ' . date('d/m/Y à H:i') . '</p>';
-            $html .= '<hr>';
-            $html .= '<p style="text-align: center; font-size: 16px; color: #999; margin-top: 50px;">Aucun participant inscrit à cet événement.</p>';
-
-            $pdf->writeHTML($html, true, false, true, false, '');
-            $pdf->Output('participants_evenement_asso_' . $evenement['id_event_asso'] . '_' . date('Y-m-d') . '.pdf', 'D');
-            exit;
-        }
-
-        // Organiser les participants par catégories
-        $categories = self::organiserParCategories($participants);
-
-        // Construction du HTML du PDF
-        $html = self::construireHTMLPDFAsso($evenement, $participants, $categories);
-
-        // Écrire le HTML dans le PDF
-        $pdf->writeHTML($html, true, false, true, false, '');
-
-        // Générer et envoyer le PDF
-        $nomFichier = 'participants_evenement_asso_' . $evenement['id_event_asso'] . '_' . date('Y-m-d') . '.pdf';
-        $pdf->Output($nomFichier, 'D'); // 'D' = Download
-        exit;
-    }
-
-    // HTML PDF asso
-    private static function construireHTMLPDFAsso($evenement, $participants, $categories)
-    {
-        $html = '';
-
-        // En-tête du document
-        $html .= '<h1 style="text-align: center; color: #2c3e50;">Liste des participants</h1>';
-        $html .= '<h2 style="text-align: center; color: #34495e;">' . htmlspecialchars($evenement['titre']) . '</h2>';
-        $html .= '<p style="text-align: center;"><strong>Date de génération:</strong> ' . date('d/m/Y à H:i') . '</p>';
-        $html .= '<p style="text-align: center;"><strong>Nombre total de participants:</strong> ' . count($participants) . '</p>';
-        $html .= '<hr style="border: 1px solid #3498db;">';
-        $html .= '<br>';
-
-        // Section recap des regimes alimentaires
-        $html .= self::construireRecapitulatifRegimes($participants);
-        $html .= '<hr style="border: 1px solid #3498db; margin: 20px 0;">';
-        $html .= '<br>';
-
-        // Section 1: Restrictions alimentaires
-        if (!empty($categories['restrictions'])) {
-            $html .= '<h2 style="color: #e74c3c; background-color: #fadbd8; padding: 8px; border-left: 4px solid #e74c3c;">Restrictions alimentaires</h2>';
-            $html .= '<br>';
-
-            foreach ($categories['restrictions'] as $restriction => $participants) {
-                $html .= '<h3 style="color: #c0392b; margin-top: 15px;">' . htmlspecialchars($restriction) . ' (' . count($participants) . ' participant' . (count($participants) > 1 ? 's' : '') . ')</h3>';
-                $html .= self::construireTableauParticipantsAsso($participants);
-                $html .= '<br>';
-            }
-        }
-
-        // Section 2: Préférences alimentaires
-        if (!empty($categories['preferences'])) {
-            $html .= '<h2 style="color: #27ae60; background-color: #d5f4e6; padding: 8px; border-left: 4px solid #27ae60;">Préférences alimentaires</h2>';
-            $html .= '<br>';
-
-            foreach ($categories['preferences'] as $preference => $participants) {
-                $html .= '<h3 style="color: #229954; margin-top: 15px;">' . htmlspecialchars($preference) . ' (' . count($participants) . ' participant' . (count($participants) > 1 ? 's' : '') . ')</h3>';
-                $html .= self::construireTableauParticipantsAsso($participants);
-                $html .= '<br>';
-            }
-        }
-
-        // Section 3: Participants avec régime alimentaire déclaré
-        $participantsAvecRegime = array_filter($participants, function($p) {
-            return !empty($p['regime_alimentaire']);
-        });
-
-        if (!empty($participantsAvecRegime)) {
-            $html .= '<h2 style="color: #9b59b6; background-color: #f5eef8; padding: 8px; border-left: 4px solid #9b59b6;">Régimes alimentaires déclarés</h2>';
-            $html .= '<br>';
-            $html .= '<p><strong>' . count($participantsAvecRegime) . ' participant' . (count($participantsAvecRegime) > 1 ? 's' : '') . '</strong> avec un régime alimentaire déclaré</p>';
-            $html .= self::construireTableauParticipantsAvecRegimeAsso($participantsAvecRegime);
-            $html .= '<br>';
-        }
-
-        // Section 4: Sans contrainte alimentaire
-        if (!empty($categories['sans_regime'])) {
-            $html .= '<h2 style="color: #7f8c8d; background-color: #ecf0f1; padding: 8px; border-left: 4px solid #7f8c8d;">Sans contrainte alimentaire</h2>';
-            $html .= '<br>';
-            $html .= '<p><strong>' . count($categories['sans_regime']) . ' participant' . (count($categories['sans_regime']) > 1 ? 's' : '') . '</strong> sans restriction ni préférence</p>';
-            $html .= self::construireTableauParticipantsAsso($categories['sans_regime']);
-            $html .= '<br>';
-        }
-
-        // Section 5: Commentaires alimentaires spécifiques
-        $participantsAvecCommentaires = array_filter($participants, function($p) {
-            return !empty($p['commentaire_alimentaire']);
-        });
-
-        if (!empty($participantsAvecCommentaires)) {
-            $html .= '<h2 style="color: #f39c12; background-color: #fef5e7; padding: 8px; border-left: 4px solid #f39c12;">Commentaires alimentaires spécifiques</h2>';
-            $html .= '<br>';
-            $html .= self::construireTableauCommentaires($participantsAvecCommentaires);
-            $html .= '<br>';
-        }
-
-        return $html;
-    }
-
-    // tableau participants asso
-    private static function construireTableauParticipantsAsso($participants)
-    {
-        $html = '<table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">';
-        $html .= '<thead>';
-        $html .= '<tr style="background-color: #3498db; color: white;">';
-        $html .= '<th style="width: 20%;"><strong>Nom</strong></th>';
-        $html .= '<th style="width: 20%;"><strong>Prénom</strong></th>';
-        $html .= '<th style="width: 25%;"><strong>Email</strong></th>';
-        $html .= '<th style="width: 18%;"><strong>Téléphone</strong></th>';
-        $html .= '<th style="width: 17%;"><strong>Accompagnateurs</strong></th>';
-        $html .= '</tr>';
-        $html .= '</thead>';
-        $html .= '<tbody>';
-
-        foreach ($participants as $participant) {
-            $html .= '<tr>';
-            $html .= '<td>' . htmlspecialchars($participant['nom']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($participant['prenom']) . '</td>';
-            $html .= '<td style="font-size: 9px;">' . htmlspecialchars($participant['mail']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($participant['telephone'] ?? '-') . '</td>';
-            $nb_invites = $participant['nb_invites'] ?? 0;
-            $html .= '<td style="text-align: center;">' . $nb_invites . ' accompagnateur' . ($nb_invites > 1 ? 's' : '') . '</td>';
-            $html .= '</tr>';
-        }
-
-        $html .= '</tbody>';
         $html .= '</table>';
 
         return $html;

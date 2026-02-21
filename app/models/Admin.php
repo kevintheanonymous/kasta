@@ -9,7 +9,6 @@ class Admin
         try {
             $pdo   = BaseDeDonnees::getConnexion();
             $login = trim($login);
-            $mdp   = trim($mdp);
 
             $sql = "SELECT Id_Admin,
                            identifiant,
@@ -61,7 +60,7 @@ class Admin
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT * FROM admin WHERE Mail = :email LIMIT 1";
+            $sql = "SELECT Id_Admin, identifiant, Mail FROM admin WHERE Mail = :email LIMIT 1";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':email' => $email]);
             $row = $stmt->fetch();
@@ -101,8 +100,8 @@ class Admin
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "SELECT * FROM admin 
-                    WHERE token_reset = :token 
+            $sql = "SELECT Id_Admin, identifiant, Mail FROM admin
+                    WHERE token_reset = :token
                     AND token_reset_expires > NOW()";
 
             $stmt = $pdo->prepare($sql);
