@@ -84,35 +84,16 @@
     text-decoration: underline;
 }
 
-/* alertes */
-.alert {
-    padding: 1rem 3rem 1rem 1rem;
-    border-radius: var(--border-radius-md);
-    margin-bottom: 1rem;
-    position: relative;
-}
-
-.alert-success {
-    background: var(--success-light);
-    color: var(--success-dark);
-    border: 1px solid var(--success-color);
-}
-
-.alert-error {
-    background: var(--danger-light);
-    color: var(--danger-dark);
-    border: 1px solid var(--danger-color);
-}
-
+/* alertes (base .alert, .alert-success, .alert-error defined in 3-composants/alertes.css) */
 .alert-info {
-    background: #d1ecf1;
+    background: var(--info-light, #d6eaf8);
     color: var(--info-dark);
     border: 1px solid var(--info-color);
 }
 
 .alert-warning {
-    background: #fff3cd;
-    color: #856404;
+    background: var(--warning-light, #fef9e7);
+    color: var(--warning-text, #856404);
     border: 1px solid var(--warning-color);
 }
 
@@ -136,7 +117,7 @@
 }
 
 .btn-submit {
-    background: var(--primary-color, #007bff);
+    background: var(--primary-color, #2c3e50);
     color: white;
     border: none;
     padding: 0.75rem 2rem;
@@ -152,12 +133,12 @@
 }
 
 .btn-submit:disabled {
-    background: #ccc;
+    background: var(--gray-400, #ccc);
     cursor: not-allowed;
 }
 
 .btn-desinscription {
-    background: #dc3545;
+    background: var(--danger-color, #e74c3c);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -169,7 +150,7 @@
 }
 
 .btn-desinscription:hover {
-    background: #c82333;
+    background: var(--danger-dark, #c0392b);
 }
 
 .btn-desinscription.btn-large {
@@ -179,21 +160,21 @@
 }
 
 .btn-back {
-    color: #666;
+    color: var(--gray-600, #666);
     text-decoration: none;
 }
 
 .btn-back:hover {
-    color: #333;
+    color: var(--gray-800, #333);
 }
 
 /* sport */
 
 .creneaux-section {
-    background: white;
+    background: var(--white, white);
     border-radius: 12px;
     padding: 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md, 0 2px 10px rgba(0, 0, 0, 0.1));
 }
 
 .creneaux-section h2 {
@@ -207,18 +188,18 @@
     justify-content: space-between;
     padding: 1rem;
     margin-bottom: 1rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--gray-300, #e0e0e0);
     border-radius: 8px;
     transition: border-color 0.2s;
 }
 
 .creneau-card:hover {
-    border-color: var(--primary-color, #007bff);
+    border-color: var(--primary-color, #2c3e50);
 }
 
 .creneau-card.inscrit {
-    border-color: #28a745;
-    background: #f8fff8;
+    border-color: var(--success-color, #27ae60);
+    background: var(--success-light, #d5f5e3);
 }
 
 .creneau-info {
@@ -236,18 +217,18 @@
 }
 
 .creneau-type.preparation {
-    background: #fff3cd;
-    color: #856404;
+    background: var(--warning-light, #fef9e7);
+    color: var(--warning-text, #856404);
 }
 
 .creneau-type.jour_j {
-    background: #d4edda;
-    color: #155724;
+    background: var(--success-light, #d5f5e3);
+    color: var(--success-text, #155724);
 }
 
 .creneau-type.rangement {
-    background: #d1ecf1;
-    color: #0c5460;
+    background: var(--info-light, #d6eaf8);
+    color: var(--info-text, #0c5460);
 }
 
 .creneau-datetime {
@@ -256,12 +237,12 @@
 }
 
 .creneau-inscrits {
-    color: #666;
+    color: var(--gray-600, #666);
     font-size: 0.9rem;
 }
 
 .creneau-commentaire {
-    color: #888;
+    color: var(--gray-500, #888);
     font-size: 0.85rem;
     font-style: italic;
     margin-top: 0.25rem;
@@ -284,13 +265,13 @@
 .no-creneaux {
     text-align: center;
     padding: 2rem;
-    color: #666;
+    color: var(--gray-600, #666);
 }
 
 /* asso */
 
 .inscription-section {
-    background: white;
+    background: var(--white, white);
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -303,16 +284,16 @@
 
 /* tarif */
 .tarif-box {
-    background: #fff3cd;
-    border: 1px solid #ffc107;
+    background: var(--warning-light, #fef9e7);
+    border: 1px solid var(--warning-color, #f39c12);
     border-radius: 8px;
     padding: 1rem;
     margin-top: 1rem;
 }
 
 .tarif-box.gratuit {
-    background: #d4edda;
-    border-color: #28a745;
+    background: var(--success-light, #d5f5e3);
+    border-color: var(--success-color, #27ae60);
 }
 
 .tarif-box h3 {
@@ -329,27 +310,27 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
-    color: #333;
+    color: var(--gray-800, #333);
 }
 
 .form-group input[type="number"] {
     width: 100px;
     padding: 0.5rem;
-    border: 2px solid #ddd;
+    border: 2px solid var(--gray-400, #ddd);
     border-radius: 6px;
     font-size: 1rem;
     min-height: 44px;
 }
 
 .form-group input[type="number"]:focus {
-    border-color: var(--primary-color, #007bff);
+    border-color: var(--primary-color, #2c3e50);
     outline: none;
 }
 
 .form-group small {
     display: block;
     margin-top: 0.25rem;
-    color: #666;
+    color: var(--gray-600, #666);
 }
 
 .invites-grid {
@@ -397,9 +378,19 @@
     .form-actions {
         flex-direction: column;
     }
+
+    .creneau-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .creneau-actions {
+        justify-content: flex-start;
+    }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 480px) {
     .invites-grid {
         grid-template-columns: 1fr;
     }
@@ -422,8 +413,8 @@
 
 /* deja inscrit */
 .inscription-existante {
-    background: #d4edda;
-    border: 2px solid #28a745;
+    background: var(--success-light, #d5f5e3);
+    border: 2px solid var(--success-color, #27ae60);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -431,7 +422,7 @@
 
 .inscription-existante h3 {
     margin: 0 0 1rem 0;
-    color: #155724;
+    color: var(--success-text, #155724);
 }
 
 .inscription-existante p {
@@ -441,7 +432,7 @@
 /* helloasso */
 .helloasso-link {
     display: inline-block;
-    background: #ff6600;
+    background: var(--secondary-color, #e67e22);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -450,13 +441,13 @@
 }
 
 .helloasso-link:hover {
-    background: #e55c00;
+    background: var(--secondary-dark, #d35400);
 }
 
 /* boutons */
 .btn-inscrire {
     padding: 0.75rem 1.5rem;
-    background-color: #28a745;
+    background-color: var(--success-color, #27ae60);
     color: white;
     border: none;
     border-radius: 8px;
@@ -469,14 +460,14 @@
 }
 
 .btn-inscrire:hover {
-    background-color: #218838;
+    background-color: var(--success-dark, #219a52);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 }
 
 .btn-gerer-inscription {
     padding: 0.75rem 1.5rem;
-    background-color: #007bff;
+    background-color: var(--accent-color, #3498db);
     color: white;
     text-decoration: none;
     border-radius: 8px;
@@ -492,23 +483,23 @@
 }
 
 .btn-gerer-inscription:hover {
-    background-color: #0056b3;
+    background-color: var(--accent-dark, #2980b9);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 /* Postes disponibles et preference */
 .postes-disponibles {
     margin-top: 0.75rem;
     padding: 0.5rem;
-    background-color: #f0f8ff;
-    border-left: 3px solid #007bff;
+    background-color: var(--info-light, #d6eaf8);
+    border-left: 3px solid var(--accent-color, #3498db);
     border-radius: 4px;
     font-size: 0.9rem;
 }
 
 .postes-disponibles strong {
-    color: #007bff;
+    color: var(--accent-color, #3498db);
 }
 
 .form-inscription-creneau {
@@ -533,7 +524,7 @@
 
 .select-poste {
     padding: 0.5rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--gray-400, #ddd);
     border-radius: 6px;
     font-size: 0.9rem;
     background-color: white;
@@ -544,8 +535,8 @@
 
 .select-poste:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    border-color: var(--accent-color, #3498db);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 /* Checkbox group pour les préférences de postes multiples */

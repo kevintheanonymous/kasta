@@ -69,11 +69,11 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
                                            class="presence-checkbox"
                                            <?= $inscrit['Presence'] ? 'checked' : '' ?>>
                                 </td>
-                                <td><?= htmlspecialchars($inscrit['Nom']) ?></td>
-                                <td><?= htmlspecialchars($inscrit['Prenom']) ?></td>
-                                <td><?= htmlspecialchars($inscrit['Mail']) ?></td>
-                                <td><?= htmlspecialchars($inscrit['Telephone']) ?></td>
-                                <td style="text-align: center;">
+                                <td data-label="Nom"><?= htmlspecialchars($inscrit['Nom']) ?></td>
+                                <td data-label="Prénom"><?= htmlspecialchars($inscrit['Prenom']) ?></td>
+                                <td data-label="Email"><?= htmlspecialchars($inscrit['Mail']) ?></td>
+                                <td data-label="Téléphone"><?= htmlspecialchars($inscrit['Telephone']) ?></td>
+                                <td data-label="Statut" style="text-align: center;">
                                     <?php if ($inscrit['Presence']): ?>
                                         <span class="badge badge-success">Présent</span>
                                     <?php else: ?>

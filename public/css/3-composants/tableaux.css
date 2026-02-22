@@ -5,9 +5,9 @@
 table.table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    background: var(--white, white);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+    border-radius: var(--border-radius-md, 8px);
     overflow: hidden;
 }
 
@@ -17,21 +17,21 @@ table.table th,
 table.table td {
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--gray-200, #eee);
     vertical-align: middle;
 }
 
 .admin-table th,
 table.table th {
-    background-color: #f8f9fa;
+    background-color: var(--gray-100, #f8f9fa);
     font-weight: 600;
-    color: #1e90ff;
+    color: var(--accent-color, #3498db);
     white-space: nowrap;
 }
 
 .admin-table tbody tr:hover,
 table.table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--gray-100, #f8f9fa);
 }
 
 /* colonnes avec largeurs et alignements specifiques */
@@ -117,11 +117,11 @@ table.table tbody tr:hover {
     .admin-table tbody tr,
     table.table tbody tr {
         display: block !important;
-        background: #fff !important;
-        border-radius: 12px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        background: var(--white, #fff) !important;
+        border-radius: var(--border-radius-lg, 12px) !important;
+        box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.1)) !important;
         margin-bottom: 1rem !important;
-        border: 1px solid #e0e0e0 !important;
+        border: 1px solid var(--gray-300, #e0e0e0) !important;
         overflow: visible !important;
         padding: 0 !important;
     }
@@ -136,12 +136,12 @@ table.table tbody tr:hover {
         padding: 14px 15px 14px 130px !important;
         min-height: 48px !important;
         border: none !important;
-        border-bottom: 1px solid #f0f0f0 !important;
+        border-bottom: 1px solid var(--gray-200, #f0f0f0) !important;
         text-align: left !important;
         font-size: 0.95rem !important;
         line-height: 1.4 !important;
-        color: #333 !important;
-        background: #fff !important;
+        color: var(--gray-800, #333) !important;
+        background: var(--white, #fff) !important;
         overflow: visible !important;
         text-overflow: unset !important;
         white-space: normal !important;
@@ -159,10 +159,10 @@ table.table tbody tr:hover {
         content: attr(data-label);
         position: absolute !important;
         left: 12px !important;
-        top: 14px !important;
+        top: 17px !important;
         width: 110px !important;
         font-weight: 700 !important;
-        color: #1e90ff !important;
+        color: var(--accent-color, #3498db) !important;
         text-transform: uppercase !important;
         font-size: 0.75rem !important;
         letter-spacing: 0.3px !important;
@@ -170,16 +170,20 @@ table.table tbody tr:hover {
         text-align: left !important;
     }
     
-    /* Actions cell - special styling, no label */
+    /* Actions cell - no label, symmetrical padding */
     .admin-table td.td-actions,
-    table.table td.td-actions {
-        padding: 12px 15px 12px 130px !important;
+    .admin-table td.actions-cell,
+    table.table td.td-actions,
+    table.table td.actions-cell {
+        padding: 12px 15px !important;
         text-align: left !important;
-        background: #f8f9fa !important;
+        background: var(--gray-100, #f8f9fa) !important;
     }
     
     .admin-table td.td-actions::before,
-    table.table td.td-actions::before {
+    .admin-table td.actions-cell::before,
+    table.table td.td-actions::before,
+    table.table td.actions-cell::before {
         display: none !important;
     }
     
@@ -215,13 +219,28 @@ table.table tbody tr:hover {
     }
     
     .actions-buttons form {
-        flex: 0 0 auto !important;
         display: flex !important;
     }
-    
-    .actions-buttons form button,
-    .actions-buttons form .btn {
+
+    /* Forms with icon-only buttons stay compact */
+    .actions-buttons form:has(.btn-sm) {
+        flex: 0 0 auto !important;
+    }
+
+    /* Forms with full-text buttons expand like direct link buttons */
+    .actions-buttons form:not(:has(.btn-sm)) {
+        flex: 1 1 45% !important;
+        max-width: 150px !important;
+    }
+
+    .actions-buttons form:has(.btn-sm) button,
+    .actions-buttons form:has(.btn-sm) .btn {
         width: auto !important;
+    }
+
+    .actions-buttons form:not(:has(.btn-sm)) button,
+    .actions-buttons form:not(:has(.btn-sm)) .btn {
+        width: 100% !important;
     }
 }
 
@@ -237,6 +256,7 @@ table.table tbody tr:hover {
         width: 100px !important;
         font-size: 0.7rem !important;
         left: 10px !important;
+        top: 15px !important;
     }
     
     /* Icon-only buttons remain side by side */

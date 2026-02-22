@@ -8,7 +8,7 @@
     border-radius: var(--border-radius-md, 8px);
     margin-bottom: var(--spacing-md, 1rem);
     position: relative;
-    animation: fadeInUp 0.3s ease;
+    animation: alertDropIn 0.3s ease;
     border-width: 1px;
     border-style: solid;
     font-size: var(--font-size-sm, 0.875rem);
@@ -95,7 +95,7 @@
     transition: all 0.3s ease;
 }
 
-@keyframes fadeInUp {
+@keyframes alertDropIn {
     from {
         opacity: 0;
         transform: translateY(-10px);

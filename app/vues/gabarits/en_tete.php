@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Kast'Asso - Gestion d'association et d'événements sportifs">
-    <meta name="theme-color" content="#1e90ff">
+    <meta name="theme-color" content="#2c3e50">
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) : "Kast'Asso" ?></title>
     <!-- Variables CSS globales - doit être chargé en premier -->
     <link rel="stylesheet" href="<?= asset('css/variables.css') ?>?v=<?= time() ?>">

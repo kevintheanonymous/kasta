@@ -36,8 +36,8 @@
 }
 
 .stat-box {
-    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-    color: white;
+    background: var(--gradient-primary, linear-gradient(135deg, #2c3e50 0%, #3498db 100%));
+    color: var(--white, white);
     padding: 20px 30px;
     border-radius: 10px;
     text-align: center;
@@ -65,7 +65,7 @@
 }
 
 .evenement-item {
-    background: white;
+    background: var(--white, white);
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -94,13 +94,13 @@
 
 .evenement-titre {
     margin: 0;
-    color: var(--primary-color, #1e90ff);
+    color: var(--accent-color, #3498db);
     font-size: 1.2rem;
 }
 
 .evenement-badge {
-    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-    color: white;
+    background: var(--gradient-primary, linear-gradient(135deg, #2c3e50 0%, #3498db 100%));
+    color: var(--white, white);
     padding: 4px 12px;
     border-radius: 15px;
     font-size: 0.8rem;
@@ -118,21 +118,21 @@
 .evenement-date,
 .evenement-lieu {
     margin: 0;
-    color: #666;
+    color: var(--gray-600, #666);
     font-size: 0.95rem;
 }
 
 .evenement-date strong,
 .evenement-lieu strong {
-    color: #333;
+    color: var(--gray-800, #333);
 }
 
 .evenement-creneaux {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--success-color, #27ae60) 0%, #20c997 100%);
+    color: var(--white, white);
     padding: 15px 25px;
     border-radius: 10px;
     min-width: 100px;

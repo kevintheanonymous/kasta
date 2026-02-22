@@ -49,9 +49,9 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
                 <?php else: ?>
                     <?php foreach ($creneaux as $creneau): ?>
                         <tr>
-                            <td><?= date('d/m/Y', strtotime($creneau['Date_creneau'])) ?></td>
-                            <td><?= date('H:i', strtotime($creneau['Heure_Debut'])) ?> - <?= date('H:i', strtotime($creneau['Heure_Fin'])) ?></td>
-                            <td>
+                            <td data-label="Date"><?= date('d/m/Y', strtotime($creneau['Date_creneau'])) ?></td>
+                            <td data-label="Heure"><?= date('H:i', strtotime($creneau['Heure_Debut'])) ?> - <?= date('H:i', strtotime($creneau['Heure_Fin'])) ?></td>
+                            <td data-label="Type">
                                 <?php
                                 $types = [
                                     'preparation' => 'Préparation',
@@ -61,8 +61,8 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
                                 echo $types[$creneau['Type']] ?? $creneau['Type'];
                                 ?>
                             </td>
-                            <td><?= htmlspecialchars($creneau['Commentaire'] ?? '') ?></td>
-                            <td>
+                            <td data-label="Commentaire"><?= htmlspecialchars($creneau['Commentaire'] ?? '') ?></td>
+                            <td data-label="Inscrits">
                                 <a href="<?= url('/admin/creneaux/inscrits&id=' . $creneau['Id_creneau']) ?>">
                                     <?= $creneau['nb_inscrits'] ?> inscrit(s)
                                 </a>

@@ -28,13 +28,15 @@ img {
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 
-.text-primary { color: var(--primary-color, #1e90ff); }
-.text-secondary { color: var(--secondary-color, #6c757d); }
-.text-success { color: var(--success-color, #28a745); }
-.text-warning { color: var(--warning-color, #ffc107); }
-.text-danger { color: var(--danger-color, #dc3545); }
+.text-primary { color: var(--primary-color, #2c3e50); }
+.text-secondary { color: var(--text-secondary, #6c757d); }
+.text-success { color: var(--success-color, #27ae60); }
+.text-warning { color: var(--warning-color, #f39c12); }
+.text-danger { color: var(--danger-color, #e74c3c); }
+.text-info { color: var(--info-color, #3498db); }
+.text-white { color: var(--white, #fff); }
 .text-muted {
-    color: #6c757d;
+    color: var(--text-muted, #95a5a6);
     font-style: italic;
 }
 
@@ -67,10 +69,10 @@ img {
 .justify-between { justify-content: space-between; }
 .justify-start { justify-content: flex-start; }
 .justify-end { justify-content: flex-end; }
-.gap-1 { gap: 0.25rem; }
-.gap-2 { gap: 0.5rem; }
-.gap-3 { gap: 1rem; }
-.gap-4 { gap: 1.5rem; }
+.gap-1 { gap: var(--spacing-xs, 0.25rem); }
+.gap-2 { gap: var(--spacing-sm, 0.5rem); }
+.gap-3 { gap: var(--spacing-md, 1rem); }
+.gap-4 { gap: var(--spacing-lg, 1.5rem); }
 .flex-gap-5 { display: flex; gap: 0.25rem; }
 
 /* Flex grow/shrink */
@@ -81,20 +83,20 @@ img {
 /* ============================================================================
    ESPACEMENT
    ============================================================================ */
-.m-0 { margin: 0; }
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 1.5rem; }
+.m-0 { margin: 0 !important; }
+.mt-1 { margin-top: var(--spacing-xs, 0.25rem) !important; }
+.mt-2 { margin-top: var(--spacing-sm, 0.5rem) !important; }
+.mt-3 { margin-top: var(--spacing-md, 1rem) !important; }
+.mt-4 { margin-top: var(--spacing-lg, 1.5rem) !important; }
+.mb-1 { margin-bottom: var(--spacing-xs, 0.25rem) !important; }
+.mb-2 { margin-bottom: var(--spacing-sm, 0.5rem) !important; }
+.mb-3 { margin-bottom: var(--spacing-md, 1rem) !important; }
+.mb-4 { margin-bottom: var(--spacing-lg, 1.5rem) !important; }
 
-.p-0 { padding: 0; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 1rem; }
-.p-4 { padding: 1.5rem; }
+.p-0 { padding: 0 !important; }
+.p-2 { padding: var(--spacing-sm, 0.5rem) !important; }
+.p-3 { padding: var(--spacing-md, 1rem) !important; }
+.p-4 { padding: var(--spacing-lg, 1.5rem) !important; }
 
 /* ============================================================================
    VISIBILITÉ ET RESPONSIVE

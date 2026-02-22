@@ -155,7 +155,7 @@ fieldset select.is-invalid,
 fieldset textarea.invalid,
 fieldset textarea.is-invalid {
     border-color: var(--danger-color);
-    background-color: #fef2f2;
+    background-color: var(--danger-light, #fadbd8);
 }
 
 /* État valide - Vert */
@@ -166,7 +166,7 @@ fieldset select.is-valid,
 fieldset textarea.valid,
 fieldset textarea.is-valid {
     border-color: var(--success-color);
-    background-color: #f0fdf4;
+    background-color: var(--success-light, #d5f5e3);
 }
 
 /* Message d'erreur - Rouge */
@@ -209,7 +209,7 @@ fieldset textarea.is-valid {
 
 .password-strength-bar.good {
     width: 75%;
-    background-color: #22c55e;
+    background-color: var(--success-color, #27ae60);
 }
 
 .password-strength-bar.strong {
@@ -366,9 +366,9 @@ fieldset textarea.is-valid {
 .adhesion-warning {
     margin-top: 1rem;
     padding: 1rem;
-    background-color: #fff3cd;
-    border: 1px solid #ffc107;
-    color: #856404;
+    background-color: var(--warning-light, #fef9e7);
+    border: 1px solid var(--warning-color, #f39c12);
+    color: var(--warning-text, #856404);
     border-radius: 6px;
     font-size: 0.9rem;
 }
@@ -409,9 +409,9 @@ main > .alert {
 }
 
 main > .alert-danger {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
+    background: var(--danger-light, #fadbd8);
+    border: 1px solid var(--danger-color, #e74c3c);
+    color: var(--danger-text, #721c24);
 }
 
 main > .alert-danger p {
@@ -419,9 +419,9 @@ main > .alert-danger p {
 }
 
 main > .alert-success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
+    background: var(--success-light, #d5f5e3);
+    border: 1px solid var(--success-color, #27ae60);
+    color: var(--success-text, #155724);
 }
 
 /* Login Link Footer */
@@ -522,6 +522,38 @@ main > .alert-success {
     .btn-deposer-adhesion {
         width: 100%;
         text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 1rem 0.5rem;
+    }
+
+    main > form {
+        padding: 1rem;
+    }
+
+    fieldset {
+        padding: 1rem;
+    }
+
+    main > h1 {
+        font-size: 1.3rem;
+    }
+
+    .adhesion-actions {
+        flex-direction: column;
+    }
+
+    .btn-download-adhesion,
+    .btn-deposer-adhesion {
+        width: 100%;
+        text-align: center;
+    }
+
+    .inscription-success-container {
+        padding: 1.5rem;
     }
 }
 

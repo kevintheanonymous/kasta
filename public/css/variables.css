@@ -246,69 +246,6 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 /* ============================================================================
-   TYPOGRAPHY CLASSES
-   ============================================================================ */
-.text-primary { color: var(--primary-color) !important; }
-.text-secondary { color: var(--text-secondary) !important; }
-.text-muted { color: var(--text-muted) !important; font-style: italic; }
-.text-success { color: var(--success-color) !important; }
-.text-warning { color: var(--warning-color) !important; }
-.text-danger { color: var(--danger-color) !important; }
-.text-info { color: var(--info-color) !important; }
-.text-white { color: var(--white) !important; }
-
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.font-normal { font-weight: var(--font-weight-normal); }
-.font-medium { font-weight: var(--font-weight-medium); }
-.font-semibold { font-weight: var(--font-weight-semibold); }
-.font-bold { font-weight: var(--font-weight-bold); }
-
-/* ============================================================================
-   UTILITY CLASSES
-   ============================================================================ */
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.flex-wrap { flex-wrap: wrap; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.gap-1 { gap: var(--spacing-xs); }
-.gap-2 { gap: var(--spacing-sm); }
-.gap-3 { gap: var(--spacing-md); }
-.gap-4 { gap: var(--spacing-lg); }
-
-.hidden { display: none !important; }
-.invisible { visibility: hidden; }
-
-/* Spacing utilities */
-.m-0 { margin: 0 !important; }
-.mt-1 { margin-top: var(--spacing-xs) !important; }
-.mt-2 { margin-top: var(--spacing-sm) !important; }
-.mt-3 { margin-top: var(--spacing-md) !important; }
-.mt-4 { margin-top: var(--spacing-lg) !important; }
-.mb-1 { margin-bottom: var(--spacing-xs) !important; }
-.mb-2 { margin-bottom: var(--spacing-sm) !important; }
-.mb-3 { margin-bottom: var(--spacing-md) !important; }
-.mb-4 { margin-bottom: var(--spacing-lg) !important; }
-
-.p-0 { padding: 0 !important; }
-.p-2 { padding: var(--spacing-sm) !important; }
-.p-3 { padding: var(--spacing-md) !important; }
-.p-4 { padding: var(--spacing-lg) !important; }
-
-/* Responsive visibility */
-@media (max-width: 768px) {
-    .hide-mobile { display: none !important; }
-}
-
-@media (min-width: 769px) {
-    .hide-desktop { display: none !important; }
-}
-
-/* ============================================================================
    ANIMATIONS
    ============================================================================ */
 @keyframes fadeIn {
@@ -328,16 +265,3 @@ h1, h2, h3, h4, h5, h6, p {
 
 .animate-fadeIn { animation: fadeIn var(--transition-normal); }
 .animate-fadeInUp { animation: fadeInUp var(--transition-normal); }
-
-/* Alert Styling (Using new colors) */
-.alert {
-    padding: var(--spacing-md) 3rem var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--border-radius-md);
-    margin-bottom: var(--spacing-md);
-    position: relative;
-    border: 1px solid transparent;
-}
-.alert-success { background-color: var(--success-light); color: var(--success-dark); border-color: var(--success-color); }
-.alert-danger { background-color: var(--danger-light); color: var(--danger-dark); border-color: var(--danger-color); }
-.alert-warning { background-color: #fff3cd; color: #856404; border-color: var(--warning-color); }
-.alert-info { background-color: #d1ecf1; color: #0c5460; border-color: var(--info-color); }

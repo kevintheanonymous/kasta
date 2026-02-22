@@ -10,14 +10,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: var(--z-modal, 500);
     padding: 1rem;
 }
 
 #popup-adhesion {
-    background: white;
+    background: var(--white, white);
     padding: 30px;
-    border-radius: 12px;
+    border-radius: var(--border-radius-lg, 12px);
     max-width: 500px;
     width: 95%;
     max-height: 90vh;
@@ -27,7 +27,7 @@
 }
 
 #popup-adhesion h2 {
-    color: #ff9800;
+    color: var(--warning-color, #f39c12);
     margin-top: 0;
 }
 
@@ -39,7 +39,7 @@
 
 #popup-adhesion .popup-warning {
     font-weight: bold;
-    color: #d32f2f;
+    color: var(--danger-color, #e74c3c);
 }
 
 .popup-buttons {
@@ -53,7 +53,7 @@
 .popup-btn {
     border: none;
     padding: 12px 30px;
-    border-radius: 8px;
+    border-radius: var(--border-radius-md, 8px);
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
@@ -68,13 +68,13 @@
 }
 
 .popup-btn-non {
-    background: #0288d1;
-    color: white;
+    background: var(--accent-color, #3498db);
+    color: var(--white, white);
 }
 
 .popup-btn-oui {
-    background: #d32f2f;
-    color: white;
+    background: var(--danger-color, #e74c3c);
+    color: var(--white, white);
 }
 
 /* Responsive popup */
@@ -83,7 +83,7 @@
         padding: 0.5rem;
         align-items: flex-end;
     }
-    
+
     #popup-adhesion {
         padding: 20px;
         border-radius: 16px 16px 0 0;
@@ -91,23 +91,42 @@
         width: 100%;
         max-width: none;
     }
-    
+
     #popup-adhesion h2 {
         font-size: 1.25rem;
     }
-    
+
     #popup-adhesion p {
         font-size: 0.95rem;
     }
-    
+
     .popup-buttons {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .popup-btn {
         width: 100%;
         padding: 14px 20px;
         font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #popup-adhesion {
+        padding: 15px;
+    }
+
+    #popup-adhesion h2 {
+        font-size: 1.1rem;
+    }
+
+    #popup-adhesion p {
+        font-size: 0.9rem;
+    }
+
+    .popup-btn {
+        padding: 12px 16px;
+        font-size: 0.95rem;
     }
 }

@@ -70,8 +70,8 @@ require_once __DIR__ . '/../gabarits/barre_nav.php';
                 <?php else: ?>
                     <?php foreach ($regimes as $regime): ?>
                         <tr>
-                            <td><?= $regime['id'] ?></td>
-                            <td>
+                            <td data-label="ID"><?= $regime['id'] ?></td>
+                            <td data-label="Nom">
                                 <span id="nom-<?= $regime['id'] ?>"><?= htmlspecialchars($regime['nom']) ?></span>
                                 <form id="form-<?= $regime['id'] ?>" action="<?= url('/admin/regimes-alimentaires/modifier') ?>" method="POST" class="edit-form" style="display: none;">
                                     <?= champCSRF() ?>
@@ -90,10 +90,10 @@ require_once __DIR__ . '/../gabarits/barre_nav.php';
                                     </button>
                                 </form>
                             </td>
-                            <td>
+                            <td data-label="Membres">
                                 <span class="badge badge-info"><?= $regime['nb_membres'] ?></span>
                             </td>
-                            <td>
+                            <td data-label="Date">
                                 <?php
                                 if (!empty($regime['date_creation'])) {
                                     $dateObj = DateTime::createFromFormat('Y-m-d H:i:s', $regime['date_creation']);

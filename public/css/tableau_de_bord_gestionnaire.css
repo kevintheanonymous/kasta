@@ -1,12 +1,8 @@
 /* css tableau de bord gestionnaire */
 
-/* body */
+/* Page-specific background */
 body {
-    font-family: var(--font-family, 'Montserrat', sans-serif);
     background: var(--gray-200, #f6f7fb);
-    color: var(--gray-800, #333);
-    margin: 0;
-    padding: 0;
 }
 
 /* container */
@@ -22,7 +18,7 @@ p {
 
 h1 {
     text-align: center;
-    color: var(--primary-color, #1e90ff);
+    color: var(--accent-color, #3498db);
     font-size: var(--font-size-3xl, 2.2rem);
     margin-bottom: var(--spacing-sm, 10px);
     animation: fadeInUp var(--transition-normal, 0.3s ease);
@@ -68,12 +64,12 @@ h1 {
 }
 
 .btn-orange {
-    background-color: var(--secondary-color, #ff6347);
+    background-color: var(--secondary-color, #e67e22);
     color: var(--white, white);
 }
 
 .btn-orange:hover {
-    background-color: var(--secondary-dark, #e55336);
+    background-color: var(--secondary-dark, #d35400);
     transform: translateY(-1px);
 }
 
@@ -117,7 +113,7 @@ h1 {
 }
 
 .stats-content strong {
-    color: var(--primary-color, #1e90ff);
+    color: var(--accent-color, #3498db);
     font-size: var(--font-size-xl, 1.3rem);
 }
 
@@ -127,7 +123,7 @@ h1 {
 }
 
 .admin-events-list strong {
-    color: var(--primary-color, #1e90ff);
+    color: var(--accent-color, #3498db);
     font-size: var(--font-size-xl, 1.3rem);
 }
 
@@ -141,44 +137,6 @@ h1 {
     padding: 0.5rem 0.3rem !important;
 }
 
-.btn-sm {
-    padding: 8px 12px;
-    font-size: var(--font-size-xs, 0.75rem);
-    margin: 0;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    min-height: 44px;
-    min-width: 44px;
-    line-height: 1.2;
-    border-radius: var(--border-radius-md, 8px);
-    text-decoration: none;
-    font-weight: var(--font-weight-semibold, 600);
-    border: none;
-    cursor: pointer;
-}
-
-.btn-info {
-    background-color: var(--info-color, #17a2b8);
-    color: var(--white, white);
-}
-
-.btn-info:hover {
-    background-color: var(--info-dark, #138496);
-}
-
-.btn-warning {
-    background-color: var(--warning-color, #ffc107);
-    color: var(--gray-800, #333);
-}
-
-.form-inline {
-    display: inline-block;
-    margin: 0;
-}
-
 /* inscription events */
 .inscription-events-section {
     margin-top: 2rem;
@@ -188,14 +146,6 @@ h1 {
     margin-bottom: 1rem;
     color: var(--gray-800, #333);
     font-size: var(--font-size-2xl, 1.5rem);
-}
-
-/* btn disabled */
-.btn-disabled,
-.btn.btn-disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    pointer-events: none;
 }
 
 /* ============================================================================
@@ -245,12 +195,12 @@ h1 {
     }
 
     .admin-events-list tr {
-        background: #fff;
+        background: var(--white, #fff);
         border-radius: 12px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         margin-bottom: 1.5rem;
         padding: 0;
-        border: 1px solid #eee;
+        border: 1px solid var(--gray-200, #eee);
         overflow: hidden;
     }
 
@@ -259,7 +209,7 @@ h1 {
         padding: 0.8rem 1rem;
         position: relative;
         padding-left: 45%;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--gray-200, #f0f0f0);
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -269,7 +219,7 @@ h1 {
 
     .admin-events-list td:last-child {
         border-bottom: none;
-        background: #fcfcfc;
+        background: var(--gray-50, #fcfcfc);
         justify-content: center;
         padding-left: 1rem;
         flex-wrap: wrap;
@@ -290,7 +240,7 @@ h1 {
         align-items: center;
         text-align: left;
         font-weight: 700;
-        color: var(--primary-color, #1e90ff);
+        color: var(--accent-color, #3498db);
         font-size: 0.85rem;
         text-transform: uppercase;
     }

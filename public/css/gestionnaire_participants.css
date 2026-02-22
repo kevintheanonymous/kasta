@@ -1,18 +1,18 @@
 /* Styles pour la page des participants inscrits aux événements associatifs */
 
 .participants-section {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: var(--white, white);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 2px 8px rgba(0,0,0,0.1));
     margin-bottom: 2rem;
     overflow: hidden;
     padding: 1.5rem;
 }
 
 .event-info {
-    background: #f8f9fa;
+    background: var(--gray-100, #f8f9fa);
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: var(--border-radius-md, 8px);
     margin-top: 1rem;
 }
 
@@ -24,25 +24,7 @@
 .nb-inscrits-total {
     margin-top: 1rem !important;
     padding-top: 1rem;
-    border-top: 2px solid #dee2e6;
-}
-
-.badge-primary {
-    background: #007bff;
-    color: white;
-    border: none;
-}
-
-.badge-success {
-    background: #28a745;
-    color: white;
-    border: none;
-}
-
-.badge-warning {
-    background: #ffc107;
-    color: #212529;
-    border: none;
+    border-top: 2px solid var(--gray-300, #dee2e6);
 }
 
 /* Utilitaires supplémentaires */
@@ -112,12 +94,12 @@
     }
 
     .admin-table tbody tr {
-        background: white;
+        background: var(--white, white);
         margin-bottom: 1rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: var(--border-radius-lg, 12px);
+        box-shadow: var(--shadow-md, 0 2px 8px rgba(0,0,0,0.1));
         padding: 0.5rem 0;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--gray-300, #e0e0e0);
     }
 
     .admin-table td {
@@ -125,7 +107,7 @@
         padding: 0.8rem 1rem;
         position: relative;
         padding-left: 40%; /* Espace pour le label */
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--gray-200, #f0f0f0);
         min-height: 40px;
         display: flex;
         align-items: center;
@@ -136,7 +118,7 @@
         border-bottom: none;
         justify-content: center;
         padding-left: 1rem;
-        background: #fcfcfc;
+        background: var(--gray-50, #fcfcfc);
     }
 
     /* Labels automatiques via CSS */
@@ -147,7 +129,7 @@
         width: 35%;
         text-align: left;
         font-weight: 600;
-        color: #1e90ff;
+        color: var(--accent-color, #3498db);
         font-size: 0.85rem;
     }
 

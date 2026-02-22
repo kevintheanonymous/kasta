@@ -2,23 +2,23 @@
 
 /* section complete de creneau */
 .creneau-section {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--white, white);
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.1));
     margin-bottom: 2rem;
     overflow: hidden;
 }
 
 /* header avec infos du creneau */
 .creneau-header {
-    background: linear-gradient(135deg, #f6f7fb 0%, #eef6fd 100%);
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
     padding: 1.5rem;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--gray-300, #e0e0e0);
 }
 
 .creneau-header h2 {
     margin: 0 0 0.5rem 0;
-    color: #333;
+    color: var(--gray-800, #333);
     font-size: 1.3rem;
     display: flex;
     align-items: center;
@@ -37,30 +37,30 @@
 
 /* variantes de types */
 .creneau-type.preparation {
-    background: #fff3cd;
-    color: #856404;
+    background: var(--warning-light, #fef9e7);
+    color: var(--warning-text, #856404);
 }
 
 .creneau-type.jour_j {
-    background: #d4edda;
-    color: #155724;
+    background: var(--success-light, #d5f5e3);
+    color: var(--success-text, #155724);
 }
 
 .creneau-type.rangement {
-    background: #d1ecf1;
-    color: #0c5460;
+    background: var(--info-light, #d6eaf8);
+    color: var(--info-text, #0c5460);
 }
 
 /* horaires */
 .creneau-horaires {
-    color: #666;
+    color: var(--gray-600, #666);
     font-weight: 500;
     font-size: 1rem;
 }
 
 /* commentaire */
 .creneau-commentaire {
-    color: #555;
+    color: var(--gray-700, #555);
     margin: 0.5rem 0 0 0;
     font-size: 0.95rem;
 }
@@ -68,7 +68,7 @@
 /* nombre d'inscrits */
 .creneau-nb-inscrits {
     margin: 0.75rem 0 0 0;
-    color: #1e90ff;
+    color: var(--accent-color, #3498db);
     font-size: 1rem;
 }
 
@@ -79,18 +79,18 @@
     justify-content: space-between;
     padding: 1rem;
     margin-bottom: 1rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--gray-300, #e0e0e0);
     border-radius: 8px;
     transition: border-color 0.2s ease;
 }
 
 .creneau-card:hover {
-    border-color: #1e90ff;
+    border-color: var(--accent-color, #3498db);
 }
 
 .creneau-card.inscrit {
-    border-color: #28a745;
-    background: #f8fff8;
+    border-color: var(--success-color, #27ae60);
+    background: var(--success-light, #d5f5e3);
 }
 
 .creneau-info {
@@ -103,7 +103,7 @@
 }
 
 .creneau-inscrits {
-    color: #666;
+    color: var(--gray-600, #666);
     font-size: 0.9rem;
 }
 
@@ -126,21 +126,21 @@
 .no-creneaux {
     text-align: center;
     padding: 2rem;
-    color: #666;
+    color: var(--gray-600, #666);
 }
 
 /* postes disponibles pour ce creneau */
 .postes-disponibles {
     margin-top: 0.75rem;
     padding: 0.5rem;
-    background-color: #f0f8ff;
-    border-left: 3px solid #007bff;
+    background-color: var(--info-light, #d6eaf8);
+    border-left: 3px solid var(--accent-color, #3498db);
     border-radius: 4px;
     font-size: 0.9rem;
 }
 
 .postes-disponibles strong {
-    color: #007bff;
+    color: var(--accent-color, #3498db);
 }
 
 /* conteneur de selection de poste */
@@ -154,15 +154,15 @@
 .preference-poste-container label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #333;
+    color: var(--gray-800, #333);
 }
 
 .select-poste {
     padding: 0.5rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--gray-400, #ddd);
     border-radius: 6px;
     font-size: 0.9rem;
-    background-color: white;
+    background-color: var(--white, white);
     cursor: pointer;
     transition: border-color 0.3s ease;
     min-height: 44px;
@@ -170,8 +170,8 @@
 
 .select-poste:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    border-color: var(--accent-color, #3498db);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 /* formulaire de presences */

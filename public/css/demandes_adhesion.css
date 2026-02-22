@@ -128,18 +128,6 @@
     }
 }
 
-/* Badge compte en attente */
-.badge-warning {
-    display: inline-block;
-    padding: 4px 8px;
-    background-color: var(--warning-color, #ffc107);
-    color: var(--gray-900, #212529);
-    border-radius: var(--border-radius-sm, 4px);
-    font-size: var(--font-size-xs, 0.75rem);
-    font-weight: var(--font-weight-semibold, 600);
-    margin-left: var(--spacing-sm, 0.5rem);
-}
-
 /* Info compte bloqué */
 .compte-bloque-info {
     color: var(--warning-color, #ffc107);
@@ -181,10 +169,10 @@
     /* 2. Style des cartes (lignes) */
     .table-dashboard tr {
         margin-bottom: 1.5rem;
-        border: 1px solid #ddd;
-        border-radius: 12px;
+        border: 1px solid var(--gray-400, #ddd);
+        border-radius: var(--border-radius-lg, 12px);
         box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        background: #fff;
+        background: var(--white, #fff);
         overflow: hidden;
     }
 
@@ -193,7 +181,7 @@
         padding: 14px 15px 14px 115px !important;
         position: relative !important;
         text-align: left !important;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--gray-200, #eee);
         min-height: 48px;
         word-break: break-word;
     }
@@ -207,7 +195,7 @@
         transform: none !important;
         width: 90px !important;
         font-weight: 700 !important;
-        color: var(--primary-color, #1e90ff) !important;
+        color: var(--accent-color, #3498db) !important;
         font-size: 0.7rem !important;
         text-transform: uppercase !important;
         letter-spacing: 0.3px;
@@ -224,7 +212,7 @@
     .table-dashboard td:last-child {
         display: block !important;
         border-bottom: none;
-        background: #f8f9fa;
+        background: var(--gray-100, #f8f9fa);
         padding: 1rem 15px !important;
     }
     
@@ -265,5 +253,32 @@
         min-height: 44px;
         flex: 0 0 auto;
         font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        padding: var(--spacing-md, 1rem);
+    }
+
+    .modal-content h2 {
+        font-size: 1.1rem;
+    }
+
+    .table-dashboard td {
+        padding: 12px 10px 12px 100px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .table-dashboard td::before {
+        width: 85px !important;
+        font-size: 0.65rem !important;
+        left: 10px !important;
+    }
+
+    .flex-gap-5 .btn-sm,
+    .flex-gap-5 form .btn-sm {
+        min-width: 90px;
+        font-size: 0.85rem;
     }
 }

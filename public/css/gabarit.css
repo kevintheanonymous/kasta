@@ -73,7 +73,7 @@ body {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #ffffff;
+    background-color: var(--white, #ffffff);
     min-width: 220px;
     box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.12);
     z-index: 1001;
@@ -85,14 +85,14 @@ body {
 }
 
 .dropdown-content a {
-    color: #333;
+    color: var(--gray-800, #333);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
     text-align: left;
     font-size: 0.95rem;
     font-weight: 500;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--gray-200, #f0f0f0);
     transition: all var(--transition-fast);
 }
 
@@ -101,7 +101,7 @@ body {
 }
 
 .dropdown-content a:hover {
-    background-color: #f8fafc;
+    background-color: var(--gray-50, #f8fafc);
     color: var(--secondary-color);
     padding-left: 20px;
 }
@@ -146,7 +146,7 @@ body {
     font-weight: 700;
     font-size: 14px;
     color: var(--primary-color);
-    background: #f1f5f9;
+    background: var(--gray-100, #f1f5f9);
     text-decoration: none;
     transition: all var(--transition-normal);
     border: 2px solid transparent;
@@ -154,25 +154,25 @@ body {
 
 .nav-profile-link:hover {
     background: var(--gradient-primary);
-    color: #fff;
+    color: var(--white, #fff);
     box-shadow: 0 8px 24px rgba(44, 62, 80, 0.3);
 }
 
 .nav-profile-link svg {
-    color: #64748b;
+    color: var(--gray-600, #64748b);
     transition: color var(--transition-normal);
     flex-shrink: 0;
 }
 
 .nav-profile-link:hover svg {
-    color: #fff;
+    color: var(--white, #fff);
 }
 
 /* Login/Signup Buttons */
 .btn-nav-login {
     color: var(--primary-color);
-    background: #fff;
-    border: 2px solid #e2e8f0;
+    background: var(--white, #fff);
+    border: 2px solid var(--gray-300, #e2e8f0);
 }
 
 .btn-nav-login:hover {
@@ -757,87 +757,5 @@ footer {
     .btn {
         min-height: 50px;
         font-size: var(--font-size-sm, 0.875rem);
-    }
-}
-    background: var(--gray-100);
-}
-
-/* Form actions container */
-.form-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 1.5rem;
-    align-items: center;
-}
-
-/* Disabled state */
-.btn-disabled,
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-/* Closed but clickable (for viewing event details) */
-.btn-closed,
-.btn.btn-closed {
-    background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
-    color: white;
-    cursor: pointer;
-    pointer-events: auto;
-    opacity: 0.85;
-    text-decoration: none;
-}
-
-.btn-closed:hover,
-.btn.btn-closed:hover {
-    opacity: 1;
-    background: linear-gradient(135deg, #5a6268 0%, #6c757d 100%);
-    transform: translateY(-1px);
-}
-
-/* =========================================
-   RESPONSIVE BUTTONS
-   ========================================= */
-@media (max-width: 768px) {
-    .btn {
-        min-height: var(--touch-target-min, 44px);
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .btn-sm, .btn-small {
-        min-height: 40px;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.8rem;
-    }
-    
-    .btn-lg {
-        min-height: 50px;
-        font-size: 1rem;
-    }
-    
-    /* Form actions stack on mobile */
-    .form-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .form-actions .btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .btn {
-        min-height: 48px;
-        padding: 0.85rem 1rem;
-    }
-    
-    .btn-sm, .btn-small {
-        min-height: 44px;
-        padding: 0.6rem 0.75rem;
     }
 }

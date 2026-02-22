@@ -1,14 +1,11 @@
+/* Page-specific background */
 body {
-    font-family: var(--font-family, 'Montserrat', sans-serif);
     background: var(--gray-100, #f6f7fb);
-    color: var(--gray-800, #333);
-    margin: 0;
-    padding: 0;
 }
 
 h1 {
     text-align: center;
-    color: var(--primary-color, #1e90ff);
+    color: var(--primary-color, #2c3e50);
     font-size: var(--font-size-3xl, 2rem);
     margin: var(--spacing-xl, 2rem) 0 var(--spacing-sm, 0.5rem) 0;
     animation: fadeInUp var(--transition-normal, 0.3s ease);
@@ -17,16 +14,6 @@ h1 {
 p {
     text-align: center;
     font-size: var(--font-size-base, 1.08rem);
-}
-
-a {
-    color: var(--primary-color, #1e90ff);
-    text-decoration: none;
-    transition: all var(--transition-fast, 0.15s ease);
-}
-
-a:hover {
-    text-decoration: underline;
 }
 
 /* Layout */
@@ -91,7 +78,7 @@ a:hover {
 .tab {
     padding: var(--spacing-sm, 0.5rem) var(--spacing-lg, 1.5rem);
     background: var(--gray-200, #eef6fd);
-    color: var(--primary-color, #1e90ff);
+    color: var(--accent-color, #3498db);
     border-radius: var(--border-radius-sm, 5px);
     font-weight: var(--font-weight-semibold, 600);
     text-decoration: none;
@@ -103,10 +90,10 @@ a:hover {
 }
 
 .tab.active, .tab:hover {
-    background: var(--primary-color, #1e90ff);
+    background: var(--accent-color, #3498db);
     color: var(--white, white);
     text-decoration: none;
-    box-shadow: var(--shadow-primary, 0 4px 14px rgba(30, 144, 255, 0.25));
+    box-shadow: var(--shadow-primary, 0 4px 14px rgba(52, 152, 219, 0.25));
 }
 
 /* Actions */
@@ -127,53 +114,13 @@ a:hover {
     min-width: 140px;
 }
 
-.btn-sm {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    min-height: 32px;
-    gap: 4px;
-}
-
 .btn-sm svg {
     display: block;
     flex-shrink: 0;
 }
 
-.btn-info {
-    background: var(--info-color, #17a2b8);
-    color: var(--white, white);
-}
-
-.btn-info:hover {
-    background: var(--info-dark, #138496);
-    color: var(--white, white);
-}
-
-/* btn-warning, btn-danger, btn-success hérités de gabarit.css */
-
-/* Alerts */
-.alert {
-    max-width: 500px;
-    margin: 0 auto var(--spacing-lg, 1.5rem) auto;
-    padding: var(--spacing-sm, 0.75rem) 3rem var(--spacing-sm, 0.75rem) var(--spacing-md, 1.125rem);
-    border-radius: var(--border-radius-md, 8px);
-    font-weight: var(--font-weight-medium, 500);
-    font-size: var(--font-size-base, 1rem);
-    animation: fadeInUp var(--transition-normal, 0.3s ease);
-    position: relative;
-}
-
-.alert-success {
-    background: var(--success-light, #e8fbe9);
-    color: var(--success-color, #219c4a);
-    border: 1px solid #aee5c7;
-}
-
-.alert-error {
-    background: var(--danger-light, #fdeaea);
-    color: var(--danger-color, #d63447);
-    border: 1px solid #f9b2b2;
-}
+/* btn-warning, btn-danger, btn-success, btn-info hérités de gabarit.css */
+/* Alerts hérités de 3-composants/alertes.css */
 
 /* Tables */
 .table-container {
@@ -253,7 +200,7 @@ th, td {
 
 th {
     background: var(--gray-200, #eef6fd);
-    color: var(--primary-color, #1e90ff);
+    color: var(--accent-color, #3498db);
     font-weight: var(--font-weight-bold, 700);
     font-size: var(--font-size-sm, 0.95rem);
     text-align: center;
@@ -357,12 +304,7 @@ tbody tr:hover {
     text-align: center;
 }
 
-/* Colonne Actions - Nouveau design propre et lisible */
-.td-actions {
-    white-space: normal !important;
-    overflow: visible !important;
-    padding: 0.75rem 0.5rem !important;
-}
+/* Colonne Actions - styles de base hérités de admin_crud.css */
 
 .actions-cell {
     display: flex;
@@ -373,41 +315,7 @@ tbody tr:hover {
     padding: 0.5rem 0;
 }
 
-.actions-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.btn-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border-radius: 6px;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
-
-.btn-action svg {
-    flex-shrink: 0;
-}
-
-.btn-action:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    text-decoration: none;
-}
-
-.btn-action:active {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+/* .actions-buttons et .btn-action hérités de admin_crud.css */
 
 /* Styles spécifiques pour les boutons d'action de taille standard */
 .actions-cell .btn-sm {
@@ -442,7 +350,7 @@ tbody tr:hover {
 
 /* Couleurs des boutons d'action */
 .actions-cell .btn-success {
-    background: var(--success-color, #28a745);
+    background: var(--success-color, #27ae60);
     color: var(--white, white);
 }
 
@@ -481,18 +389,6 @@ tbody tr:hover {
     margin: 0;
 }
 
-/* Badge texte grisé amélioré */
-.text-muted-badge {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--gray-500, #888);
-    min-width: 38px;
-    height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
 /* Utilities */
 .flex-gap-5 {
     display: flex;
@@ -519,38 +415,7 @@ tbody tr:hover {
     text-align: center;
 }
 
-
-/* Badges */
-.badge {
-    display: inline-block;
-    padding: 0.35em 0.65em;
-    font-size: var(--font-size-xs, 0.75em);
-    font-weight: var(--font-weight-bold, 700);
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: var(--border-radius-sm, 0.25rem);
-    color: var(--white, #fff);
-    transition: transform var(--transition-fast, 0.15s ease);
-}
-
-.badge:hover {
-    transform: scale(1.05);
-}
-
-.badge-success {
-    background-color: var(--success-color, #28a745);
-}
-
-.badge-warning {
-    background-color: var(--warning-color, #ffc107);
-    color: var(--gray-900, #212529);
-}
-
-.badge-danger {
-    background-color: var(--danger-color, #dc3545);
-}
+/* Badges hérités de 3-composants/badges.css */
 
 /* Modal */
 .modal {
@@ -635,8 +500,8 @@ tbody tr:hover {
 
 .modal-form-group textarea:focus {
     outline: none;
-    border-color: var(--primary-color, #1e90ff);
-    box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+    border-color: var(--accent-color, #3498db);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .modal-form-group small {
@@ -862,23 +727,24 @@ tbody tr:hover {
         top: -9999px !important;
     }
     
-    /* Table container */
+    /* Table container - reset min-width for card view */
     table.table,
     table.table-dashboard {
         border: none !important;
         box-shadow: none !important;
         background: transparent !important;
+        min-width: 0 !important;
     }
     
     /* Each row is a card */
     table.table tbody tr,
     table.table-dashboard tbody tr {
-        background: #fff !important;
+        background: var(--white, #fff) !important;
         border-radius: 12px !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
         margin-bottom: 16px !important;
         padding: 0 !important;
-        border: 1px solid #e0e0e0 !important;
+        border: 1px solid var(--gray-300, #e0e0e0) !important;
         overflow: visible !important;
     }
     
@@ -889,12 +755,12 @@ tbody tr:hover {
         padding: 14px 15px 14px 130px !important;
         min-height: 48px !important;
         border: none !important;
-        border-bottom: 1px solid #f0f0f0 !important;
+        border-bottom: 1px solid var(--gray-200, #f0f0f0) !important;
         text-align: left !important;
         font-size: 0.95rem !important;
         line-height: 1.4 !important;
-        color: #333 !important;
-        background: #fff !important;
+        color: var(--gray-800, #333) !important;
+        background: var(--white, #fff) !important;
         /* CRITICAL: Ensure content is visible */
         overflow: visible !important;
         text-overflow: unset !important;
@@ -915,11 +781,11 @@ tbody tr:hover {
         content: attr(data-label);
         position: absolute !important;
         left: 12px !important;
-        top: 14px !important;
+        top: 17px !important;
         width: 110px !important;
         font-weight: 700 !important;
         font-size: 0.75rem !important;
-        color: #1e90ff !important;
+        color: var(--accent-color, #3498db) !important;
         text-transform: uppercase !important;
         letter-spacing: 0.3px !important;
         line-height: 1.4 !important;
@@ -943,18 +809,18 @@ tbody tr:hover {
     table.table:not(.table-dashboard) tbody td:nth-child(5)::before { content: "Rôle" !important; }
     table.table:not(.table-dashboard) tbody td:nth-child(6)::before { content: "" !important; }
 
-    /* ACTION CELL (7th column for dashboard) - special styling */
+    /* ACTION CELL (7th column for dashboard) - no label, symmetrical padding */
     table.table-dashboard tbody td:nth-child(7) {
-        padding: 12px 15px 12px 130px !important;
+        padding: 12px 15px !important;
         text-align: left !important;
-        background: #f8f9fa !important;
+        background: var(--gray-100, #f8f9fa) !important;
     }
-    
+
     /* ACTION CELL for regular tables (last child) */
     table.table:not(.table-dashboard) tbody td:last-child {
-        padding: 12px 15px 12px 130px !important;
+        padding: 12px 15px !important;
         text-align: left !important;
-        background: #f8f9fa !important;
+        background: var(--gray-100, #f8f9fa) !important;
     }
 
     /* Buttons container inside action cells */
@@ -1030,12 +896,12 @@ tbody tr:hover {
     /* Ensure text inside cells is visible */
     table.table tbody td,
     table.table-dashboard tbody td {
-        color: #333 !important;
+        color: var(--gray-800, #333) !important;
     }
-    
+
     table.table tbody td .text-muted,
     table.table-dashboard tbody td .text-muted {
-        color: #666 !important;
+        color: var(--gray-600, #666) !important;
         font-style: italic !important;
     }
     
@@ -1075,6 +941,7 @@ tbody tr:hover {
         width: 100px !important;
         font-size: 0.7rem !important;
         left: 10px !important;
+        top: 15px !important;
     }
     
     /* Fix colspan cells on small screens */

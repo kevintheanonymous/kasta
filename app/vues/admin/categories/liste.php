@@ -43,7 +43,7 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
             <tbody>
                 <?php foreach ($categories as $categorie): ?>
                     <tr>
-                        <td class="col-libelle"><?= htmlspecialchars($categorie['libelle']) ?></td>
+                        <td class="col-libelle" data-label="Libellé"><?= htmlspecialchars($categorie['libelle']) ?></td>
                         <td class="td-actions">
                             <div class="actions-buttons">
                                 <a href="<?= url('/admin/categories/edit&id=' . $categorie['Id_Categorie_evenement']) ?>" class="btn btn-action btn-warning" title="Modifier la catégorie">

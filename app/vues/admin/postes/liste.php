@@ -44,8 +44,8 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
             <tbody>
                 <?php foreach ($postes as $poste): ?>
                     <tr>
-                        <td class="col-libelle"><?= htmlspecialchars($poste['libelle']) ?></td>
-                        <td class="col-niveau">
+                        <td class="col-libelle" data-label="Libellé"><?= htmlspecialchars($poste['libelle']) ?></td>
+                        <td class="col-niveau" data-label="Niveau">
                             <span class="badge-niveau niveau-<?= $poste['niveau'] ?>">
                                 Niveau <?= $poste['niveau'] ?>
                             </span>
