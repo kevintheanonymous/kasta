@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3)",
+      "Bash(grep -n \"REINIT_MDP\\\\|reinitialisation_mdp\\\\|\\\\[0-9\\\\]\\\\|\\\\\\\\\\\\\\\\d\\\\|FILTER_SANITIZE\\\\|error_log\" c:/Users/ruthb/OneDrive/Desktop/kasta/app/controleurs/ControleurAuth.php)"
+    ]
+  }
+}

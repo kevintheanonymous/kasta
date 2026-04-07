@@ -12,6 +12,17 @@ require_once __DIR__ . '/../validators/ProfilValidator.php';
 
 class ControleurMembre
 {
+    private const ROUTE_CONNEXION = '/connexion';
+    private const CSRF_ERR = 'Token de sécurité invalide. Veuillez réessayer.';
+    private const ROUTE_PROFIL = '/membre/profil';
+    private const ROUTE_PROFIL_EDIT = '/membre/profil/edit';
+    private const ROUTE_DASHBOARD = '/membre/tableau_de_bord';
+    private const ROUTE_INSCRIPTIONS_ASSO = '/membre/mes_inscriptions_asso';
+    private const ROUTE_INSCRIPTIONS_SPORT = '/membre/mes_inscriptions_sport';
+    private const ROUTE_INSCRIPTION_SPORT = '/membre/inscription/sport?id=';
+    private const ERR_EVENT = 'Événement non trouvé.';
+    private const ERR_DESINSCRIPTION = 'Erreur lors de la désinscription.';
+
     private static function ensurerSession(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -40,12 +51,12 @@ class ControleurMembre
         $mes_inscriptions_sport = Participation::getMesInscriptionsSport($userId);
         $mes_inscriptions_asso = Participation::getMesInscriptionsAsso($userId);
 
-        require __DIR__ . '/../vues/membre/tableau_de_bord.php';
+        require_once __DIR__ . '/../vues/membre/tableau_de_bord.php';
     }
 
     public static function afficherEvenements(): void
     {
-        self::verifierMembre(); 
+        self::verifierMembre();
         rediriger('/');
     }
 
@@ -53,17 +64,17 @@ class ControleurMembre
     {
         self::verifierMembre();
         $id = $_SESSION['user_id'] ?? 0;
-        
+
         if ($id) {
             $membre = Membre::getMembreParId($id);
             if (!$membre) {
                 $_SESSION['errors'] = ['Profil introuvable.'];
-                rediriger('/connexion');
+                rediriger(self::ROUTE_CONNEXION);
                 return;
             }
-            require __DIR__ . '/../vues/membre/profil.php';
+            require_once __DIR__ . '/../vues/membre/profil.php';
         } else {
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
     }
 
@@ -73,8 +84,8 @@ class ControleurMembre
 
         // Vérification CSRF
         if (!verifierTokenCSRF()) {
-            $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
-            rediriger('/membre/profil');
+            $_SESSION['errors'] = [self::CSRF_ERR];
+            rediriger(self::ROUTE_PROFIL);
             return;
         }
 
@@ -84,9 +95,9 @@ class ControleurMembre
             if (Membre::devenirAdherent($id)) {
                 // On pourrait ajouter un message flash ici si on avait un système de session flash
             }
-            rediriger('/membre/profil');
+            rediriger(self::ROUTE_PROFIL);
         } else {
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
     }
 
@@ -95,28 +106,28 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/profil');
+            rediriger(self::ROUTE_PROFIL);
             return;
         }
 
         // check CSRF
         if (!verifierTokenCSRF()) {
-            $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
-            rediriger('/membre/profil');
+            $_SESSION['errors'] = [self::CSRF_ERR];
+            rediriger(self::ROUTE_PROFIL);
             return;
         }
 
         $id = $_SESSION['user_id'] ?? 0;
 
         if (!$id) {
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
             return;
         }
 
         // check fichier
         if (!isset($_FILES['formulaire_adhesion']) || $_FILES['formulaire_adhesion']['error'] !== UPLOAD_ERR_OK) {
             $_SESSION['errors'] = ['Aucun fichier uploadé ou erreur lors de l\'upload'];
-            rediriger('/membre/profil');
+            rediriger(self::ROUTE_PROFIL);
             return;
         }
 
@@ -125,7 +136,7 @@ class ControleurMembre
 
         if (!$uploadResult['success']) {
             $_SESSION['errors'] = [$uploadResult['message']];
-            rediriger('/membre/profil');
+            rediriger(self::ROUTE_PROFIL);
             return;
         }
 
@@ -136,7 +147,7 @@ class ControleurMembre
             $_SESSION['errors'] = ['Erreur lors de la soumission de la demande'];
         }
 
-        rediriger('/membre/profil');
+        rediriger(self::ROUTE_PROFIL);
     }
     public static function afficherEditionProfil(): void
     {
@@ -145,15 +156,15 @@ class ControleurMembre
         $membre = Membre::getMembreParId($id);
         if (!$membre) {
             $_SESSION['errors'] = ['Profil introuvable.'];
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
             return;
         }
-        
+
         // recuperer la liste des regimes alimentaires pour le formulaire
         require_once __DIR__ . '/../models/RegimeAlimentaire.php';
         $regimesAlimentaires = RegimeAlimentaire::tous();
-        
-        require __DIR__ . '/../vues/membre/edition_profil.php';
+
+        require_once __DIR__ . '/../vues/membre/edition_profil.php';
     }
 
     public static function traiterEditionProfil(): void
@@ -162,13 +173,13 @@ class ControleurMembre
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Vérification CSRF
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
-                rediriger('/membre/profil/edit');
+                $_SESSION['errors'] = [self::CSRF_ERR];
+                rediriger(self::ROUTE_PROFIL_EDIT);
                 return;
             }
-            
+
             $id = $_SESSION['user_id'];
-            
+
             // Préparer les données pour validation
             $dataValidation = [
                 'nom' => trim($_POST['nom'] ?? ''),
@@ -180,15 +191,15 @@ class ControleurMembre
                 'commentaires' => trim($_POST['commentaires'] ?? ''),
                 'regime_id' => $_POST['regime_alimentaire'] ?? ''
             ];
-            
+
             // Validation des données
             $validation = ProfilValidator::valider($dataValidation, $id);
             if (!$validation['valid']) {
                 $_SESSION['errors'] = $validation['errors'];
-                rediriger('/membre/profil/edit');
+                rediriger(self::ROUTE_PROFIL_EDIT);
                 return;
             }
-            
+
             // Handle Photo Upload via service
             $url_photo = null;
             if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -198,7 +209,7 @@ class ControleurMembre
                     $url_photo = $uploadResult['path'];
                 } else {
                     $_SESSION['errors'] = [$uploadResult['message']];
-                    rediriger('/membre/profil/edit');
+                    rediriger(self::ROUTE_PROFIL_EDIT);
                     return;
                 }
             }
@@ -219,10 +230,10 @@ class ControleurMembre
                 // Update session name if changed
                 $_SESSION['user_name'] = $data['prenom'] . ' ' . $data['nom'];
                 $_SESSION['success'] = 'Profil mis à jour avec succès.';
-                rediriger('/membre/profil');
+                rediriger(self::ROUTE_PROFIL);
             } else {
                 $_SESSION['errors'] = ['Erreur lors de la mise à jour.'];
-                rediriger('/membre/profil/edit');
+                rediriger(self::ROUTE_PROFIL_EDIT);
             }
         }
     }
@@ -230,28 +241,28 @@ class ControleurMembre
     public static function supprimerCompte(): void
     {
         self::verifierMembre();
-        
+
         // Vérification CSRF
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
-            rediriger('/membre/profil');
+            $_SESSION['error'] = self::CSRF_ERR;
+            rediriger(self::ROUTE_PROFIL);
             return;
         }
-        
+
         $id = $_SESSION['user_id'];
-        
+
         if (Membre::supprimerMembre($id)) {
             session_destroy();
             rediriger('/');
         } else {
-            rediriger('/membre/profil');
+            rediriger(self::ROUTE_PROFIL);
         }
     }
     private static function verifierMembre(): void
     {
         self::ensurerSession();
         if (!estConnecte()) {
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
         // Un admin (table admin) n'est pas un membre, il doit aller sur son espace
         if (($_SESSION['user_type'] ?? '') === 'admin') {
@@ -269,15 +280,15 @@ class ControleurMembre
 
         $idEvent = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         if (!$idEvent) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         $evenement = EvenementSport::findById($idEvent);
         if (!$evenement) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -294,7 +305,7 @@ class ControleurMembre
         // Vérifier si les inscriptions sont closes
         $inscriptionsClosed = strtotime($evenement['date_cloture']) < time();
 
-        require __DIR__ . '/../vues/membre/inscription_sport.php';
+        require_once __DIR__ . '/../vues/membre/inscription_sport.php';
     }
 
     public static function traiterInscriptionSport(): void
@@ -302,13 +313,13 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/tableau_de_bord');
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::CSRF_ERR;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -321,23 +332,23 @@ class ControleurMembre
         $userId = $_SESSION['user_id'];
 
         if (!$idEvent) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         // Vérifier que l'événement existe
         $evenement = EvenementSport::findById($idEvent);
         if (!$evenement) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         // Vérifier que les inscriptions ne sont pas closes
         if (strtotime($evenement['date_cloture']) < time()) {
             $_SESSION['error'] = "Les inscriptions sont closes pour cet événement.";
-            rediriger('/membre/inscription/sport?id=' . $idEvent);
+            rediriger(self::ROUTE_INSCRIPTION_SPORT . $idEvent);
             return;
         }
 
@@ -362,13 +373,13 @@ class ControleurMembre
 
         if ($nbInscrits > 0) {
             $_SESSION['success'] = "Vous avez été inscrit à $nbInscrits créneau(x) avec succès. Vous pouvez vous inscrire à d'autres créneaux ci-dessous.";
-            rediriger('/membre/inscription/sport?id=' . $idEvent);
+            rediriger(self::ROUTE_INSCRIPTION_SPORT . $idEvent);
         } elseif (empty($erreurs)) {
             $_SESSION['info'] = "Aucun nouveau créneau sélectionné ou vous êtes déjà inscrit.";
-            rediriger('/membre/inscription/sport?id=' . $idEvent);
+            rediriger(self::ROUTE_INSCRIPTION_SPORT . $idEvent);
         } else {
             $_SESSION['error'] = implode(' ', $erreurs);
-            rediriger('/membre/inscription/sport?id=' . $idEvent);
+            rediriger(self::ROUTE_INSCRIPTION_SPORT . $idEvent);
         }
     }
 
@@ -377,13 +388,13 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/tableau_de_bord');
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::CSRF_ERR;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -393,7 +404,7 @@ class ControleurMembre
 
         if (!$idCreneau) {
             $_SESSION['error'] = "Créneau non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -404,7 +415,7 @@ class ControleurMembre
             $_SESSION['error'] = "Erreur lors de la désinscription.";
         }
 
-        rediriger('/membre/inscription/sport?id=' . $idEvent);
+        rediriger(self::ROUTE_INSCRIPTION_SPORT . $idEvent);
     }
 
     public static function afficherInscriptionAsso(): void
@@ -413,15 +424,15 @@ class ControleurMembre
 
         $idEvent = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         if (!$idEvent) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         $evenement = EvenementAsso::findById($idEvent);
         if (!$evenement) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -432,7 +443,7 @@ class ControleurMembre
 
         if ($evenement['prive'] && !$isAdherent) {
             $_SESSION['error'] = "Cet événement est réservé aux adhérents.";
-            rediriger('/membre/tableau_de_bord');
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -461,7 +472,7 @@ class ControleurMembre
             $tarifMembre = $aParticipe ? 0 : (float)$evenement['tarif'];
         }
 
-        require __DIR__ . '/../vues/membre/inscription_asso.php';
+        require_once __DIR__ . '/../vues/membre/inscription_asso.php';
     }
 
     public static function traiterInscriptionAsso(): void
@@ -469,13 +480,13 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/tableau_de_bord');
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::CSRF_ERR;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -484,16 +495,16 @@ class ControleurMembre
         $userId = $_SESSION['user_id'];
 
         if (!$idEvent) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         // Vérifier que l'événement existe
         $evenement = EvenementAsso::findById($idEvent);
         if (!$evenement) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -510,7 +521,7 @@ class ControleurMembre
 
         if ($evenement['prive'] && !$isAdherent) {
             $_SESSION['error'] = "Cet événement est réservé aux adhérents.";
-            rediriger('/membre/tableau_de_bord');
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -546,14 +557,14 @@ class ControleurMembre
             // mode mise a jour : on garde l'inscription existante et on met a jour les accompagnateurs
             Participation::sauvegarderAccompagnateurs($userId, $idEvent, $accompagnateursData);
             $_SESSION['success'] = 'Votre inscription a été mise à jour avec succès.';
-            rediriger('/membre/mes_inscriptions_asso');
+            rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
         } else {
             // mode creation : nouvelle inscription
             if (Participation::inscrireEvenementAsso($userId, $idEvent, $nbInvites)) {
                 // sauvegarder les accompagnateurs
                 Participation::sauvegarderAccompagnateurs($userId, $idEvent, $accompagnateursData);
                 $_SESSION['success'] = "Vous avez été inscrit à l'événement avec succès.";
-                rediriger('/membre/mes_inscriptions_asso');
+                rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
             } else {
                 $_SESSION['error'] = "Vous êtes déjà inscrit à cet événement.";
                 rediriger('/membre/inscription/asso?id=' . $idEvent);
@@ -566,13 +577,13 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/tableau_de_bord');
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::CSRF_ERR;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -580,8 +591,8 @@ class ControleurMembre
         $userId = $_SESSION['user_id'];
 
         if (!$idEvent) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/tableau_de_bord');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_DASHBOARD);
             return;
         }
 
@@ -592,7 +603,7 @@ class ControleurMembre
             $_SESSION['error'] = "Erreur lors de la désinscription.";
         }
 
-        rediriger('/membre/mes_inscriptions_asso');
+        rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
     }
 
     // gestion des inscriptions sportives
@@ -621,7 +632,7 @@ class ControleurMembre
             $evenements[$idEvent]['creneaux'][] = $insc;
         }
 
-        require __DIR__ . '/../vues/membre/mes_inscriptions_sport.php';
+        require_once __DIR__ . '/../vues/membre/mes_inscriptions_sport.php';
     }
 
     public static function traiterDesinscriptionSportComplet(): void
@@ -629,13 +640,13 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/mes_inscriptions_sport');
+            rediriger(self::ROUTE_INSCRIPTIONS_SPORT);
             return;
         }
 
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
-            rediriger('/membre/mes_inscriptions_sport');
+            $_SESSION['error'] = self::CSRF_ERR;
+            rediriger(self::ROUTE_INSCRIPTIONS_SPORT);
             return;
         }
 
@@ -643,8 +654,8 @@ class ControleurMembre
         $userId = $_SESSION['user_id'];
 
         if (!$idEvent) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/mes_inscriptions_sport');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_INSCRIPTIONS_SPORT);
             return;
         }
 
@@ -655,7 +666,7 @@ class ControleurMembre
             $_SESSION['error'] = "Erreur lors de la désinscription.";
         }
 
-        rediriger('/membre/mes_inscriptions_sport');
+        rediriger(self::ROUTE_INSCRIPTIONS_SPORT);
     }
 
     // gestion des inscriptions associatives
@@ -667,7 +678,7 @@ class ControleurMembre
         $userId = $_SESSION['user_id'];
         $mes_inscriptions_asso = Participation::getMesInscriptionsAsso($userId);
 
-        require __DIR__ . '/../vues/membre/mes_inscriptions_asso.php';
+        require_once __DIR__ . '/../vues/membre/mes_inscriptions_asso.php';
     }
 
     public static function traiterModificationAccompagnateurs(): void
@@ -675,13 +686,13 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/mes_inscriptions_asso');
+            rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
             return;
         }
 
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
-            rediriger('/membre/mes_inscriptions_asso');
+            $_SESSION['error'] = self::CSRF_ERR;
+            rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
             return;
         }
 
@@ -690,8 +701,8 @@ class ControleurMembre
         $userId = $_SESSION['user_id'];
 
         if (!$idEvent) {
-            $_SESSION['error'] = "Événement non trouvé.";
-            rediriger('/membre/mes_inscriptions_asso');
+            $_SESSION['error'] = self::ERR_EVENT;
+            rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
             return;
         }
 
@@ -702,42 +713,42 @@ class ControleurMembre
             $_SESSION['error'] = "Erreur lors de la modification.";
         }
 
-        rediriger('/membre/mes_inscriptions_asso');
+        rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
     }
 
     public static function afficherSecurite(): void
     {
         self::verifierMembre();
         $id = $_SESSION['user_id'] ?? 0;
-        
+
         if ($id) {
-            require __DIR__ . '/../vues/membre/securite.php';
+            require_once __DIR__ . '/../vues/membre/securite.php';
         } else {
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
     }
 
     public static function traiterChangementMotDePasse(): void
     {
         self::verifierMembre();
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             rediriger('/membre/securite');
             return;
         }
-        
+
         // Vérification CSRF
         if (!verifierTokenCSRF()) {
-            $_SESSION['error'] = 'Token de sécurité invalide. Veuillez réessayer.';
+            $_SESSION['error'] = self::CSRF_ERR;
             rediriger('/membre/securite');
             return;
         }
-        
+
         $id = $_SESSION['user_id'];
         $mdpActuel = $_POST['mdp_actuel'] ?? '';
         $nouveauMdp = $_POST['nouveau_mdp'] ?? '';
         $confirmMdp = $_POST['confirm_mdp'] ?? '';
-        
+
         // Récupérer le membre
         $membre = Membre::getMembreParId($id);
         if (!$membre) {
@@ -745,28 +756,28 @@ class ControleurMembre
             rediriger('/membre/securite');
             return;
         }
-        
+
         // Vérifier le mot de passe actuel
         if (!password_verify($mdpActuel, $membre['Mot_de_passe'])) {
             $_SESSION['error'] = 'Le mot de passe actuel est incorrect.';
             rediriger('/membre/securite');
             return;
         }
-        
+
         // Vérifier que le nouveau mot de passe n'est pas vide
         if (empty($nouveauMdp)) {
             $_SESSION['error'] = 'Le nouveau mot de passe ne peut pas être vide.';
             rediriger('/membre/securite');
             return;
         }
-        
+
         // Vérifier que les deux mots de passe correspondent
         if ($nouveauMdp !== $confirmMdp) {
             $_SESSION['error'] = 'Les deux mots de passe ne correspondent pas.';
             rediriger('/membre/securite');
             return;
         }
-        
+
         // Validation du mot de passe (mêmes règles que l'inscription)
         $mdpRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
         if (!preg_match($mdpRegex, $nouveauMdp)) {
@@ -774,7 +785,7 @@ class ControleurMembre
             rediriger('/membre/securite');
             return;
         }
-        
+
         // Mettre à jour le mot de passe
         if (Membre::changerMotDePasse($id, $nouveauMdp)) {
             $_SESSION['success'] = 'Votre mot de passe a été modifié avec succès.';
@@ -792,14 +803,14 @@ class ControleurMembre
         $userId = $_SESSION['user_id'] ?? 0;
 
         if (!$userId) {
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
             return;
         }
 
         // recup les events sportifs ou le membre a ete marque present
         $evenementsPasses = Participation::getMesEvenementsSportifsPasses($userId);
 
-        require __DIR__ . '/../vues/membre/mes_evenements_passes.php';
+        require_once __DIR__ . '/../vues/membre/mes_evenements_passes.php';
     }
 
     // calcule le tarif pour une personne selon sa participation aux events sportifs des 12 derniers mois
@@ -878,7 +889,7 @@ public static function afficherContact(): void
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
     $titrePage = "Nous contacter";
-    require __DIR__ . '/../vues/membre/contact.php';
+    require_once __DIR__ . '/../vues/membre/contact.php';
 }
 
 public static function traiterContact(): void
@@ -887,7 +898,7 @@ public static function traiterContact(): void
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    
+
     // Déterminer l'URL de redirection
     $redirectUrl = isset($_SESSION['user']) ? '/membre/contact' : '/contact';
 
@@ -915,7 +926,7 @@ public static function traiterContact(): void
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = "L'adresse email n'est pas valide.";
         }
-        
+
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
             $_SESSION['form_data'] = ['sujet' => $sujet, 'message' => $message, 'email' => $email];
@@ -931,7 +942,7 @@ public static function traiterContact(): void
             $nomMembre = 'Visiteur (non connecté)';
         }
         $emailMembre = htmlspecialchars($email);
-        
+
         // Contenu du mail formaté en HTML
         $emailBody = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
@@ -956,19 +967,19 @@ public static function traiterContact(): void
 
         // Email de destination
         $emailDestination = Env::get('CONTACT_EMAIL') ?: 'contact@kastasso.fr';
-        
+
         try {
             require_once __DIR__ . '/../services/EmailService.php';
             require_once __DIR__ . '/../../config/env.php';
             Env::load();
-            
+
             $resultat = EmailService::envoyer(
-                $emailDestination, 
-                "[Kast'Asso Contact] " . $sujet, 
-                $emailBody, 
+                $emailDestination,
+                "[Kast'Asso Contact] " . $sujet,
+                $emailBody,
                 "Kast'Asso"
             );
-            
+
             if ($resultat) {
                 $_SESSION['success'] = "Votre message a bien été envoyé ! Nous vous répondrons dans les plus brefs délais.";
             } else {
@@ -978,7 +989,7 @@ public static function traiterContact(): void
             error_log("Erreur envoi contact : " . $e->getMessage());
             $_SESSION['errors'] = ["Une erreur est survenue lors de l'envoi du message."];
         }
-        
+
         // Nettoyer les données du formulaire en cas de succès
         unset($_SESSION['form_data']);
         rediriger($redirectUrl);

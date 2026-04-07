@@ -8,17 +8,24 @@ require_once __DIR__ . '/../services/FileUploadService.php';
 require_once __DIR__ . '/../validators/InscriptionValidator.php';
 
 class ControleurAuth {
+
+    private const CSRF_ERR = 'Erreur de sécurité : requête invalide. Veuillez réessayer.';
+    private const ROUTE_INSCRIPTION = '/inscription';
+    private const ROUTE_CONNEXION = '/connexion';
+    private const ROUTE_MDP_OUBLIE = '/mot_de_passe_oublie';
+    private const ROUTE_REINIT_MDP = '/reinitialisation_mdp';
+
     private static function ensurerSession(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
-    
+
     private static function redirigerVersTableauDeBord(): void
     {
         $userType = $_SESSION['user_type'] ?? '';
-        
+
         switch ($userType) {
             case 'admin':
                 rediriger('/admin/tableau_de_bord');
@@ -38,37 +45,35 @@ class ControleurAuth {
         self::ensurerSession();
         $evenements_sport = EvenementSport::findAllPublic();
         $evenements_asso = EvenementAsso::findAllPublic();
-        require __DIR__ . '/../vues/accueil.php';
+        require_once __DIR__ . '/../vues/accueil.php';
     }
- 
 
     public static function afficherInscription(): void
     {
         self::ensurerSession();
-        
+
         if (isset($_SESSION['user_id'])) {
             self::redirigerVersTableauDeBord();
         }
-        
-        // recuperer la liste des regimes alimentaires pour le formulaire
+
         require_once __DIR__ . '/../models/RegimeAlimentaire.php';
         $regimesAlimentaires = RegimeAlimentaire::tous();
-        
-        require __DIR__ . '/../vues/authentification/inscription.php';
+
+        require_once __DIR__ . '/../vues/authentification/inscription.php';
     }
 
     public static function traiterInscription(): void
     {
         self::ensurerSession();
-        
+
         if (isset($_SESSION['user_id'])) {
             self::redirigerVersTableauDeBord();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ["Erreur de sécurité : requête invalide. Veuillez réessayer."];
-                rediriger('/inscription');
+                $_SESSION['errors'] = [self::CSRF_ERR];
+                rediriger(self::ROUTE_INSCRIPTION);
             }
 
             $data = [
@@ -101,10 +106,9 @@ class ControleurAuth {
 
             if (!$validation['valid']) {
                 $_SESSION['errors'] = $validation['errors'];
-                rediriger('/inscription');
+                rediriger(self::ROUTE_INSCRIPTION);
             }
 
-            // gestion upload photo profil
             $url_photo = null;
             if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
                 $uploadResult = FileUploadService::uploadPhoto($_FILES['photo']);
@@ -113,13 +117,10 @@ class ControleurAuth {
                     $url_photo = $uploadResult['path'];
                 } else {
                     $_SESSION['errors'] = [$uploadResult['message']];
-                    rediriger('/inscription');
+                    rediriger(self::ROUTE_INSCRIPTION);
                 }
             }
 
-            // gestion upload formulaire adhesion
-            // on traite d'abord l'inscription pour avoir l'id membre, puis on uploade le fichier
-            $url_adhesion = null;
             $formulaire_adhesion_present = isset($_FILES['formulaire_adhesion']) && $_FILES['formulaire_adhesion']['error'] === UPLOAD_ERR_OK;
 
             $membreData = [
@@ -143,16 +144,13 @@ class ControleurAuth {
             if ($result['success']) {
                 $idMembre = $result['id'];
 
-                // si formulaire adhesion present, uploader et soumettre demande
                 if ($formulaire_adhesion_present) {
                     $uploadAdhesionResult = FileUploadService::uploadFormulaireAdhesion($_FILES['formulaire_adhesion'], $idMembre);
 
                     if ($uploadAdhesionResult['success']) {
-                        // soumettre la demande adhesion (met statut en_attente)
                         Membre::soumettreDemandeAdhesion($idMembre, $uploadAdhesionResult['path']);
                         $_SESSION['success'] = 'Inscription réussie ! Votre compte et votre demande d\'adhésion sont en attente de validation.';
                     } else {
-                        // fichier adhesion invalide mais inscription ok
                         $_SESSION['success'] = 'Inscription réussie ! Votre compte est en attente de validation. Attention : ' . $uploadAdhesionResult['message'];
                     }
                 } else {
@@ -160,10 +158,10 @@ class ControleurAuth {
                 }
 
                 unset($_SESSION['inscription']);
-                rediriger('/inscription');
+                rediriger(self::ROUTE_INSCRIPTION);
             } else {
                 $_SESSION['errors'] = [$result['message']];
-                rediriger('/inscription');
+                rediriger(self::ROUTE_INSCRIPTION);
             }
             exit();
         }
@@ -172,40 +170,39 @@ class ControleurAuth {
     public static function afficherConnexion(): void
     {
         self::ensurerSession();
-        
+
         if (isset($_SESSION['user_id'])) {
             self::redirigerVersTableauDeBord();
         }
-        
-        require __DIR__ . '/../vues/authentification/connexion.php';
+
+        require_once __DIR__ . '/../vues/authentification/connexion.php';
     }
 
     public static function traiterConnexion(): void
     {
         self::ensurerSession();
-        
+
         if (isset($_SESSION['user_id'])) {
             self::redirigerVersTableauDeBord();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ["Erreur de sécurité : requête invalide. Veuillez réessayer."];
-                rediriger('/connexion');
+                $_SESSION['errors'] = [self::CSRF_ERR];
+                rediriger(self::ROUTE_CONNEXION);
             }
-            
+
             $email = $_POST['email'] ?? '';
             $mdp = $_POST['mot_de_passe'] ?? '';
 
             if (empty($email) || empty($mdp)) {
                 $_SESSION['errors'] = ["Veuillez remplir tous les champs."];
-                rediriger('/connexion');
+                rediriger(self::ROUTE_CONNEXION);
             }
 
-            // Verification rate limiting
             if (!self::verifierRateLimit('login_' . $email)) {
                 $_SESSION['errors'] = ["Trop de tentatives. Veuillez patienter avant de réessayer."];
-                rediriger('/connexion');
+                rediriger(self::ROUTE_CONNEXION);
             }
 
             // SECURITE: Toujours verifier les deux tables pour eviter les timing attacks
@@ -215,10 +212,9 @@ class ControleurAuth {
             if ($result['success']) {
                 $membre = $result['data'];
 
-                // Vérification du statut du compte
                 if ($membre['statut_compte'] !== 'valide') {
                     $_SESSION['errors'] = ["Votre compte est en attente de validation ou a été refusé."];
-                    rediriger('/connexion');
+                    rediriger(self::ROUTE_CONNEXION);
                 }
 
                 self::resetRateLimit('login_' . $email);
@@ -266,7 +262,7 @@ class ControleurAuth {
 
             self::incrementerRateLimit('login_' . $email);
             $_SESSION['errors'] = ['Identifiants incorrects'];
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
     }
 
@@ -274,13 +270,13 @@ class ControleurAuth {
     {
         self::ensurerSession();
         session_destroy();
-        rediriger('/connexion');
+        rediriger(self::ROUTE_CONNEXION);
     }
 
     public static function afficherMotDePasseOublie(): void
     {
         self::ensurerSession();
-        require __DIR__ . '/../vues/authentification/mot_de_passe_oublie.php';
+        require_once __DIR__ . '/../vues/authentification/mot_de_passe_oublie.php';
     }
 
     public static function traiterMotDePasseOublie(): void
@@ -288,67 +284,61 @@ class ControleurAuth {
         self::ensurerSession();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // on check le csrf
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ["Erreur de sécurité : requête invalide. Veuillez réessayer."];
-                rediriger('/mot_de_passe_oublie');
+                $_SESSION['errors'] = [self::CSRF_ERR];
+                rediriger(self::ROUTE_MDP_OUBLIE);
             }
-            
+
             $email = $_POST['email'] ?? '';
 
             if (empty($email)) {
                 $_SESSION['errors'] = ["Veuillez saisir votre adresse email."];
-                rediriger('/mot_de_passe_oublie');
+                rediriger(self::ROUTE_MDP_OUBLIE);
             }
 
-            // on regarde si c'est un membre ou un admin
             $isMembre = Membre::emailExiste($email);
             $isAdmin = Admin::emailExiste($email);
-            
+
             $token = bin2hex(random_bytes(32));
             $userFound = false;
             $nomComplet = "Utilisateur";
 
-            // d'abord on essaye avec les membres (priorité)
             if ($isMembre) {
                 if (Membre::setResetToken($email, $token)) {
                     $userFound = true;
-                    // on recupere le nom pour l'email
                     $membreInfo = Membre::getMembreByEmail($email);
                     if ($membreInfo) {
                         $nomComplet = $membreInfo['Prenom'] . ' ' . $membreInfo['Nom'];
                     }
                 }
             } elseif ($isAdmin) {
-                // sinon on essaye avec les admins
                 if (Admin::setResetToken($email, $token)) {
                     $userFound = true;
                     $nomComplet = "Administrateur";
                 }
             }
 
-            // on envoie l'email seulement si l'user existe
             if ($userFound) {
-                // on construit l'url avec le token
-                // le & c'est parce que url() genere deja un ?
-                $lien_reset = url('/reinitialisation_mdp') . '&token=' . $token;
-                
+                $lien_reset = url(self::ROUTE_REINIT_MDP) . '&token=' . $token;
+
                 ob_start();
-                include __DIR__ . '/../templates/email_reset_mdp.php';
+                include_once __DIR__ . '/../templates/email_reset_mdp.php';
                 $messageHTML = ob_get_clean();
 
                 $resultat = EmailService::envoyer($email, "Réinitialisation de mot de passe", $messageHTML, $nomComplet);
                 if (!$resultat) {
-                    error_log("Échec de l'envoi de l'email de réinitialisation à {$email}");
+                    $safeEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
+                    error_log("Échec de l'envoi de l'email de réinitialisation à {$safeEmail}");
                 }
             } else {
-                error_log("Réinitialisation demandée pour email non trouvé: {$email}");
+                $safeEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
+                error_log("Réinitialisation demandée pour email non trouvé: {$safeEmail}");
             }
-            
+
             // SÉCURITÉ: Toujours afficher le même message pour éviter l'énumération d'utilisateurs
             $_SESSION['success'] = "Si cette adresse email est associée à un compte, un lien de réinitialisation vous a été envoyé.";
 
-            rediriger('/mot_de_passe_oublie');
+            rediriger(self::ROUTE_MDP_OUBLIE);
         }
     }
 
@@ -359,20 +349,18 @@ class ControleurAuth {
 
         if (empty($token)) {
             $_SESSION['errors'] = ["Token manquant."];
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
 
-        // on check si le token est bon
         $membre = Membre::verifyResetToken($token);
         $admin = Admin::verifyResetToken($token);
 
         if (!$membre && !$admin) {
             $_SESSION['errors'] = ["Ce lien de réinitialisation est invalide ou a expiré."];
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
 
-        // on passe le token a la vue
-        require __DIR__ . '/../vues/authentification/reinitialisation_mdp.php';
+        require_once __DIR__ . '/../vues/authentification/reinitialisation_mdp.php';
     }
 
     public static function traiterReinitialisation(): void
@@ -381,8 +369,8 @@ class ControleurAuth {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ["Erreur de sécurité : requête invalide. Veuillez réessayer."];
-                rediriger('/connexion');
+                $_SESSION['errors'] = [self::CSRF_ERR];
+                rediriger(self::ROUTE_CONNEXION);
             }
 
             $token = $_POST['token'] ?? '';
@@ -391,19 +379,18 @@ class ControleurAuth {
 
             if (empty($token) || empty($mdp) || empty($confmdp)) {
                 $_SESSION['errors'] = ["Tous les champs sont obligatoires."];
-                rediriger('/reinitialisation_mdp&token=' . $token);
+                rediriger(self::ROUTE_REINIT_MDP . '?token=' . $token);
             }
 
             if ($mdp !== $confmdp) {
                 $_SESSION['errors'] = ["Les mots de passe ne correspondent pas."];
-                rediriger('/reinitialisation_mdp&token=' . $token);
+                rediriger(self::ROUTE_REINIT_MDP . '?token=' . $token);
             }
 
-            // Validation de la complexite du mot de passe
             $erreursMdp = self::validerComplexiteMotDePasse($mdp);
             if (!empty($erreursMdp)) {
                 $_SESSION['errors'] = $erreursMdp;
-                rediriger('/reinitialisation_mdp&token=' . $token);
+                rediriger(self::ROUTE_REINIT_MDP . '?token=' . $token);
             }
 
             $membre = Membre::verifyResetToken($token);
@@ -412,17 +399,17 @@ class ControleurAuth {
             if ($membre) {
                 if (Membre::updatePasswordByToken($token, $mdp)) {
                     $_SESSION['success'] = "Votre mot de passe a été réinitialisé avec succès.";
-                    rediriger('/connexion');
+                    rediriger(self::ROUTE_CONNEXION);
                 }
             } elseif ($admin) {
                 if (Admin::updatePasswordByToken($token, $mdp)) {
                     $_SESSION['success'] = "Votre mot de passe a été réinitialisé avec succès.";
-                    rediriger('/connexion');
+                    rediriger(self::ROUTE_CONNEXION);
                 }
             }
 
             $_SESSION['errors'] = ["Une erreur est survenue ou le lien a expiré."];
-            rediriger('/connexion');
+            rediriger(self::ROUTE_CONNEXION);
         }
     }
 
@@ -438,7 +425,7 @@ class ControleurAuth {
         if (!preg_match('/[a-z]/', $mdp)) {
             $erreurs[] = "Le mot de passe doit contenir au moins une minuscule.";
         }
-        if (!preg_match('/[0-9]/', $mdp)) {
+        if (!preg_match('/\d/', $mdp)) {
             $erreurs[] = "Le mot de passe doit contenir au moins un chiffre.";
         }
         if (!preg_match('/[^A-Za-z0-9]/', $mdp)) {

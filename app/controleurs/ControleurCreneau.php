@@ -8,10 +8,16 @@ require_once __DIR__ . '/../models/Poste.php';
 require_once __DIR__ . '/../models/CreneauPoste.php';
 
 class ControleurCreneau {
-    
+
+    private const ROUTE_EVENTS = '/admin/events';
+    private const ERR_EVENEMENT = 'Événement introuvable';
+    private const CSRF_ERR = 'Token de sécurité invalide. Veuillez réessayer.';
+
     private static function verifierAdmin() {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        if (!isset($_SESSION['user_type']) || ($_SESSION['user_type'] !== 'admin' && $_SESSION['user_type'] !== 'gestionnaire')) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin' && $_SESSION['user_type'] !== 'gestionnaire') {
             rediriger('/connexion');
             exit;
         }
@@ -20,22 +26,22 @@ class ControleurCreneau {
     public static function index() {
         self::verifierAdmin();
         $idEvent = $_GET['id_event'] ?? null;
-        
+
         if (!$idEvent) {
-            rediriger('/admin/events');
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
         $event = EvenementSport::findById($idEvent);
         if (!$event) {
-            $_SESSION['errors'] = ["Événement introuvable"];
-            rediriger('/admin/events');
+            $_SESSION['errors'] = [self::ERR_EVENEMENT];
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
         $creneaux = Creneau::findByEvent($idEvent);
-        $postes = Poste::findAll(); // on charge les postes pour le formulaire d'ajout inline
-        require __DIR__ . '/../vues/admin/creneaux/liste.php';
+        $postes = Poste::findAll();
+        require_once __DIR__ . '/../vues/admin/creneaux/liste.php';
     }
 
     public static function create() {
@@ -43,41 +49,38 @@ class ControleurCreneau {
         $idEvent = $_GET['id_event'] ?? null;
 
         if (!$idEvent) {
-            rediriger('/admin/events');
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
         $event = EvenementSport::findById($idEvent);
         if (!$event) {
-            $_SESSION['errors'] = ["Événement introuvable"];
-            rediriger('/admin/events');
+            $_SESSION['errors'] = [self::ERR_EVENEMENT];
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
-        // on charge tous les postes disponibles
         $postes = Poste::findAll();
 
-        require __DIR__ . '/../vues/admin/creneaux/creer.php';
+        require_once __DIR__ . '/../vues/admin/creneaux/creer.php';
     }
 
     public static function store() {
         self::verifierAdmin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Vérification CSRF
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
+                $_SESSION['errors'] = [self::CSRF_ERR];
                 $idEvent = $_POST['id_event_sportif'] ?? '';
                 rediriger("/admin/creneaux&id_event=$idEvent");
                 exit;
             }
-            
+
             $idEvent = $_POST['id_event_sportif'];
-            
-            // Récupération de l'événement pour validation des dates
+
             $event = EvenementSport::findById($idEvent);
             if (!$event) {
-                $_SESSION['errors'] = ["Événement introuvable"];
-                rediriger('/admin/events');
+                $_SESSION['errors'] = [self::ERR_EVENEMENT];
+                rediriger(self::ROUTE_EVENTS);
                 exit;
             }
 
@@ -90,14 +93,11 @@ class ControleurCreneau {
                 'heure_fin' => $_POST['heure_fin']
             ];
 
-            // check : le creneau doit commencer apres la cloture des inscriptions
             $creneauDebut = $data['date_creneau'] . ' ' . $data['heure_debut'];
-            // on rajoute les secondes si y'en a pas
             if (strlen($data['heure_debut']) === 5) {
                 $creneauDebut .= ':00';
             }
 
-            // heure debut < heure fin
             $creneauFin = $data['date_creneau'] . ' ' . $data['heure_fin'];
             if (strlen($data['heure_fin']) === 5) {
                 $creneauFin .= ':00';
@@ -117,7 +117,6 @@ class ControleurCreneau {
 
             $idCreneau = Creneau::create($data);
             if ($idCreneau) {
-                // on lie les postes au creneau si y'en a
                 $postesSelectionnes = $_POST['postes'] ?? [];
                 if (!empty($postesSelectionnes)) {
                     CreneauPoste::lierPostesACreneau($idCreneau, $postesSelectionnes);
@@ -137,26 +136,22 @@ class ControleurCreneau {
         self::verifierAdmin();
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            rediriger('/admin/events');
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
         $creneau = Creneau::findById($id);
         if (!$creneau) {
-            rediriger('/admin/events');
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
         $event = EvenementSport::findById($creneau['Id_Event_sportif']);
-
-        // on charge tous les postes dispo
         $postes = Poste::findAll();
-
-        // on recupere les postes actuellement lies a ce creneau
         $postesActuels = CreneauPoste::getPostesPourCreneau($id);
         $postesActuelsIds = array_column($postesActuels, 'Id_Poste');
 
-        require __DIR__ . '/../vues/admin/creneaux/modifier.php';
+        require_once __DIR__ . '/../vues/admin/creneaux/modifier.php';
     }
 
     public static function update() {
@@ -164,19 +159,17 @@ class ControleurCreneau {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id_creneau'];
             $idEvent = $_POST['id_event_sportif'];
-            
-            // Vérification CSRF
+
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
+                $_SESSION['errors'] = [self::CSRF_ERR];
                 rediriger("/admin/creneaux/edit&id=$id");
                 exit;
             }
-            
-            // Récupération de l'événement pour validation des dates
+
             $event = EvenementSport::findById($idEvent);
             if (!$event) {
-                $_SESSION['errors'] = ["Événement introuvable"];
-                rediriger('/admin/events');
+                $_SESSION['errors'] = [self::ERR_EVENEMENT];
+                rediriger(self::ROUTE_EVENTS);
                 exit;
             }
 
@@ -188,13 +181,11 @@ class ControleurCreneau {
                 'heure_fin' => $_POST['heure_fin']
             ];
 
-            // pareil, le creneau doit etre apres la cloture
             $creneauDebut = $data['date_creneau'] . ' ' . $data['heure_debut'];
             if (strlen($data['heure_debut']) === 5) {
                 $creneauDebut .= ':00';
             }
 
-            // heure debut < heure fin
             $creneauFin = $data['date_creneau'] . ' ' . $data['heure_fin'];
             if (strlen($data['heure_fin']) === 5) {
                 $creneauFin .= ':00';
@@ -213,10 +204,8 @@ class ControleurCreneau {
             }
 
             if (Creneau::update($id, $data)) {
-                // ensuite on met a jour les postes lies au creneau
                 $postesSelectionnes = $_POST['postes'] ?? [];
                 CreneauPoste::lierPostesACreneau($id, $postesSelectionnes);
-
                 $_SESSION['success'] = "Créneau mis à jour avec succès";
             } else {
                 $_SESSION['errors'] = ["Erreur lors de la mise à jour du créneau"];
@@ -230,16 +219,15 @@ class ControleurCreneau {
     public static function delete() {
         self::verifierAdmin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Vérification CSRF
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
-                rediriger('/admin/events');
+                $_SESSION['errors'] = [self::CSRF_ERR];
+                rediriger(self::ROUTE_EVENTS);
                 exit;
             }
-            
+
             $id = $_POST['id_creneau'];
             $creneau = Creneau::findById($id);
-            
+
             if ($creneau) {
                 $idEvent = $creneau['Id_Event_sportif'];
                 if (Creneau::delete($id)) {
@@ -250,8 +238,8 @@ class ControleurCreneau {
                 rediriger("/admin/creneaux&id_event=$idEvent");
                 exit;
             }
-            
-            rediriger('/admin/events');
+
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
     }
@@ -260,26 +248,24 @@ class ControleurCreneau {
         self::verifierAdmin();
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            rediriger('/admin/events');
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
         $creneau = Creneau::findById($id);
         if (!$creneau) {
-            rediriger('/admin/events');
+            rediriger(self::ROUTE_EVENTS);
             exit;
         }
 
         $event = EvenementSport::findById($creneau['Id_Event_sportif']);
         $inscrits = Participation::getInscritsCreneaux($id);
 
-        require __DIR__ . '/../vues/admin/creneaux/inscrits.php';
+        require_once __DIR__ . '/../vues/admin/creneaux/inscrits.php';
     }
 
-    //Marque les présences des bénévoles pour un ou plusieurs créneaux
-    //Traite un formulaire avec des checkboxes pour chaque bénévole
     public static function marquerPresences() {
         self::verifierAdmin();
-        traiterMarquerPresences('/admin/events');
+        traiterMarquerPresences(self::ROUTE_EVENTS);
     }
 }

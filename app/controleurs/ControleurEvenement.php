@@ -8,6 +8,11 @@ require_once __DIR__ . '/../models/EvenementAsso.php';
 
 class ControleurEvenement {
 
+    private const ROUTE_EVENTS = '/admin/events';
+    private const ROUTE_CREATE_SPORT = '/admin/events/create-with-slots&type=sport';
+    private const ROUTE_CREATE_TYPE = '/admin/events/create-with-slots&type=';
+    private const ROUTE_LIST_TYPE = '/admin/events&type=';
+
     private static function verifierAdmin(): void
     {
         verifierAccesAdminOuGestionnaire();
@@ -34,7 +39,7 @@ class ControleurEvenement {
         }
 
         $categories = Categorie::findAll();
-        require __DIR__ . '/../vues/evenements/admin/liste.php';
+        require_once __DIR__ . '/../vues/evenements/admin/liste.php';
     }
 
     public static function adminCreate(): void
@@ -42,10 +47,10 @@ class ControleurEvenement {
         self::verifierAdmin();
         $type = $_GET['type'] ?? 'sport';
         if ($type === 'sport') {
-            rediriger('/admin/events/create-with-slots&type=sport');
+            rediriger(self::ROUTE_CREATE_SPORT);
         }
         $categories = Categorie::findAll();
-        require __DIR__ . '/../vues/evenements/admin/creer.php';
+        require_once __DIR__ . '/../vues/evenements/admin/creer.php';
     }
 
     public static function adminCreateWithSlots(): void
@@ -54,19 +59,19 @@ class ControleurEvenement {
         $type = $_GET['type'] ?? 'sport';
         if ($type !== 'sport') {
             $_SESSION['errors'] = ["La création combinée n'est disponible que pour les événements sportifs."];
-            rediriger('/admin/events&type=' . $type);
+            rediriger(self::ROUTE_LIST_TYPE . $type);
         }
         $categories = Categorie::findAll();
         $postes = Poste::findAll();
         $formAction = url('/admin/events/store-with-slots');
-        $cancelUrl = url('/admin/events&type=' . $type);
-        require __DIR__ . '/../vues/evenements/admin/creer_evenement_creneaux.php';
+        $cancelUrl = url(self::ROUTE_LIST_TYPE . $type);
+        require_once __DIR__ . '/../vues/evenements/admin/creer_evenement_creneaux.php';
     }
 
     public static function adminStore(): void
     {
         self::verifierAdmin();
-        traiterCreationEvenement('/admin/events');
+        traiterCreationEvenement(self::ROUTE_EVENTS);
     }
 
     public static function adminStoreWithSlots(): void
@@ -74,22 +79,22 @@ class ControleurEvenement {
         self::verifierAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/admin/events/create-with-slots&type=sport');
+            rediriger(self::ROUTE_CREATE_SPORT);
         }
 
-        validerCSRFOuRediriger('/admin/events/create-with-slots&type=sport');
+        validerCSRFOuRediriger(self::ROUTE_CREATE_SPORT);
 
         $type = $_POST['type'] ?? 'sport';
         if ($type !== 'sport') {
             $_SESSION['errors'] = ["La création combinée n'est disponible que pour les événements sportifs."];
-            rediriger('/admin/events&type=' . $type);
+            rediriger(self::ROUTE_LIST_TYPE . $type);
         }
 
         $data = extraireDonneesEvenementBase();
         $validation = validerDatesEvenement($data);
         if (!$validation['valid']) {
             $_SESSION['errors'] = [$validation['error']];
-            rediriger('/admin/events/create-with-slots&type=' . $type);
+            rediriger(self::ROUTE_CREATE_TYPE . $type);
         }
 
         $data = preparerDonneesEvenementSport($data);
@@ -103,7 +108,7 @@ class ControleurEvenement {
         $errors = validerCreneaux($creneaux, $dateCloture);
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
-            rediriger('/admin/events/create-with-slots&type=' . $type);
+            rediriger(self::ROUTE_CREATE_TYPE . $type);
         }
 
         $pdo = BaseDeDonnees::getConnexion();
@@ -113,12 +118,12 @@ class ControleurEvenement {
 
             $eventId = EvenementSport::createAndReturnId($data);
             if (!$eventId) {
-                throw new Exception("Échec de la création de l'événement.");
+                throw new RuntimeException("Échec de la création de l'événement.");
             }
 
             $okCreneaux = Creneau::createMany($eventId, $creneaux);
             if (!$okCreneaux) {
-                throw new Exception("Échec de la création des créneaux.");
+                throw new RuntimeException("Échec de la création des créneaux.");
             }
 
             $pdo->commit();
@@ -130,7 +135,7 @@ class ControleurEvenement {
             }
             error_log('ControleurEvenement::adminStoreWithSlots error: ' . $e->getMessage());
             $_SESSION['errors'] = ["Erreur lors de la création. Veuillez réessayer."];
-            rediriger('/admin/events/create-with-slots&type=' . $type);
+            rediriger(self::ROUTE_CREATE_TYPE . $type);
         }
     }
 
@@ -143,23 +148,23 @@ class ControleurEvenement {
         $event = getEvenementById($id, $type);
         if (!$event) {
             $_SESSION['errors'] = ["Événement introuvable"];
-            rediriger('/admin/events&type=' . $type);
+            rediriger(self::ROUTE_LIST_TYPE . $type);
         }
 
         $categories = Categorie::findAll();
-        require __DIR__ . '/../vues/evenements/admin/modifier.php';
+        require_once __DIR__ . '/../vues/evenements/admin/modifier.php';
     }
 
     public static function adminUpdate(): void
     {
         self::verifierAdmin();
-        traiterMiseAJourEvenement('/admin/events');
+        traiterMiseAJourEvenement(self::ROUTE_EVENTS);
     }
 
     public static function adminDelete(): void
     {
         self::verifierAdmin();
-        traiterSuppressionEvenement('/admin/events');
+        traiterSuppressionEvenement(self::ROUTE_EVENTS);
     }
 
     public static function detail(): void
@@ -176,36 +181,36 @@ class ControleurEvenement {
             rediriger('/');
         }
 
-        require __DIR__ . '/../vues/evenements/detail.php';
+        require_once __DIR__ . '/../vues/evenements/detail.php';
     }
 
     public static function afficherBenevolesAdmin(): void
     {
         self::verifierAdmin();
-        afficherBenevolesPourEvenement('/admin/events', 'evenements/admin/benevoles_inscrits.php');
+        afficherBenevolesPourEvenement(self::ROUTE_EVENTS, 'evenements/admin/benevoles_inscrits.php');
     }
 
     public static function afficherParticipantsAdmin(): void
     {
         self::verifierAdmin();
-        afficherParticipantsPourEvenement('/admin/events', 'evenements/admin/participants_inscrits.php');
+        afficherParticipantsPourEvenement(self::ROUTE_EVENTS, 'evenements/admin/participants_inscrits.php');
     }
 
     public static function genererPDFParticipantsAdmin(): void
     {
         self::verifierAdmin();
-        genererPDFParticipantsSport('/admin/events');
+        genererPDFParticipantsSport(self::ROUTE_EVENTS);
     }
 
     public static function genererPDFParticipantsAssoAdmin(): void
     {
         self::verifierAdmin();
-        genererPDFParticipantsAsso('/admin/events');
+        genererPDFParticipantsAsso(self::ROUTE_EVENTS);
     }
 
     public static function modifierPaiement(): void
     {
         self::verifierAdmin();
-        traiterModifierPaiement('/admin/events');
+        traiterModifierPaiement(self::ROUTE_EVENTS);
     }
 }
