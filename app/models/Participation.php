@@ -97,7 +97,7 @@ class Participation {
         
         // Récupérer les créneaux auxquels le membre est inscrit avant de supprimer
         $sqlCreneaux = "
-            SELECT ab.Id_creneau 
+            SELECT ab.Id_creneau
             FROM aide_benevole ab
             INNER JOIN creneau_event ce ON ab.Id_creneau = ce.Id_creneau
             WHERE ab.Id_Membre = ? AND ce.Id_Event_sportif = ?

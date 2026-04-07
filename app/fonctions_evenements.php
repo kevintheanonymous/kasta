@@ -34,7 +34,7 @@ function extraireDonneesEvenementBase(): array
         'titre' => trim($_POST['titre'] ?? ''),
         'descriptif' => trim($_POST['description'] ?? ''),
         'adresse' => trim($_POST['adresse'] ?? ''),
-        'code_postal' => preg_replace('/[^0-9]/', '', $_POST['code_postal'] ?? ''),  // Que des chiffres
+        'code_postal' => preg_replace('/\D/', '', $_POST['code_postal'] ?? ''),  // Que des chiffres
         'ville' => trim($_POST['ville'] ?? ''),
         'lieu_maps' => trim($_POST['lieu_maps'] ?? ''),
         'date_visible' => trim($_POST['date_visible'] ?? ''),
@@ -384,7 +384,7 @@ function afficherBenevolesPourEvenement(string $redirectBase, string $vuePath): 
     }
 
     $creneaux = array_values($creneauxAvecInscrits);
-    require __DIR__ . '/vues/' . $vuePath;
+    require_once __DIR__ . '/vues/' . $vuePath;
 }
 
 function afficherParticipantsPourEvenement(string $redirectBase, string $vuePath): void
@@ -404,7 +404,7 @@ function afficherParticipantsPourEvenement(string $redirectBase, string $vuePath
     $nombreInscrits = Participation::obtenirNombreInscritsEvenementAsso($idEvent);
     $participants = Participation::obtenirInscritsPourEvenementAsso($idEvent);
 
-    require __DIR__ . '/vues/' . $vuePath;
+    require_once __DIR__ . '/vues/' . $vuePath;
 }
 
 function genererPDFParticipantsSport(string $redirectBase): void

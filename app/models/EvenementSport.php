@@ -6,7 +6,7 @@ class EvenementSport {
     public static function findAll() {
         $db = BaseDeDonnees::getConnexion();
         $sql = "
-            SELECT 
+            SELECT
                 es.Id_Event_sportif as id_event_sport,
                 es.Titre as titre,
                 es.Descriptif as descriptif,
@@ -28,7 +28,7 @@ class EvenementSport {
     public static function findAllPublic() {
         $db = BaseDeDonnees::getConnexion();
         $sql = "
-            SELECT 
+            SELECT
                 es.Id_Event_sportif as id_event_sport,
                 es.Titre as titre,
                 es.Descriptif as descriptif,
@@ -51,7 +51,7 @@ class EvenementSport {
     public static function findById($id) {
         $db = BaseDeDonnees::getConnexion();
         $sql = "
-            SELECT 
+            SELECT
                 es.Id_Event_sportif as id_event_sport,
                 es.Titre as titre,
                 es.Descriptif as descriptif,

@@ -60,14 +60,12 @@ class FileUploadService
 
         // on cree le dossier si il existe pas
         $uploadDir = __DIR__ . self::UPLOAD_DIR;
-        if (!is_dir($uploadDir)) {
-            if (!mkdir($uploadDir, 0755, true)) {
-                return [
-                    'success' => false,
-                    'path' => null,
-                    'message' => 'Impossible de créer le dossier d\'upload'
-                ];
-            }
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+            return [
+                'success' => false,
+                'path' => null,
+                'message' => 'Impossible de créer le dossier d\'upload'
+            ];
         }
 
         // on genere un nom unique pour eviter les conflits
@@ -160,14 +158,12 @@ class FileUploadService
 
         // creer dossier si existe pas
         $uploadDir = __DIR__ . self::ADHESION_DIR;
-        if (!is_dir($uploadDir)) {
-            if (!mkdir($uploadDir, 0755, true)) {
-                return [
-                    'success' => false,
-                    'path' => null,
-                    'message' => 'Impossible de créer le dossier d\'upload'
-                ];
-            }
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+            return [
+                'success' => false,
+                'path' => null,
+                'message' => 'Impossible de créer le dossier d\'upload'
+            ];
         }
 
         // nom unique avec id membre

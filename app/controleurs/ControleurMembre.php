@@ -20,6 +20,8 @@ class ControleurMembre
     private const ROUTE_INSCRIPTIONS_ASSO = '/membre/mes_inscriptions_asso';
     private const ROUTE_INSCRIPTIONS_SPORT = '/membre/mes_inscriptions_sport';
     private const ROUTE_INSCRIPTION_SPORT = '/membre/inscription/sport?id=';
+    private const ROUTE_SECURITE = '/membre/securite';
+    private const CONTENT_TYPE_JSON = 'Content-Type: application/json';
     private const ERR_EVENT = 'Événement non trouvé.';
     private const ERR_DESINSCRIPTION = 'Erreur lors de la désinscription.';
 
@@ -412,7 +414,7 @@ class ControleurMembre
         if (Participation::desinscrireCreneau($idCreneau, $userId)) {
             $_SESSION['success'] = "Vous avez été désinscrit du créneau avec succès.";
         } else {
-            $_SESSION['error'] = "Erreur lors de la désinscription.";
+            $_SESSION['error'] = self::ERR_DESINSCRIPTION;
         }
 
         rediriger(self::ROUTE_INSCRIPTION_SPORT . $idEvent);
@@ -600,7 +602,7 @@ class ControleurMembre
         if (Participation::desinscrireEvenementAsso($userId, $idEvent)) {
             $_SESSION['success'] = "Vous avez été désinscrit de l'événement avec succès.";
         } else {
-            $_SESSION['error'] = "Erreur lors de la désinscription.";
+            $_SESSION['error'] = self::ERR_DESINSCRIPTION;
         }
 
         rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
@@ -663,7 +665,7 @@ class ControleurMembre
         if (Participation::desinscrireEvenementSportifComplet($userId, $idEvent)) {
             $_SESSION['success'] = "Vous avez été désinscrit de tous les créneaux de cet événement.";
         } else {
-            $_SESSION['error'] = "Erreur lors de la désinscription.";
+            $_SESSION['error'] = self::ERR_DESINSCRIPTION;
         }
 
         rediriger(self::ROUTE_INSCRIPTIONS_SPORT);
@@ -733,14 +735,14 @@ class ControleurMembre
         self::verifierMembre();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            rediriger('/membre/securite');
+            rediriger(self::ROUTE_SECURITE);
             return;
         }
 
         // Vérification CSRF
         if (!verifierTokenCSRF()) {
             $_SESSION['error'] = self::CSRF_ERR;
-            rediriger('/membre/securite');
+            rediriger(self::ROUTE_SECURITE);
             return;
         }
 
@@ -753,28 +755,28 @@ class ControleurMembre
         $membre = Membre::getMembreParId($id);
         if (!$membre) {
             $_SESSION['error'] = 'Erreur : membre introuvable.';
-            rediriger('/membre/securite');
+            rediriger(self::ROUTE_SECURITE);
             return;
         }
 
         // Vérifier le mot de passe actuel
         if (!password_verify($mdpActuel, $membre['Mot_de_passe'])) {
             $_SESSION['error'] = 'Le mot de passe actuel est incorrect.';
-            rediriger('/membre/securite');
+            rediriger(self::ROUTE_SECURITE);
             return;
         }
 
         // Vérifier que le nouveau mot de passe n'est pas vide
         if (empty($nouveauMdp)) {
             $_SESSION['error'] = 'Le nouveau mot de passe ne peut pas être vide.';
-            rediriger('/membre/securite');
+            rediriger(self::ROUTE_SECURITE);
             return;
         }
 
         // Vérifier que les deux mots de passe correspondent
         if ($nouveauMdp !== $confirmMdp) {
             $_SESSION['error'] = 'Les deux mots de passe ne correspondent pas.';
-            rediriger('/membre/securite');
+            rediriger(self::ROUTE_SECURITE);
             return;
         }
 
@@ -782,7 +784,7 @@ class ControleurMembre
         $mdpRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
         if (!preg_match($mdpRegex, $nouveauMdp)) {
             $_SESSION['error'] = 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.';
-            rediriger('/membre/securite');
+            rediriger(self::ROUTE_SECURITE);
             return;
         }
 
@@ -793,7 +795,7 @@ class ControleurMembre
             $_SESSION['error'] = 'Erreur lors de la modification du mot de passe.';
         }
 
-        rediriger('/membre/securite');
+        rediriger(self::ROUTE_SECURITE);
     }
 
     public static function afficherMesEvenementsPasses(): void
@@ -838,7 +840,7 @@ class ControleurMembre
         $data = json_decode($json, true);
 
         if (!isset($data['email']) || empty($data['email'])) {
-            header('Content-Type: application/json');
+            header(self::CONTENT_TYPE_JSON);
             echo json_encode(['success' => false, 'message' => 'Email manquant']);
             exit;
         }
@@ -846,7 +848,7 @@ class ControleurMembre
         $email = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            header('Content-Type: application/json');
+            header(self::CONTENT_TYPE_JSON);
             echo json_encode(['success' => false, 'message' => 'Email invalide']);
             exit;
         }
@@ -866,7 +868,7 @@ class ControleurMembre
             $raison = "Aucune participation bénévole dans les 12 derniers mois";
         }
 
-        header('Content-Type: application/json');
+        header(self::CONTENT_TYPE_JSON);
         echo json_encode([
             'success' => true,
             'tarif' => $tarif,

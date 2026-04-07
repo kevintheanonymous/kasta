@@ -46,7 +46,9 @@ class EmailService
 
             // on envoie
             $mail->send();
-            error_log("Email envoyé avec succès à {$destinataire} - Sujet: {$sujet}");
+            $safeDestinataire = filter_var($destinataire, FILTER_SANITIZE_EMAIL);
+            $safeSujet = preg_replace('/[\r\n]/', '', $sujet);
+            error_log("Email envoyé avec succès à {$safeDestinataire} - Sujet: {$safeSujet}");
             return true;
 
         } catch (PHPMailer\PHPMailer\Exception $e) {
@@ -105,8 +107,8 @@ class EmailService
             $code_postal = $evenement['code_postal'] ?? $evenement['Code_postal'] ?? '';
             $ville = $evenement['ville'] ?? $evenement['Ville'] ?? '';
             $lieu_maps = $evenement['lieu_maps'] ?? $evenement['Lieu_maps'] ?? '';
-            $lien_profil = get_base_url() . 'index.php?path=/membre/profil';
-            $lien_evenements = get_base_url() . 'index.php?path=/membre/tableau_de_bord';
+            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
+            $lien_evenements = getBaseUrl() . 'index.php?path=/membre/tableau_de_bord';
 
             // Génération du contenu HTML
             ob_start();
@@ -159,8 +161,8 @@ class EmailService
             $code_postal = $evenement['code_postal'] ?? '';
             $ville = $evenement['ville'] ?? '';
             $lieu_maps = $evenement['lieu_maps'] ?? '';
-            $lien_profil = get_base_url() . 'index.php?path=/membre/profil';
-            $lien_evenements = get_base_url() . 'index.php?path=/membre/tableau_de_bord';
+            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
+            $lien_evenements = getBaseUrl() . 'index.php?path=/membre/tableau_de_bord';
 
             // Génération du contenu HTML
             ob_start();
@@ -271,7 +273,7 @@ class EmailService
             $descriptif = $evenement['Descriptif'] ?? '';
             $nb_inscrits = count($inscrits);
             $contact_organisateur = '';
-            $lien_profil = get_base_url() . 'index.php?path=/membre/profil';
+            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
 
             $nbEnvoyes = 0;
 
@@ -338,7 +340,7 @@ class EmailService
             $lieu_maps = $evenement['Lieu_maps'] ?? '';
             $descriptif = $evenement['Descriptif'] ?? '';
             $message_organisateur = $messageOrganisateur;
-            $lien_profil = get_base_url() . 'index.php?path=/membre/profil';
+            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
 
             $nbEnvoyes = 0;
 
@@ -411,7 +413,7 @@ class EmailService
             $ville = $evenement['ville'] ?? '';
             $raison_annulation = $raisonAnnulation;
             $evenements_similaires = [];
-            $lien_evenements = get_base_url() . 'index.php?path=/';
+            $lien_evenements = getBaseUrl() . 'index.php?path=/';
 
             $nbEnvoyes = 0;
 

@@ -25,4 +25,3 @@ class BaseDeDonnees {
         return self::$connexion;
     }
 }
-?>

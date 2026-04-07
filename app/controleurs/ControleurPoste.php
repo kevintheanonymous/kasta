@@ -4,8 +4,13 @@ require_once __DIR__ . '/../models/Poste.php';
 
 class ControleurPoste {
 
+    private const ROUTE_POSTES = '/admin/postes';
+    private const CSRF_ERR = 'Token de sécurité invalide. Veuillez réessayer.';
+
     private static function verifierAdmin() {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (!isset($_SESSION['user_type']) || ($_SESSION['user_type'] !== 'admin' && $_SESSION['user_type'] !== 'gestionnaire')) {
             rediriger('/connexion');
         }
@@ -14,19 +19,19 @@ class ControleurPoste {
     public static function index() {
         self::verifierAdmin();
         $postes = Poste::findAll();
-        require __DIR__ . '/../vues/admin/postes/liste.php';
+        require_once __DIR__ . '/../vues/admin/postes/liste.php';
     }
 
     public static function create() {
         self::verifierAdmin();
-        require __DIR__ . '/../vues/admin/postes/creer.php';
+        require_once __DIR__ . '/../vues/admin/postes/creer.php';
     }
 
     public static function store() {
         self::verifierAdmin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
+                $_SESSION['errors'] = [self::CSRF_ERR];
                 rediriger('/admin/postes/create');
                 exit;
             }
@@ -49,7 +54,7 @@ class ControleurPoste {
             } else {
                 $_SESSION['errors'] = ["Le libellé est obligatoire"];
             }
-            rediriger('/admin/postes');
+            rediriger(self::ROUTE_POSTES);
         }
     }
 
@@ -57,10 +62,10 @@ class ControleurPoste {
         self::verifierAdmin();
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            rediriger('/admin/postes');
+            rediriger(self::ROUTE_POSTES);
         }
         $poste = Poste::findById($id);
-        require __DIR__ . '/../vues/admin/postes/modifier.php';
+        require_once __DIR__ . '/../vues/admin/postes/modifier.php';
     }
 
     public static function update() {
@@ -69,7 +74,7 @@ class ControleurPoste {
             $id = $_POST['id_poste'];
 
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
+                $_SESSION['errors'] = [self::CSRF_ERR];
                 rediriger("/admin/postes/edit&id=$id");
                 exit;
             }
@@ -92,7 +97,7 @@ class ControleurPoste {
             } else {
                 $_SESSION['errors'] = ["Le libellé est obligatoire"];
             }
-            rediriger('/admin/postes');
+            rediriger(self::ROUTE_POSTES);
         }
     }
 
@@ -100,8 +105,8 @@ class ControleurPoste {
         self::verifierAdmin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = ['Token de sécurité invalide. Veuillez réessayer.'];
-                rediriger('/admin/postes');
+                $_SESSION['errors'] = [self::CSRF_ERR];
+                rediriger(self::ROUTE_POSTES);
                 exit;
             }
 
@@ -120,7 +125,7 @@ class ControleurPoste {
                     $_SESSION['errors'] = ["Erreur lors de la suppression"];
                 }
             }
-            rediriger('/admin/postes');
+            rediriger(self::ROUTE_POSTES);
         }
     }
 }

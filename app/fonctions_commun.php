@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 define('SESSION_TIMEOUT', 3600);
 
-function get_base_url(): string {
+function getBaseUrl(): string {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
     $host = $_SERVER['HTTP_HOST'];
     $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
@@ -23,7 +23,7 @@ function verifierTimeoutSession(): void
                 session_destroy();
                 session_start();
                 $_SESSION['errors'] = ["Votre session a expiré après 1 heure d'inactivité. Veuillez vous reconnecter."];
-                header('Location: ' . get_base_url() . 'index.php?path=/connexion');
+                header('Location: ' . getBaseUrl() . 'index.php?path=/connexion');
                 exit();
             }
         }
@@ -34,7 +34,7 @@ function verifierTimeoutSession(): void
 verifierTimeoutSession();
 
 function url(string $path = ''): string {
-    $base = get_base_url();
+    $base = getBaseUrl();
     $path = ltrim($path, '/');
     if (strpos($path, '?') !== false) {
         list($route, $params) = explode('?', $path, 2);
@@ -44,7 +44,7 @@ function url(string $path = ''): string {
 }
 
 function asset(string $path): string {
-    $base = get_base_url();
+    $base = getBaseUrl();
     $path = ltrim($path, '/');
     return $base . $path;
 }

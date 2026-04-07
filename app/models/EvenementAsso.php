@@ -23,11 +23,8 @@ class EvenementAsso {
             FROM event_associatif ea
             WHERE 1=1";
 
-        if(!$modeAdmin) {
-            if(!$includePrivate && !$userIsAdherent) {
-                $sql .= " AND ea.Prive = 0";
-            } elseif(!$includePrivate && $userIsAdherent) {
-            } elseif(!$includePrivate) {
+        if (!$modeAdmin) {
+            if (!$includePrivate && !$userIsAdherent) {
                 $sql .= " AND ea.Prive = 0";
             }
 
@@ -47,7 +44,7 @@ class EvenementAsso {
     public static function findById($id) {
         $db = BaseDeDonnees::getConnexion();
         $sql = "
-            SELECT 
+            SELECT
                 ea.Id_Event_associatif as id_event_asso,
                 ea.Titre as titre,
                 ea.Descriptif as descriptif,

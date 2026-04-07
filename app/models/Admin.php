@@ -119,7 +119,7 @@ class Admin
     {
         try {
             $pdo = BaseDeDonnees::getConnexion();
-            $sql = "UPDATE admin 
+            $sql = "UPDATE admin
                     SET Mot_de_passe = :mdp,
                         token_reset = NULL,
                         token_reset_expires = NULL

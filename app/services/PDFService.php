@@ -75,7 +75,7 @@ class PDFService
         // Configuration
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         $pdf->SetMargins(15, 15, 15);
-        $pdf->SetAutoPageBreak(TRUE, 15);
+        $pdf->SetAutoPageBreak(true, 15);
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // Supprimer header et footer par défaut
@@ -117,9 +117,9 @@ class PDFService
     }
 
     // wrapper backward-compatible pour asso
-    public static function genererPDFParticipantsAsso($evenement, $participants)
+    public static function genererPDFParticipantsAsso($evenement, $participants): void
     {
-        return self::genererPDFParticipants($evenement, $participants, 'asso');
+        self::genererPDFParticipants($evenement, $participants, 'asso');
     }
 
     // construit le HTML du PDF (sport ou asso)
