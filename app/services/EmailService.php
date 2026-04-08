@@ -116,7 +116,7 @@ class EmailService
 
             // Génération du contenu HTML
             ob_start();
-            require __DIR__ . '/../templates/' . $template;
+            require_once __DIR__ . '/../templates/' . $template;
             $message = ob_get_clean();
 
             // Envoi de l'email
@@ -170,7 +170,7 @@ class EmailService
 
             // Génération du contenu HTML
             ob_start();
-            require __DIR__ . '/../templates/' . $template;
+            require_once __DIR__ . '/../templates/' . $template;
             $message = ob_get_clean();
 
             // Envoi de l'email

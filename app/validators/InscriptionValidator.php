@@ -1,11 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../models/Membre.php';
+require_once __DIR__ . '/ValidateurTrait.php';
 
 // validateur pour le formulaire d'inscription
 // verifie que tout les champs sont corrects avant d'inserer en bdd
 class InscriptionValidator
 {
+    use ValidateurTrait;
     // valide les donnees du formulaire
     // retourne valid = true si tout est bon, sinon les erreurs
     public static function valider(array $data): array
@@ -35,22 +37,6 @@ class InscriptionValidator
         ];
     }
 
-    private static function validerNomPrenom(string $valeur, string $libelle, array &$errors): void
-    {
-        if (empty($valeur)) {
-            return;
-        }
-        if (strlen($valeur) < 2) {
-            $errors[] = "Le $libelle doit contenir au moins 2 caractères.";
-        }
-        if (strlen($valeur) > 30) {
-            $errors[] = "Le $libelle ne doit pas dépasser 30 caractères.";
-        }
-        if (!preg_match('/^[A-Za-zÀ-ÿ\s\'-]+$/', $valeur)) {
-            $errors[] = "Le $libelle contient des caractères invalides.";
-        }
-    }
-
     private static function validerEmail(string $email, array &$errors): void
     {
         if (empty($email)) {
@@ -60,13 +46,6 @@ class InscriptionValidator
             $errors[] = "L'adresse email est invalide.";
         } elseif (Membre::emailExiste($email)) {
             $errors[] = "Cet email est déjà utilisé.";
-        }
-    }
-
-    private static function validerTelephone(string $telephone, array &$errors): void
-    {
-        if (!empty($telephone) && !preg_match('/^0[1-9][0-9]{8}$/', $telephone)) {
-            $errors[] = "Le numéro de téléphone est invalide (format: 0612345678).";
         }
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../models/Membre.php';
+require_once __DIR__ . '/ValidateurTrait.php';
 
 /**
  * Validateur pour la modification de profil
@@ -8,6 +9,7 @@ require_once __DIR__ . '/../models/Membre.php';
  */
 class ProfilValidator
 {
+    use ValidateurTrait;
     /**
      * Valide les données du formulaire de modification de profil
      * @param array $data Les données du formulaire
@@ -41,22 +43,6 @@ class ProfilValidator
         ];
     }
 
-    private static function validerNomPrenom(string $valeur, string $libelle, array &$errors): void
-    {
-        if (empty($valeur)) {
-            return;
-        }
-        if (strlen($valeur) < 2) {
-            $errors[] = "Le $libelle doit contenir au moins 2 caractères.";
-        }
-        if (strlen($valeur) > 30) {
-            $errors[] = "Le $libelle ne doit pas dépasser 30 caractères.";
-        }
-        if (!preg_match('/^[A-Za-zÀ-ÿ\s\'-]+$/', $valeur)) {
-            $errors[] = "Le $libelle contient des caractères invalides.";
-        }
-    }
-
     private static function validerEmail(string $email, int $userId, array &$errors): void
     {
         if (empty($email)) {
@@ -66,17 +52,6 @@ class ProfilValidator
             $errors[] = "L'adresse email est invalide.";
         } elseif (Membre::emailExisteAutreUtilisateur($email, $userId)) {
             $errors[] = "Cet email est déjà utilisé par un autre compte.";
-        }
-    }
-
-    private static function validerTelephone(string $telephone, array &$errors): void
-    {
-        if (empty($telephone)) {
-            return;
-        }
-        $tel = preg_replace('/\s+/', '', $telephone);
-        if (!preg_match('/^0[1-9][0-9]{8}$/', $tel)) {
-            $errors[] = "Le numéro de téléphone est invalide (format: 0612345678).";
         }
     }
 

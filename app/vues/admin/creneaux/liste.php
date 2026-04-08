@@ -13,21 +13,7 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
         </div>
     </div>
 
-    <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert alert-success">
-            <?= htmlspecialchars($_SESSION['success']) ?>
-            <?php unset($_SESSION['success']); ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['errors'])): ?>
-        <div class="alert alert-danger">
-            <?php foreach ($_SESSION['errors'] as $error): ?>
-                <p><?= htmlspecialchars($error) ?></p>
-            <?php endforeach; ?>
-            <?php unset($_SESSION['errors']); ?>
-        </div>
-    <?php endif; ?>
+    <?php require __DIR__ . '/../../gabarits/flash_messages.php'; ?>
 
     <div class="table-wrapper">
         <table class="admin-table">
