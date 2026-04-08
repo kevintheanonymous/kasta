@@ -9,7 +9,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /var/www/html
 
-COPY . /var/www/html/
+COPY app/ /var/www/html/app/
+COPY config/ /var/www/html/config/
+COPY public/ /var/www/html/public/
+COPY vendor/ /var/www/html/vendor/
+COPY composer.json composer.lock /var/www/html/
 
 RUN chown -R www-data:www-data /var/www/html
 
