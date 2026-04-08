@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
 <div class="admin-container">
     <h1>Gestion des Catégories</h1>
 
-    <?php require __DIR__ . '/../../gabarits/flash_messages.php'; ?>
+    <?php require_once __DIR__ . '/../../gabarits/flash_messages.php'; ?>
 
     <a href="<?= url('/admin/tableau_de_bord') ?>" class="back-link">
         ← Retour au tableau de bord

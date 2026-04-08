@@ -13,7 +13,7 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
         </div>
     </div>
 
-    <?php require __DIR__ . '/../../gabarits/flash_messages.php'; ?>
+    <?php require_once __DIR__ . '/../../gabarits/flash_messages.php'; ?>
 
     <div class="table-wrapper">
         <table class="admin-table">
