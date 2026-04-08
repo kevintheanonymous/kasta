@@ -299,8 +299,7 @@ class ControleurAuth {
         if ($userFound) {
             self::envoyerEmailReset($email, $token, $nomComplet);
         } else {
-            $safeEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
-            error_log("Réinitialisation demandée pour email non trouvé: {$safeEmail}");
+            error_log("Réinitialisation demandée pour un email non trouvé");
         }
 
         // SÉCURITÉ: Toujours afficher le même message pour éviter l'énumération d'utilisateurs
@@ -329,8 +328,7 @@ class ControleurAuth {
         $messageHTML = ob_get_clean();
         $resultat = EmailService::envoyer($email, "Réinitialisation de mot de passe", $messageHTML, $nomComplet);
         if (!$resultat) {
-            $safeEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
-            error_log("Échec de l'envoi de l'email de réinitialisation à {$safeEmail}");
+            error_log("Échec de l'envoi de l'email de réinitialisation");
         }
     }
 
