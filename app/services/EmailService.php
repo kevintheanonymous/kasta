@@ -52,16 +52,14 @@ class EmailService
 
             // on envoie
             $mail->send();
-            $safeDestinataire = filter_var($destinataire, FILTER_SANITIZE_EMAIL);
-            $safeSujet = preg_replace('/[\r\n]/', '', $sujet);
-            error_log("Email envoyé avec succès à {$safeDestinataire} - Sujet: {$safeSujet}");
+            error_log("Email envoyé avec succès");
             return true;
 
         } catch (PHPMailer\PHPMailer\Exception $e) {
-            error_log("Erreur PHPMailer lors de l'envoi à {$destinataire}: {$mail->ErrorInfo}");
+            error_log("Erreur PHPMailer lors de l'envoi d'email");
             return false;
         } catch (Throwable $e) {
-            error_log("Erreur générale lors de l'envoi d'email à {$destinataire}: {$e->getMessage()}");
+            error_log("Erreur générale lors de l'envoi d'email");
             return false;
         }
     }
@@ -130,7 +128,7 @@ class EmailService
             );
 
         } catch (Throwable $e) {
-            error_log("Erreur lors de l'envoi de notification créneau: {$e->getMessage()}");
+            error_log("Erreur lors de l'envoi de notification créneau");
             return false;
         }
     }
@@ -184,7 +182,7 @@ class EmailService
             );
 
         } catch (Throwable $e) {
-            error_log("Erreur lors de l'envoi de notification événement: {$e->getMessage()}");
+            error_log("Erreur lors de l'envoi de notification événement");
             return false;
         }
     }
@@ -307,7 +305,7 @@ class EmailService
             return $nbEnvoyes;
 
         } catch (Throwable $e) {
-            error_log("Erreur lors de l'envoi des rappels pour créneau {$idCreneau}: {$e->getMessage()}");
+            error_log("Erreur lors de l'envoi des rappels pour créneau {$idCreneau}");
             return 0;
         }
     }
@@ -375,7 +373,7 @@ class EmailService
             return $nbEnvoyes;
 
         } catch (Throwable $e) {
-            error_log("Erreur lors de la notification de modification: {$e->getMessage()}");
+            error_log("Erreur lors de la notification de modification");
             return 0;
         }
     }
@@ -425,7 +423,7 @@ class EmailService
             return $nbEnvoyes;
 
         } catch (Throwable $e) {
-            error_log("Erreur lors de la notification d'annulation: {$e->getMessage()}");
+            error_log("Erreur lors de la notification d'annulation");
             return 0;
         }
     }

@@ -1,0 +1,13 @@
+.env
+.env.*
+*.log
+*.key
+*.pem
+*.p12
+*.pfx
+.git
+.gitignore
+docker-compose*.yml
+Dockerfile
+.dockerignore
+node_modules
