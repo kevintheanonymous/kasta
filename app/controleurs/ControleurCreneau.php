@@ -67,69 +67,54 @@ class ControleurCreneau {
 
     public static function store() {
         self::verifierAdmin();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = [self::CSRF_ERR];
-                $idEvent = $_POST['id_event_sportif'] ?? '';
-                rediriger("/admin/creneaux&id_event=$idEvent");
-                exit;
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
 
-            $idEvent = $_POST['id_event_sportif'];
-
-            $event = EvenementSport::findById($idEvent);
-            if (!$event) {
-                $_SESSION['errors'] = [self::ERR_EVENEMENT];
-                rediriger(self::ROUTE_EVENTS);
-                exit;
-            }
-
-            $data = [
-                'id_event_sportif' => $idEvent,
-                'type' => $_POST['type'],
-                'commentaire' => $_POST['commentaire'] ?? '',
-                'date_creneau' => $_POST['date_creneau'],
-                'heure_debut' => $_POST['heure_debut'],
-                'heure_fin' => $_POST['heure_fin']
-            ];
-
-            $creneauDebut = $data['date_creneau'] . ' ' . $data['heure_debut'];
-            if (strlen($data['heure_debut']) === 5) {
-                $creneauDebut .= ':00';
-            }
-
-            $creneauFin = $data['date_creneau'] . ' ' . $data['heure_fin'];
-            if (strlen($data['heure_fin']) === 5) {
-                $creneauFin .= ':00';
-            }
-
-            if ($creneauDebut >= $creneauFin) {
-                $_SESSION['errors'] = ["L'heure de début doit être strictement inférieure à l'heure de fin."];
-                rediriger("/admin/creneaux&id_event=$idEvent");
-                exit;
-            }
-
-            if ($creneauDebut < $event['date_cloture']) {
-                $_SESSION['errors'] = ["Le créneau (début : $creneauDebut) doit commencer après la date de clôture des inscriptions ({$event['date_cloture']})."];
-                rediriger("/admin/creneaux&id_event=$idEvent");
-                exit;
-            }
-
-            $idCreneau = Creneau::create($data);
-            if ($idCreneau) {
-                $postesSelectionnes = $_POST['postes'] ?? [];
-                if (!empty($postesSelectionnes)) {
-                    CreneauPoste::lierPostesACreneau($idCreneau, $postesSelectionnes);
-                }
-
-                $_SESSION['success'] = "Créneau créé avec succès";
-            } else {
-                $_SESSION['errors'] = ["Erreur lors de la création du créneau"];
-            }
-
+        if (!verifierTokenCSRF()) {
+            $_SESSION['errors'] = [self::CSRF_ERR];
+            $idEvent = $_POST['id_event_sportif'] ?? '';
             rediriger("/admin/creneaux&id_event=$idEvent");
             exit;
         }
+
+        $idEvent = $_POST['id_event_sportif'];
+        $event = EvenementSport::findById($idEvent);
+        if (!$event) {
+            $_SESSION['errors'] = [self::ERR_EVENEMENT];
+            rediriger(self::ROUTE_EVENTS);
+            exit;
+        }
+
+        $data = [
+            'id_event_sportif' => $idEvent,
+            'type' => $_POST['type'],
+            'commentaire' => $_POST['commentaire'] ?? '',
+            'date_creneau' => $_POST['date_creneau'],
+            'heure_debut' => $_POST['heure_debut'],
+            'heure_fin' => $_POST['heure_fin']
+        ];
+
+        $erreur = self::validerHorairesCreneau($data, $event);
+        if ($erreur !== null) {
+            $_SESSION['errors'] = [$erreur];
+            rediriger("/admin/creneaux&id_event=$idEvent");
+            exit;
+        }
+
+        $idCreneau = Creneau::create($data);
+        if ($idCreneau) {
+            $postesSelectionnes = $_POST['postes'] ?? [];
+            if (!empty($postesSelectionnes)) {
+                CreneauPoste::lierPostesACreneau($idCreneau, $postesSelectionnes);
+            }
+            $_SESSION['success'] = "Créneau créé avec succès";
+        } else {
+            $_SESSION['errors'] = ["Erreur lors de la création du créneau"];
+        }
+
+        rediriger("/admin/creneaux&id_event=$idEvent");
+        exit;
     }
 
     public static function edit() {
@@ -156,64 +141,69 @@ class ControleurCreneau {
 
     public static function update() {
         self::verifierAdmin();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id_creneau'];
-            $idEvent = $_POST['id_event_sportif'];
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
 
-            if (!verifierTokenCSRF()) {
-                $_SESSION['errors'] = [self::CSRF_ERR];
-                rediriger("/admin/creneaux/edit&id=$id");
-                exit;
-            }
+        $id = $_POST['id_creneau'];
+        $idEvent = $_POST['id_event_sportif'];
 
-            $event = EvenementSport::findById($idEvent);
-            if (!$event) {
-                $_SESSION['errors'] = [self::ERR_EVENEMENT];
-                rediriger(self::ROUTE_EVENTS);
-                exit;
-            }
-
-            $data = [
-                'type' => $_POST['type'],
-                'commentaire' => $_POST['commentaire'] ?? '',
-                'date_creneau' => $_POST['date_creneau'],
-                'heure_debut' => $_POST['heure_debut'],
-                'heure_fin' => $_POST['heure_fin']
-            ];
-
-            $creneauDebut = $data['date_creneau'] . ' ' . $data['heure_debut'];
-            if (strlen($data['heure_debut']) === 5) {
-                $creneauDebut .= ':00';
-            }
-
-            $creneauFin = $data['date_creneau'] . ' ' . $data['heure_fin'];
-            if (strlen($data['heure_fin']) === 5) {
-                $creneauFin .= ':00';
-            }
-
-            if ($creneauDebut >= $creneauFin) {
-                $_SESSION['errors'] = ["L'heure de début doit être strictement inférieure à l'heure de fin."];
-                rediriger("/admin/creneaux/edit&id=$id");
-                exit;
-            }
-
-            if ($creneauDebut < $event['date_cloture']) {
-                $_SESSION['errors'] = ["Le créneau (début : $creneauDebut) doit commencer après la date de clôture des inscriptions ({$event['date_cloture']})."];
-                rediriger("/admin/creneaux/edit&id=$id");
-                exit;
-            }
-
-            if (Creneau::update($id, $data)) {
-                $postesSelectionnes = $_POST['postes'] ?? [];
-                CreneauPoste::lierPostesACreneau($id, $postesSelectionnes);
-                $_SESSION['success'] = "Créneau mis à jour avec succès";
-            } else {
-                $_SESSION['errors'] = ["Erreur lors de la mise à jour du créneau"];
-            }
-
-            rediriger("/admin/creneaux&id_event=$idEvent");
+        if (!verifierTokenCSRF()) {
+            $_SESSION['errors'] = [self::CSRF_ERR];
+            rediriger("/admin/creneaux/edit&id=$id");
             exit;
         }
+
+        $event = EvenementSport::findById($idEvent);
+        if (!$event) {
+            $_SESSION['errors'] = [self::ERR_EVENEMENT];
+            rediriger(self::ROUTE_EVENTS);
+            exit;
+        }
+
+        $data = [
+            'type' => $_POST['type'],
+            'commentaire' => $_POST['commentaire'] ?? '',
+            'date_creneau' => $_POST['date_creneau'],
+            'heure_debut' => $_POST['heure_debut'],
+            'heure_fin' => $_POST['heure_fin']
+        ];
+
+        $erreur = self::validerHorairesCreneau($data, $event);
+        if ($erreur !== null) {
+            $_SESSION['errors'] = [$erreur];
+            rediriger("/admin/creneaux/edit&id=$id");
+            exit;
+        }
+
+        if (Creneau::update($id, $data)) {
+            CreneauPoste::lierPostesACreneau($id, $_POST['postes'] ?? []);
+            $_SESSION['success'] = "Créneau mis à jour avec succès";
+        } else {
+            $_SESSION['errors'] = ["Erreur lors de la mise à jour du créneau"];
+        }
+
+        rediriger("/admin/creneaux&id_event=$idEvent");
+        exit;
+    }
+
+    private static function validerHorairesCreneau(array $data, array $event): ?string
+    {
+        $debut = $data['date_creneau'] . ' ' . $data['heure_debut'];
+        if (strlen($data['heure_debut']) === 5) {
+            $debut .= ':00';
+        }
+        $fin = $data['date_creneau'] . ' ' . $data['heure_fin'];
+        if (strlen($data['heure_fin']) === 5) {
+            $fin .= ':00';
+        }
+        if ($debut >= $fin) {
+            return "L'heure de début doit être strictement inférieure à l'heure de fin.";
+        }
+        if ($debut < $event['date_cloture']) {
+            return "Le créneau (début : $debut) doit commencer après la date de clôture des inscriptions ({$event['date_cloture']}).";
+        }
+        return null;
     }
 
     public static function delete() {

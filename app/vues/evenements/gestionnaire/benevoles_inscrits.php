@@ -56,9 +56,9 @@ require_once __DIR__ . '/../../gabarits/barre_nav.php';
                         <span class="creneau-type badge
                             <?php
                                 $typeClass = 'badge-secondary';
-                                if (stripos($creneau['type'], 'préparation') !== false) $typeClass = 'badge-primary';
-                                if (stripos($creneau['type'], 'jour') !== false) $typeClass = 'badge-success';
-                                if (stripos($creneau['type'], 'rangement') !== false) $typeClass = 'badge-warning';
+                                if (stripos($creneau['type'], 'préparation') !== false) { $typeClass = 'badge-primary'; }
+                                if (stripos($creneau['type'], 'jour') !== false) { $typeClass = 'badge-success'; }
+                                if (stripos($creneau['type'], 'rangement') !== false) { $typeClass = 'badge-warning'; }
                                 echo $typeClass;
                             ?>">
                             <?= htmlspecialchars($creneau['type']) ?>

@@ -38,32 +38,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function toISO(fn, val) {
+        return window[fn] ? (window[fn](val) || val) : val;
+    }
+
+    function validerCreneau(e) {
+        const dateVal = dateInput.value;
+        const heureVal = heureInput.value;
+        if (!dateVal || !heureVal) { return; }
+
+        const isoDate = toISO('toISODateFromFr', dateVal);
+        const isoDebut = toISO('toISOTimeFromFr', heureVal);
+        const heureFinVal = heureFinInput ? heureFinInput.value : '';
+        const isoFin = heureFinVal ? toISO('toISOTimeFromFr', heureFinVal) : null;
+
+        const creneauDebut = new Date(isoDate + 'T' + isoDebut);
+        const creneauFin = isoFin ? new Date(isoDate + 'T' + isoFin) : null;
+        const dateCloture = new Date(dateClotureStr.replace(' ', 'T'));
+
+        if (creneauDebut < dateCloture) {
+            e.preventDefault();
+            showError("Le créneau doit commencer après la date de clôture des inscriptions (" + dateClotureStr + ").");
+            return;
+        }
+        if (creneauFin && creneauDebut >= creneauFin) {
+            e.preventDefault();
+            showError("L'heure de début doit être strictement inférieure à l'heure de fin.");
+        }
+    }
+
     if (form && dateClotureStr) {
-        form.addEventListener('submit', function(e) {
-            const dateVal = dateInput.value;
-            const heureVal = heureInput.value;
-            const heureFinVal = heureFinInput ? heureFinInput.value : '';
-            
-            if(dateVal && heureVal) {
-                const isoDate = window.toISODateFromFr ? (window.toISODateFromFr(dateVal) || dateVal) : dateVal;
-                const isoDebut = window.toISOTimeFromFr ? (window.toISOTimeFromFr(heureVal) || heureVal) : heureVal;
-                const isoFin = heureFinVal ? (window.toISOTimeFromFr ? (window.toISOTimeFromFr(heureFinVal) || heureFinVal) : heureFinVal) : null;
-                const creneauDebut = new Date(isoDate + 'T' + isoDebut);
-                const creneauFin = isoFin ? new Date(isoDate + 'T' + isoFin) : null;
-                const dateCloture = new Date(dateClotureStr.replace(' ', 'T')); // Compatibilité Safari/Firefox
-
-                if (creneauDebut < dateCloture) {
-                    e.preventDefault();
-                    showError("Le créneau doit commencer après la date de clôture des inscriptions (" + dateClotureStr + ").");
-                    return;
-                }
-
-                if (creneauFin && creneauDebut >= creneauFin) {
-                    e.preventDefault();
-                    showError("L'heure de début doit être strictement inférieure à l'heure de fin.");
-                    return;
-                }
-            }
-        });
+        form.addEventListener('submit', validerCreneau);
     }
 });

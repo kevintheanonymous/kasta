@@ -5,6 +5,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 class PDFService
 {
+    private const LABEL_PARTICIPANT = ' participant';
+
     // organise par categories alimentaires
     public static function organiserParCategories($participants)
     {
@@ -17,35 +19,19 @@ class PDFService
             $aPreference = !empty($participant['preferences']);
             $aRegimeAlimentaire = !empty($participant['regime_alimentaire']);
 
-            // Si le participant a des restrictions, on l'ajoute à chaque catégorie de restriction
             if ($aRestriction) {
-                $restrictions = explode(', ', $participant['restrictions']);
-                foreach ($restrictions as $restriction) {
-                    if (!isset($categoriesRestrictions[$restriction])) {
-                        $categoriesRestrictions[$restriction] = [];
-                    }
-                    $categoriesRestrictions[$restriction][] = $participant;
-                }
+                self::ajouterACategories($categoriesRestrictions, $participant['restrictions'], $participant);
             }
 
-            // Si le participant a des préférences, on l'ajoute à chaque catégorie de préférence
             if ($aPreference) {
-                $preferences = explode(', ', $participant['preferences']);
-                foreach ($preferences as $preference) {
-                    if (!isset($categoriesPreferences[$preference])) {
-                        $categoriesPreferences[$preference] = [];
-                    }
-                    $categoriesPreferences[$preference][] = $participant;
-                }
+                self::ajouterACategories($categoriesPreferences, $participant['preferences'], $participant);
             }
 
-            // Si le participant n'a ni restriction, ni préférence, ni régime alimentaire
             if (!$aRestriction && !$aPreference && !$aRegimeAlimentaire) {
                 $sansRegime[] = $participant;
             }
         }
 
-        // Tri alphabétique des catégories
         ksort($categoriesRestrictions);
         ksort($categoriesPreferences);
 
@@ -54,6 +40,17 @@ class PDFService
             'preferences' => $categoriesPreferences,
             'sans_regime' => $sansRegime
         ];
+    }
+
+    // ajoute un participant à chaque sous-catégorie d'une chaîne séparée par des virgules
+    private static function ajouterACategories(array &$categories, string $valeurs, array $participant): void
+    {
+        foreach (explode(', ', $valeurs) as $valeur) {
+            if (!isset($categories[$valeur])) {
+                $categories[$valeur] = [];
+            }
+            $categories[$valeur][] = $participant;
+        }
     }
 
     // genere PDF participants (sport ou asso)
@@ -122,78 +119,73 @@ class PDFService
         self::genererPDFParticipants($evenement, $participants, 'asso');
     }
 
+    // retourne le label "N participant(s)"
+    private static function labelParticipants(int $count): string
+    {
+        return $count . self::LABEL_PARTICIPANT . ($count > 1 ? 's' : '');
+    }
+
+    // construit une section (restrictions ou préférences) avec son titre et ses tableaux
+    private static function construireSectionCategories(array $items, string $titreSection, string $styleTitre, string $styleH3, string $type): string
+    {
+        $html = '<h2 style="' . $styleTitre . '">' . $titreSection . '</h2><br>';
+        foreach ($items as $label => $participants) {
+            $html .= '<h3 style="' . $styleH3 . '">' . htmlspecialchars($label) . ' (' . self::labelParticipants(count($participants)) . ')</h3>';
+            $html .= self::construireTableauParticipants($participants, $type);
+            $html .= '<br>';
+        }
+        return $html;
+    }
+
     // construit le HTML du PDF (sport ou asso)
     private static function construireHTMLPDF($evenement, $participants, $categories, string $type = 'sport')
     {
-        $html = '';
-
-        // En-tête du document
-        $html .= '<h1 style="text-align: center; color: #2c3e50;">Liste des participants</h1>';
+        $html = '<h1 style="text-align: center; color: #2c3e50;">Liste des participants</h1>';
         $html .= '<h2 style="text-align: center; color: #34495e;">' . htmlspecialchars($evenement['titre']) . '</h2>';
         $html .= '<p style="text-align: center;"><strong>Date de génération:</strong> ' . date('d/m/Y à H:i') . '</p>';
         $html .= '<p style="text-align: center;"><strong>Nombre total de participants:</strong> ' . count($participants) . '</p>';
-        $html .= '<hr style="border: 1px solid #3498db;">';
-        $html .= '<br>';
-
-        // Section recap des regimes alimentaires
+        $html .= '<hr style="border: 1px solid #3498db;"><br>';
         $html .= self::construireRecapitulatifRegimes($participants);
-        $html .= '<hr style="border: 1px solid #3498db; margin: 20px 0;">';
-        $html .= '<br>';
+        $html .= '<hr style="border: 1px solid #3498db; margin: 20px 0;"><br>';
 
-        // Section 1: Restrictions alimentaires
         if (!empty($categories['restrictions'])) {
-            $html .= '<h2 style="color: #e74c3c; background-color: #fadbd8; padding: 8px; border-left: 4px solid #e74c3c;">Restrictions alimentaires</h2>';
-            $html .= '<br>';
-
-            foreach ($categories['restrictions'] as $restriction => $participants) {
-                $html .= '<h3 style="color: #c0392b; margin-top: 15px;">' . htmlspecialchars($restriction) . ' (' . count($participants) . ' participant' . (count($participants) > 1 ? 's' : '') . ')</h3>';
-                $html .= self::construireTableauParticipants($participants, $type);
-                $html .= '<br>';
-            }
+            $html .= self::construireSectionCategories(
+                $categories['restrictions'],
+                'Restrictions alimentaires',
+                'color: #e74c3c; background-color: #fadbd8; padding: 8px; border-left: 4px solid #e74c3c;',
+                'color: #c0392b; margin-top: 15px;',
+                $type
+            );
         }
 
-        // Section 2: Préférences alimentaires
         if (!empty($categories['preferences'])) {
-            $html .= '<h2 style="color: #27ae60; background-color: #d5f4e6; padding: 8px; border-left: 4px solid #27ae60;">Préférences alimentaires</h2>';
-            $html .= '<br>';
-
-            foreach ($categories['preferences'] as $preference => $participants) {
-                $html .= '<h3 style="color: #229954; margin-top: 15px;">' . htmlspecialchars($preference) . ' (' . count($participants) . ' participant' . (count($participants) > 1 ? 's' : '') . ')</h3>';
-                $html .= self::construireTableauParticipants($participants, $type);
-                $html .= '<br>';
-            }
+            $html .= self::construireSectionCategories(
+                $categories['preferences'],
+                'Préférences alimentaires',
+                'color: #27ae60; background-color: #d5f4e6; padding: 8px; border-left: 4px solid #27ae60;',
+                'color: #229954; margin-top: 15px;',
+                $type
+            );
         }
 
-        // Section 3: Participants avec régime alimentaire déclaré
-        $participantsAvecRegime = array_filter($participants, function($p) {
-            return !empty($p['regime_alimentaire']);
-        });
-
+        $participantsAvecRegime = array_filter($participants, static fn($p) => !empty($p['regime_alimentaire']));
         if (!empty($participantsAvecRegime)) {
-            $html .= '<h2 style="color: #9b59b6; background-color: #f5eef8; padding: 8px; border-left: 4px solid #9b59b6;">Régimes alimentaires déclarés</h2>';
-            $html .= '<br>';
-            $html .= '<p><strong>' . count($participantsAvecRegime) . ' participant' . (count($participantsAvecRegime) > 1 ? 's' : '') . '</strong> avec un régime alimentaire déclaré</p>';
+            $html .= '<h2 style="color: #9b59b6; background-color: #f5eef8; padding: 8px; border-left: 4px solid #9b59b6;">Régimes alimentaires déclarés</h2><br>';
+            $html .= '<p><strong>' . self::labelParticipants(count($participantsAvecRegime)) . '</strong> avec un régime alimentaire déclaré</p>';
             $html .= self::construireTableauParticipantsAvecRegime($participantsAvecRegime, $type);
             $html .= '<br>';
         }
 
-        // Section 4: Sans contrainte alimentaire
         if (!empty($categories['sans_regime'])) {
-            $html .= '<h2 style="color: #7f8c8d; background-color: #ecf0f1; padding: 8px; border-left: 4px solid #7f8c8d;">Sans contrainte alimentaire</h2>';
-            $html .= '<br>';
-            $html .= '<p><strong>' . count($categories['sans_regime']) . ' participant' . (count($categories['sans_regime']) > 1 ? 's' : '') . '</strong> sans restriction ni préférence</p>';
+            $html .= '<h2 style="color: #7f8c8d; background-color: #ecf0f1; padding: 8px; border-left: 4px solid #7f8c8d;">Sans contrainte alimentaire</h2><br>';
+            $html .= '<p><strong>' . self::labelParticipants(count($categories['sans_regime'])) . '</strong> sans restriction ni préférence</p>';
             $html .= self::construireTableauParticipants($categories['sans_regime'], $type);
             $html .= '<br>';
         }
 
-        // Section 5: Commentaires alimentaires spécifiques
-        $participantsAvecCommentaires = array_filter($participants, function($p) {
-            return !empty($p['commentaire_alimentaire']);
-        });
-
+        $participantsAvecCommentaires = array_filter($participants, static fn($p) => !empty($p['commentaire_alimentaire']));
         if (!empty($participantsAvecCommentaires)) {
-            $html .= '<h2 style="color: #f39c12; background-color: #fef5e7; padding: 8px; border-left: 4px solid #f39c12;">Commentaires alimentaires spécifiques</h2>';
-            $html .= '<br>';
+            $html .= '<h2 style="color: #f39c12; background-color: #fef5e7; padding: 8px; border-left: 4px solid #f39c12;">Commentaires alimentaires spécifiques</h2><br>';
             $html .= self::construireTableauCommentaires($participantsAvecCommentaires);
             $html .= '<br>';
         }

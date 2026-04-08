@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // si pas de fichier adhesion valide, afficher popup
             if (!fichierAdhesionValide && (!fileInput || !fileInput.files.length)) {
                 // verifier si popup deja confirmee via data attribute
-                if (!formulaire.hasAttribute('data-popup-confirmee')) {
+                if (!('popupConfirmee' in formulaire.dataset)) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
                     afficherPopupAvertissement();
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // bouton NON - fermer popup
         document.getElementById('popup-non').addEventListener('click', function() {
             document.body.removeChild(overlay);
-            formulaire.removeAttribute('data-popup-confirmee');
+            delete formulaire.dataset.popupConfirmee;
             // reactiver le bouton submit
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('popup-oui').addEventListener('click', function() {
             document.body.removeChild(overlay);
             // marquer formulaire comme confirme
-            formulaire.setAttribute('data-popup-confirmee', 'true');
+            formulaire.dataset.popupConfirmee = 'true';
             // creer un input submit temporaire et le cliquer pour soumettre
             const tempSubmit = document.createElement('input');
             tempSubmit.type = 'submit';

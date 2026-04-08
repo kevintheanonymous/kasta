@@ -12,7 +12,7 @@ function fermerModalRefus() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    var modalRefus = document.getElementById('modalRefus');
+    const modalRefus = document.getElementById('modalRefus');
     if (modalRefus) {
         modalRefus.addEventListener('click', function(e) {
             if (e.target === this) {

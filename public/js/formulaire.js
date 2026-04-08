@@ -361,20 +361,20 @@
             }
             
             // Prévisualisation
+            function animerAvatar(src) {
+                if (!elements.avatar) { return; }
+                elements.avatar.style.opacity = '0';
+                elements.avatar.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    elements.avatar.src = src;
+                    elements.avatar.style.opacity = '1';
+                    elements.avatar.style.transform = 'scale(1)';
+                }, 150);
+            }
+
             const reader = new FileReader();
             reader.onload = (event) => {
-                if (elements.avatar) {
-                    elements.avatar.style.opacity = '0';
-                    elements.avatar.style.transform = 'scale(0.8)';
-                    
-                    setTimeout(() => {
-                        elements.avatar.src = event.target.result;
-                        elements.avatar.style.opacity = '1';
-                        elements.avatar.style.transform = 'scale(1)';
-                    }, 150);
-                }
-                
-                // Créer une prévisualisation si pas d'avatar
+                animerAvatar(event.target.result);
                 createImagePreview(event.target.result, file.name);
             };
             reader.readAsDataURL(file);
@@ -505,7 +505,7 @@
                 inputWrapper.className = 'password-input-wrapper';
 
                 // Insérer le wrapper avant l'input
-                label.insertBefore(inputWrapper, input);
+                input.before(inputWrapper);
 
                 // Déplacer UNIQUEMENT l'input dans le wrapper
                 // Le span message reste HORS du wrapper pour ne pas affecter le positionnement du bouton

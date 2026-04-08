@@ -24,7 +24,7 @@
     };
 
     const handleTabClick = function() {
-        const filter = this.getAttribute('data-filter');
+        const filter = this.dataset.filter;
         
         // Mise à jour de l'onglet actif
         elements.tabs.forEach(t => {
@@ -42,7 +42,7 @@
         let visibleCount = 0;
         
         elements.eventCards.forEach(card => {
-            const eventType = card.getAttribute('data-type');
+            const eventType = card.dataset.type;
             const shouldShow = filter === 'tous' || eventType === filter;
 
             if (shouldShow) {

@@ -35,7 +35,7 @@ function showError(message) {
   if (h1 && h1.nextSibling) {
     h1.parentNode.insertBefore(alertDiv, h1.nextSibling);
   } else if (container && form) {
-    container.insertBefore(alertDiv, form);
+    form.before(alertDiv);
   } else if (form) {
     form.parentNode.insertBefore(alertDiv, form);
   }
@@ -44,31 +44,42 @@ function showError(message) {
   alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+function parseInputDate(input, datetime) {
+  const val = input.value;
+  if (datetime) {
+    return window.parseDatetimeFr ? (window.parseDatetimeFr(val) || new Date(val)) : new Date(val);
+  }
+  return window.parseDateFr ? (window.parseDateFr(val) || new Date(val)) : new Date(val);
+}
+
+function verifDateEvenement(evenement, visible, cloture) {
+  if (isNaN(evenement.getTime())) { return true; }
+  if (evenement < cloture) {
+    showError("La date de clôture doit être avant ou égale à la date de l'événement.");
+    return false;
+  }
+  if (evenement < visible) {
+    showError("La date de visibilité doit être avant ou égale à la date de l'événement.");
+    return false;
+  }
+  return true;
+}
+
 function verifDate() {
-  if (!dateVisible || !dateCloture) return true;
+  if (!dateVisible || !dateCloture) { return true; }
 
-  const visible = window.parseDateFr ? (window.parseDateFr(dateVisible.value) || new Date(dateVisible.value)) : new Date(dateVisible.value);
-  const cloture = window.parseDateFr ? (window.parseDateFr(dateCloture.value) || new Date(dateCloture.value)) : new Date(dateCloture.value);
-  
-  if (isNaN(visible.getTime()) || isNaN(cloture.getTime())) return true;
+  const visible = parseInputDate(dateVisible, false);
+  const cloture = parseInputDate(dateCloture, false);
 
-  if(visible > cloture) {
-      showError("La date de visibilité doit être avant ou égale à la date de clôture.");
-      return false;
+  if (isNaN(visible.getTime()) || isNaN(cloture.getTime())) { return true; }
+
+  if (visible > cloture) {
+    showError("La date de visibilité doit être avant ou égale à la date de clôture.");
+    return false;
   }
 
   if (dateEvenement) {
-      const evenement = window.parseDatetimeFr ? (window.parseDatetimeFr(dateEvenement.value) || new Date(dateEvenement.value)) : new Date(dateEvenement.value);
-      if (!isNaN(evenement.getTime())) {
-        if(evenement < cloture) {
-            showError("La date de clôture doit être avant ou égale à la date de l'événement.");
-            return false;
-        }
-        if(evenement < visible) {
-            showError("La date de visibilité doit être avant ou égale à la date de l'événement.");
-            return false;
-        }
-      }
+    return verifDateEvenement(parseInputDate(dateEvenement, true), visible, cloture);
   }
   return true;
 }

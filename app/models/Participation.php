@@ -3,6 +3,8 @@ require_once __DIR__ . '/BaseDeDonnees.php';
 
 class Participation {
 
+    private const EMAIL_SERVICE = self::EMAIL_SERVICE;
+
     public static function inscrireCreneau($idCreneau, $idMembre, $preferencesPostes = []) {
         $pdo = BaseDeDonnees::getConnexion();
 
@@ -18,7 +20,7 @@ class Participation {
         $stmt = $pdo->prepare("INSERT INTO aide_benevole (Id_creneau, Id_Membre, Presence, Preference_Poste) VALUES (?, ?, 0, ?)");
         $resultat = $stmt->execute([$idCreneau, $idMembre, $preferencesJson]);
         if ($resultat) {
-            require_once __DIR__ . '/../services/EmailService.php';
+            require_once __DIR__ . self::EMAIL_SERVICE;
             EmailService::envoyerConfirmationInscriptionCreneau($idCreneau, $idMembre);
         }
 
@@ -31,7 +33,7 @@ class Participation {
         $resultat = $stmt->execute([$idCreneau, $idMembre]);
         
         if ($resultat && $stmt->rowCount() > 0) {
-            require_once __DIR__ . '/../services/EmailService.php';
+            require_once __DIR__ . self::EMAIL_SERVICE;
             EmailService::envoyerConfirmationDesinscriptionCreneau($idCreneau, $idMembre);
         }
         
@@ -65,7 +67,7 @@ class Participation {
         $stmt = $pdo->prepare($sql);
         $resultat = $stmt->execute([$idMembre, $idEventAsso, $nbInvites]);
         if ($resultat) {
-            require_once __DIR__ . '/../services/EmailService.php';
+            require_once __DIR__ . self::EMAIL_SERVICE;
             EmailService::envoyerConfirmationInscriptionEventAsso($idEventAsso, $idMembre, $nbInvites);
         }
 
@@ -78,7 +80,7 @@ class Participation {
         $resultat = $stmt->execute([$idMembre, $idEventAsso]);
         
         if ($resultat && $stmt->rowCount() > 0) {
-            require_once __DIR__ . '/../services/EmailService.php';
+            require_once __DIR__ . self::EMAIL_SERVICE;
             EmailService::envoyerConfirmationDesinscriptionEventAsso($idEventAsso, $idMembre);
         }
         
@@ -117,7 +119,7 @@ class Participation {
         
         // Envoyer un email pour le premier créneau (représentant l'événement)
         if ($resultat && $stmt->rowCount() > 0 && !empty($creneaux)) {
-            require_once __DIR__ . '/../services/EmailService.php';
+            require_once __DIR__ . self::EMAIL_SERVICE;
             EmailService::envoyerConfirmationDesinscriptionCreneau($creneaux[0], $idMembre);
         }
         

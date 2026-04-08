@@ -502,7 +502,6 @@ class ControleurMembre
             return;
         }
 
-        // Vérifier que l'événement existe
         $evenement = EvenementAsso::findById($idEvent);
         if (!$evenement) {
             $_SESSION['error'] = self::ERR_EVENT;
@@ -510,67 +509,68 @@ class ControleurMembre
             return;
         }
 
-        // Vérifier que les inscriptions ne sont pas closes
+        if (!self::verifierAccesEvenementAsso($evenement, $userId, $idEvent)) {
+            return;
+        }
+
+        $accompagnateursData = self::extraireAccompagnateurs($idEvent);
+        self::enregistrerInscriptionAsso($userId, $idEvent, $nbInvites, $accompagnateursData);
+    }
+
+    private static function verifierAccesEvenementAsso(array $evenement, int $userId, int $idEvent): bool
+    {
         if (strtotime($evenement['date_cloture']) < time()) {
             $_SESSION['error'] = "Les inscriptions sont closes pour cet événement.";
             rediriger('/membre/inscription/asso?id=' . $idEvent);
-            return;
+            return false;
         }
-
-        // Vérifier l'accès aux événements privés
         $membre = Membre::getMembreParId($userId);
-        $isAdherent = ($membre && $membre['Adherent'] == 1);
-
-        if ($evenement['prive'] && !$isAdherent) {
+        if ($evenement['prive'] && !($membre && $membre['Adherent'] == 1)) {
             $_SESSION['error'] = "Cet événement est réservé aux adhérents.";
             rediriger(self::ROUTE_DASHBOARD);
-            return;
+            return false;
         }
+        return true;
+    }
 
-        // recuperer les donnees des accompagnateurs
-        $accompagnateursData = [];
-        if (isset($_POST['accompagnateurs_data']) && !empty($_POST['accompagnateurs_data'])) {
-            $accompagnateursJson = $_POST['accompagnateurs_data'];
-            $accompagnateursData = json_decode($accompagnateursJson, true);
-            if (!is_array($accompagnateursData)) {
-                $accompagnateursData = [];
+    private static function extraireAccompagnateurs(int $idEvent): array
+    {
+        if (empty($_POST['accompagnateurs_data'])) {
+            return [];
+        }
+        $data = json_decode($_POST['accompagnateurs_data'], true);
+        if (!is_array($data)) {
+            return [];
+        }
+        foreach ($data as &$acc) {
+            $acc['nom'] = trim(htmlspecialchars($acc['nom'] ?? '', ENT_QUOTES, 'UTF-8'));
+            $acc['prenom'] = trim(htmlspecialchars($acc['prenom'] ?? '', ENT_QUOTES, 'UTF-8'));
+            $acc['email'] = filter_var($acc['email'] ?? '', FILTER_SANITIZE_EMAIL);
+            $acc['tarif'] = isset($acc['tarif']) ? max(0, (float)$acc['tarif']) : 0;
+            if (empty($acc['nom']) || empty($acc['prenom'])) {
+                $_SESSION['errors'] = ["Chaque accompagnateur doit avoir un nom et un prénom."];
+                rediriger('/membre/inscription_asso&id=' . $idEvent);
             }
         }
+        unset($acc);
+        return $data;
+    }
 
-            // Validation des accompagnateurs
-            if (!empty($accompagnateursData)) {
-                foreach ($accompagnateursData as &$acc) {
-                    $acc['nom'] = trim(htmlspecialchars($acc['nom'] ?? '', ENT_QUOTES, 'UTF-8'));
-                    $acc['prenom'] = trim(htmlspecialchars($acc['prenom'] ?? '', ENT_QUOTES, 'UTF-8'));
-                    $acc['email'] = filter_var($acc['email'] ?? '', FILTER_SANITIZE_EMAIL);
-                    $acc['tarif'] = isset($acc['tarif']) ? max(0, (float)$acc['tarif']) : 0;
-                    if (empty($acc['nom']) || empty($acc['prenom'])) {
-                        $_SESSION['errors'] = ["Chaque accompagnateur doit avoir un nom et un prénom."];
-                        rediriger('/membre/inscription_asso&id=' . $idEvent);
-                    }
-                }
-                unset($acc);
-            }
-
-        // verifier si c'est une mise a jour ou une creation
-        $inscriptionExistante = Participation::getInscriptionEventAsso($userId, $idEvent);
-
-        if ($inscriptionExistante) {
-            // mode mise a jour : on garde l'inscription existante et on met a jour les accompagnateurs
+    private static function enregistrerInscriptionAsso(int $userId, int $idEvent, int $nbInvites, array $accompagnateursData): void
+    {
+        if (Participation::getInscriptionEventAsso($userId, $idEvent)) {
             Participation::sauvegarderAccompagnateurs($userId, $idEvent, $accompagnateursData);
             $_SESSION['success'] = 'Votre inscription a été mise à jour avec succès.';
             rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
+            return;
+        }
+        if (Participation::inscrireEvenementAsso($userId, $idEvent, $nbInvites)) {
+            Participation::sauvegarderAccompagnateurs($userId, $idEvent, $accompagnateursData);
+            $_SESSION['success'] = "Vous avez été inscrit à l'événement avec succès.";
+            rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
         } else {
-            // mode creation : nouvelle inscription
-            if (Participation::inscrireEvenementAsso($userId, $idEvent, $nbInvites)) {
-                // sauvegarder les accompagnateurs
-                Participation::sauvegarderAccompagnateurs($userId, $idEvent, $accompagnateursData);
-                $_SESSION['success'] = "Vous avez été inscrit à l'événement avec succès.";
-                rediriger(self::ROUTE_INSCRIPTIONS_ASSO);
-            } else {
-                $_SESSION['error'] = "Vous êtes déjà inscrit à cet événement.";
-                rediriger('/membre/inscription/asso?id=' . $idEvent);
-            }
+            $_SESSION['error'] = "Vous êtes déjà inscrit à cet événement.";
+            rediriger('/membre/inscription/asso?id=' . $idEvent);
         }
     }
 
@@ -896,105 +896,100 @@ public static function afficherContact(): void
 
 public static function traiterContact(): void
 {
-    // Ne pas exiger de connexion pour cette page
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
 
-    // Déterminer l'URL de redirection
     $redirectUrl = isset($_SESSION['user']) ? '/membre/contact' : '/contact';
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (!verifierTokenCSRF()) {
-            $_SESSION['errors'] = ["Erreur de sécurité. Veuillez réessayer."];
-            rediriger($redirectUrl);
-            return;
-        }
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return;
+    }
 
-        $sujet = trim($_POST['sujet'] ?? '');
-        $message = trim($_POST['message'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+    if (!verifierTokenCSRF()) {
+        $_SESSION['errors'] = ["Erreur de sécurité. Veuillez réessayer."];
+        rediriger($redirectUrl);
+        return;
+    }
 
-        // Validation des champs
-        $errors = [];
-        if (empty($sujet)) {
-            $errors[] = "Veuillez sélectionner un sujet.";
-        }
-        if (empty($message)) {
-            $errors[] = "Veuillez entrer votre message.";
-        }
-        if (empty($email)) {
-            $errors[] = "Veuillez entrer votre adresse email.";
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "L'adresse email n'est pas valide.";
-        }
+    $sujet = trim($_POST['sujet'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+    $email = trim($_POST['email'] ?? '');
 
-        if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
-            $_SESSION['form_data'] = ['sujet' => $sujet, 'message' => $message, 'email' => $email];
-            rediriger($redirectUrl);
-            return;
-        }
+    $errors = self::validerChampContact($sujet, $message, $email);
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        $_SESSION['form_data'] = ['sujet' => $sujet, 'message' => $message, 'email' => $email];
+        rediriger($redirectUrl);
+        return;
+    }
 
-        // Informations de l'expéditeur
-        if (isset($_SESSION['user'])) {
-            $user = $_SESSION['user'];
-            $nomMembre = htmlspecialchars($user['prenom'] . ' ' . $user['nom']);
+    $nomMembre = isset($_SESSION['user'])
+        ? htmlspecialchars($_SESSION['user']['prenom'] . ' ' . $_SESSION['user']['nom'])
+        : 'Visiteur (non connecté)';
+
+    $emailBody = self::construireEmailContact($nomMembre, htmlspecialchars($email), $sujet, $message);
+
+    try {
+        require_once __DIR__ . '/../services/EmailService.php';
+        require_once __DIR__ . '/../../config/env.php';
+        Env::load();
+
+        $emailDestination = Env::get('CONTACT_EMAIL') ?: 'contact@kastasso.fr';
+        $resultat = EmailService::envoyer($emailDestination, "[Kast'Asso Contact] " . $sujet, $emailBody, "Kast'Asso");
+
+        if ($resultat) {
+            $_SESSION['success'] = "Votre message a bien été envoyé ! Nous vous répondrons dans les plus brefs délais.";
         } else {
-            $nomMembre = 'Visiteur (non connecté)';
+            $_SESSION['errors'] = ["Une erreur est survenue lors de l'envoi. Veuillez réessayer."];
         }
-        $emailMembre = htmlspecialchars($email);
+    } catch (Exception $e) {
+        error_log("Erreur envoi contact : " . $e->getMessage());
+        $_SESSION['errors'] = ["Une erreur est survenue lors de l'envoi du message."];
+    }
 
-        // Contenu du mail formaté en HTML
-        $emailBody = "
-            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-                <div style='background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); padding: 20px; border-radius: 8px 8px 0 0;'>
-                    <h2 style='color: white; margin: 0;'>📩 Nouveau message de contact</h2>
-                </div>
-                <div style='background: #f8f9fa; padding: 25px; border: 1px solid #e9ecef;'>
-                    <p><strong>👤 Membre :</strong> {$nomMembre}</p>
-                    <p><strong>📧 Email :</strong> {$emailMembre}</p>
-                    <p><strong>🏷️ Sujet :</strong> " . htmlspecialchars($sujet) . "</p>
-                    <hr style='border: none; border-top: 1px solid #dee2e6; margin: 20px 0;'>
-                    <p><strong>💬 Message :</strong></p>
-                    <div style='background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db;'>
-                        " . nl2br(htmlspecialchars($message)) . "
-                    </div>
-                </div>
-                <div style='background: #2c3e50; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px; font-size: 12px;'>
-                    Message envoyé depuis le formulaire de contact Kast'Asso
+    unset($_SESSION['form_data']);
+    rediriger($redirectUrl);
+}
+
+private static function validerChampContact(string $sujet, string $message, string $email): array
+{
+    $errors = [];
+    if (empty($sujet)) {
+        $errors[] = "Veuillez sélectionner un sujet.";
+    }
+    if (empty($message)) {
+        $errors[] = "Veuillez entrer votre message.";
+    }
+    if (empty($email)) {
+        $errors[] = "Veuillez entrer votre adresse email.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "L'adresse email n'est pas valide.";
+    }
+    return $errors;
+}
+
+private static function construireEmailContact(string $nomMembre, string $emailMembre, string $sujet, string $message): string
+{
+    return "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+            <div style='background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); padding: 20px; border-radius: 8px 8px 0 0;'>
+                <h2 style='color: white; margin: 0;'>📩 Nouveau message de contact</h2>
+            </div>
+            <div style='background: #f8f9fa; padding: 25px; border: 1px solid #e9ecef;'>
+                <p><strong>👤 Membre :</strong> {$nomMembre}</p>
+                <p><strong>📧 Email :</strong> {$emailMembre}</p>
+                <p><strong>🏷️ Sujet :</strong> " . htmlspecialchars($sujet) . "</p>
+                <hr style='border: none; border-top: 1px solid #dee2e6; margin: 20px 0;'>
+                <p><strong>💬 Message :</strong></p>
+                <div style='background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db;'>
+                    " . nl2br(htmlspecialchars($message)) . "
                 </div>
             </div>
-        ";
-
-        // Email de destination
-        $emailDestination = Env::get('CONTACT_EMAIL') ?: 'contact@kastasso.fr';
-
-        try {
-            require_once __DIR__ . '/../services/EmailService.php';
-            require_once __DIR__ . '/../../config/env.php';
-            Env::load();
-
-            $resultat = EmailService::envoyer(
-                $emailDestination,
-                "[Kast'Asso Contact] " . $sujet,
-                $emailBody,
-                "Kast'Asso"
-            );
-
-            if ($resultat) {
-                $_SESSION['success'] = "Votre message a bien été envoyé ! Nous vous répondrons dans les plus brefs délais.";
-            } else {
-                $_SESSION['errors'] = ["Une erreur est survenue lors de l'envoi. Veuillez réessayer."];
-            }
-        } catch (Exception $e) {
-            error_log("Erreur envoi contact : " . $e->getMessage());
-            $_SESSION['errors'] = ["Une erreur est survenue lors de l'envoi du message."];
-        }
-
-        // Nettoyer les données du formulaire en cas de succès
-        unset($_SESSION['form_data']);
-        rediriger($redirectUrl);
-    }
+            <div style='background: #2c3e50; color: white; padding: 15px; text-align: center; border-radius: 0 0 8px 8px; font-size: 12px;'>
+                Message envoyé depuis le formulaire de contact Kast'Asso
+            </div>
+        </div>
+    ";
 }
 }

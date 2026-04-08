@@ -2,6 +2,12 @@
 // fonctions pour gerer les evenements
 // c'est utilisé par le controleur evenement et le controleur gestionaire
 // j'ai mis tout en commun pour pas dupliquer le code
+
+const TYPE_PARAM = '&type=';
+const TYPE_SPORT_SUFFIX = TYPE_SPORT_SUFFIX;
+const TYPE_ASSO_SUFFIX = TYPE_ASSO_SUFFIX;
+const MSG_ID_EVENT_MANQUANT = 'ID événement manquant';
+
 require_once __DIR__ . '/fonctions_commun.php';
 require_once __DIR__ . '/models/EvenementSport.php';
 require_once __DIR__ . '/models/EvenementAsso.php';
@@ -244,7 +250,7 @@ function traiterCreationEvenement(string $redirectUrlBase): void
         rediriger($createUrl);
     }
     
-    rediriger($redirectUrlBase . '&type=' . $type);
+    rediriger($redirectUrlBase . TYPE_PARAM . $type);
 }
 
 // pareil mais pour la modification
@@ -266,7 +272,7 @@ function traiterMiseAJourEvenement(string $redirectUrlBase): void
     $validation = validerDatesEvenement($data);
     if (!$validation['valid']) {
         $_SESSION['errors'] = [$validation['error']];
-        rediriger($redirectUrlBase . '&type=' . $type);
+        rediriger($redirectUrlBase . TYPE_PARAM . $type);
     }
     
     // Préparation des données selon le type
@@ -279,7 +285,7 @@ function traiterMiseAJourEvenement(string $redirectUrlBase): void
         $validationAsso = validerDatesEvenementAsso($data);
         if (!$validationAsso['valid']) {
             $_SESSION['errors'] = [$validationAsso['error']];
-            rediriger($redirectUrlBase . '&type=' . $type);
+            rediriger($redirectUrlBase . TYPE_PARAM . $type);
         }
     }
     
@@ -299,7 +305,7 @@ function traiterMiseAJourEvenement(string $redirectUrlBase): void
         $_SESSION['errors'] = ["Erreur lors de la modification de l'événement"];
     }
     
-    rediriger($redirectUrlBase . '&type=' . $type);
+    rediriger($redirectUrlBase . TYPE_PARAM . $type);
 }
 
 // gere la suppression d'un evenement
@@ -331,7 +337,7 @@ function traiterSuppressionEvenement(string $redirectUrlBase): void
         $_SESSION['errors'] = ["Erreur lors de la suppression de l'événement"];
     }
 
-    rediriger($redirectUrlBase . '&type=' . $type);
+    rediriger($redirectUrlBase . TYPE_PARAM . $type);
 }
 
 
@@ -341,14 +347,14 @@ function afficherBenevolesPourEvenement(string $redirectBase, string $vuePath): 
 {
     $idEvent = (int)($_GET['id'] ?? 0);
     if ($idEvent === 0) {
-        $_SESSION['errors'] = ["ID événement manquant"];
-        rediriger($redirectBase . '&type=sport');
+        $_SESSION['errors'] = [MSG_ID_EVENT_MANQUANT];
+        rediriger($redirectBase . TYPE_SPORT_SUFFIX);
     }
 
     $event = EvenementSport::findById($idEvent);
     if (!$event) {
         $_SESSION['errors'] = ["Événement sportif introuvable"];
-        rediriger($redirectBase . '&type=sport');
+        rediriger($redirectBase . TYPE_SPORT_SUFFIX);
     }
 
     $nombreInscrits = Participation::obtenirNombreInscritsEvenement($idEvent);
@@ -391,14 +397,14 @@ function afficherParticipantsPourEvenement(string $redirectBase, string $vuePath
 {
     $idEvent = (int)($_GET['id'] ?? 0);
     if ($idEvent === 0) {
-        $_SESSION['errors'] = ["ID événement manquant"];
-        rediriger($redirectBase . '&type=asso');
+        $_SESSION['errors'] = [MSG_ID_EVENT_MANQUANT];
+        rediriger($redirectBase . TYPE_ASSO_SUFFIX);
     }
 
     $event = EvenementAsso::findById($idEvent);
     if (!$event) {
         $_SESSION['errors'] = ["Événement associatif introuvable"];
-        rediriger($redirectBase . '&type=asso');
+        rediriger($redirectBase . TYPE_ASSO_SUFFIX);
     }
 
     $nombreInscrits = Participation::obtenirNombreInscritsEvenementAsso($idEvent);
@@ -413,14 +419,14 @@ function genererPDFParticipantsSport(string $redirectBase): void
 
     $idEvent = (int)($_GET['id'] ?? 0);
     if ($idEvent === 0) {
-        $_SESSION['errors'] = ["ID événement manquant"];
-        rediriger($redirectBase . '&type=sport');
+        $_SESSION['errors'] = [MSG_ID_EVENT_MANQUANT];
+        rediriger($redirectBase . TYPE_SPORT_SUFFIX);
     }
 
     $evenement = EvenementSport::findById($idEvent);
     if (!$evenement) {
         $_SESSION['errors'] = ["Événement sportif introuvable"];
-        rediriger($redirectBase . '&type=sport');
+        rediriger($redirectBase . TYPE_SPORT_SUFFIX);
     }
 
     $participants = EvenementSport::obtenirParticipantsAvecRegimes($idEvent);
@@ -433,14 +439,14 @@ function genererPDFParticipantsAsso(string $redirectBase): void
 
     $idEvent = (int)($_GET['id'] ?? 0);
     if ($idEvent === 0) {
-        $_SESSION['errors'] = ["ID événement manquant"];
-        rediriger($redirectBase . '&type=asso');
+        $_SESSION['errors'] = [MSG_ID_EVENT_MANQUANT];
+        rediriger($redirectBase . TYPE_ASSO_SUFFIX);
     }
 
     $evenement = EvenementAsso::findById($idEvent);
     if (!$evenement) {
         $_SESSION['errors'] = ["Événement associatif introuvable"];
-        rediriger($redirectBase . '&type=asso');
+        rediriger($redirectBase . TYPE_ASSO_SUFFIX);
     }
 
     $participants = EvenementAsso::obtenirParticipantsAvecRegimes($idEvent);

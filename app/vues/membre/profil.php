@@ -1,5 +1,6 @@
 <?php
 // La variable $membre est transmise par le contrôleur
+const NON_RENSEIGNE = NON_RENSEIGNE;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -30,15 +31,15 @@
             <div class="profile-info">
                 <p><strong>Nom :</strong> <?= htmlspecialchars($membre['Nom']) ?></p>
                 <p><strong>Prénom :</strong> <?= htmlspecialchars($membre['Prenom']) ?></p>
-                <p><strong>Sexe :</strong> <?= ($membre['Sexe'] === 'H') ? 'Homme' : (($membre['Sexe'] === 'F') ? 'Femme' : 'Non renseigné') ?></p>
+                <p><strong>Sexe :</strong> <?= ($membre['Sexe'] === 'H') ? 'Homme' : (($membre['Sexe'] === 'F') ? 'Femme' : NON_RENSEIGNE) ?></p>
                 <p><strong>Email :</strong> <?= htmlspecialchars($membre['Mail']) ?></p>
                 <p><strong>Téléphone :</strong> <?= htmlspecialchars($membre['Telephone']) ?></p>
                 
                 <hr>
                 
                 <h3>Informations Complémentaires</h3>
-                <p><strong>Taille T-shirt :</strong> <?= htmlspecialchars($membre['Taille_Teeshirt'] ?: 'Non renseigné') ?></p>
-                <p><strong>Taille Pull :</strong> <?= htmlspecialchars($membre['Taille_Pull'] ?: 'Non renseigné') ?></p>
+                <p><strong>Taille T-shirt :</strong> <?= htmlspecialchars($membre['Taille_Teeshirt'] ?: NON_RENSEIGNE) ?></p>
+                <p><strong>Taille Pull :</strong> <?= htmlspecialchars($membre['Taille_Pull'] ?: NON_RENSEIGNE) ?></p>
                 <p><strong>Régime Alimentaire :</strong>
                     <?php
                     $nomRegime = Membre::obtenirRegimeAlimentaire($membre['Id_Membre']);

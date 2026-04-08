@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // boutons confirmations
     document.querySelectorAll('[data-confirm]').forEach(element => {
         element.addEventListener('click', function(e) {
-            const message = this.getAttribute('data-confirm') || 'Êtes-vous sûr ?';
+            const message = this.dataset.confirm || 'Êtes-vous sûr ?';
             if (!confirm(message)) {
                 e.preventDefault();
             }

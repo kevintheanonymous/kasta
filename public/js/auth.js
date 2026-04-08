@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             inputWrapper.className = 'password-wrapper';
 
             // Insérer le wrapper avant l'input
-            label.insertBefore(inputWrapper, input);
+            input.before(inputWrapper);
 
             // Déplacer UNIQUEMENT l'input dans le wrapper
             inputWrapper.appendChild(input);

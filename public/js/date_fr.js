@@ -61,40 +61,42 @@
         return isNaN(d.getTime()) ? null : d;
     }
 
+    function normalizeDateInput(el, original) {
+        el.placeholder = 'jj/mm/aaaa';
+        if (original && original.includes('-')) {
+            el.value = toFrDate(original) || original;
+        }
+    }
+
+    function normalizeTimeInput(el, original) {
+        el.placeholder = 'hh:mm';
+        if (original && ISO_TIME.test(original)) {
+            el.value = original;
+        }
+    }
+
+    function normalizeDatetimeInput(el, original) {
+        el.placeholder = 'jj/mm/aaaa hh:mm';
+        if (original && ISO_DATETIME.test(original)) {
+            const [datePart, timePart] = original.split(/[ T]/);
+            const frDate = toFrDate(datePart) || datePart;
+            const time = timePart ? timePart.slice(0, 5) : '';
+            el.value = time ? `${frDate} ${time}` : frDate;
+        }
+    }
+
     function normalizeInput(el) {
-        if (el.tagName !== 'INPUT') return;
+        if (el.tagName !== 'INPUT') { return; }
         const original = el.value;
 
         if (window.flatpickr) {
-            // Bascule en text pour éviter le native picker, flatpickr fournira l'UI FR.
             el.type = 'text';
-            // Ne pas modifier la valeur, flatpickr va la gérer avec defaultDate
             return;
         }
 
-        if (el.classList.contains('js-date-fr')) {
-            el.placeholder = 'jj/mm/aaaa';
-            if (original && original.includes('-')) {
-                el.value = toFrDate(original) || original;
-            }
-        }
-
-        if (el.classList.contains('js-time-fr')) {
-            el.placeholder = 'hh:mm';
-            if (original && ISO_TIME.test(original)) {
-                el.value = original;
-            }
-        }
-
-        if (el.classList.contains('js-datetime-fr')) {
-            el.placeholder = 'jj/mm/aaaa hh:mm';
-            if (original && ISO_DATETIME.test(original)) {
-                const [datePart, timePart] = original.split(/[ T]/);
-                const frDate = toFrDate(datePart) || datePart;
-                const time = timePart ? timePart.slice(0, 5) : '';
-                el.value = time ? `${frDate} ${time}` : frDate;
-            }
-        }
+        if (el.classList.contains('js-date-fr')) { normalizeDateInput(el, original); }
+        if (el.classList.contains('js-time-fr')) { normalizeTimeInput(el, original); }
+        if (el.classList.contains('js-datetime-fr')) { normalizeDatetimeInput(el, original); }
     }
 
     function convertForSubmit(el) {
@@ -203,20 +205,16 @@
             initFlatpickr(inputs);
         }
 
+        function handleFormSubmit(e) {
+            const f = e.currentTarget;
+            const scopedInputs = f.querySelectorAll(`${SELECTOR_DATE}, ${SELECTOR_TIME}, ${SELECTOR_DATETIME}`);
+            const ok = Array.from(scopedInputs).every(convertForSubmit);
+            if (!ok) { e.preventDefault(); }
+        }
+
         const forms = new Set(Array.from(inputs).map(el => el.form).filter(Boolean));
         forms.forEach(form => {
-            form.addEventListener('submit', (e) => {
-                let ok = true;
-                const scopedInputs = form.querySelectorAll(`${SELECTOR_DATE}, ${SELECTOR_TIME}, ${SELECTOR_DATETIME}`);
-                scopedInputs.forEach(el => {
-                    if (!convertForSubmit(el)) {
-                        ok = false;
-                    }
-                });
-                if (!ok) {
-                    e.preventDefault();
-                }
-            });
+            form.addEventListener('submit', handleFormSubmit);
         });
     }
 

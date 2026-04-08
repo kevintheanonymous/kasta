@@ -1,5 +1,6 @@
 <?php
 // variables du controleur : $evenement, $inscription, $inscriptionsClosed, $userEmail, $userNom, $userPrenom
+const ROUTE_INSCRIPTIONS_ASSO = ROUTE_INSCRIPTIONS_ASSO;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -79,7 +80,7 @@
                     <h3>Vous êtes déjà inscrit à cet événement</h3>
                     <p>Gérez votre inscription et modifiez le nombre d'accompagnateurs depuis votre espace de gestion.</p>
                     <div class="form-actions">
-                        <a href="<?= url('/membre/mes_inscriptions_asso') ?>" class="btn-gerer-inscription">Gérer mon inscription</a>
+                        <a href="<?= url(ROUTE_INSCRIPTIONS_ASSO) ?>" class="btn-gerer-inscription">Gérer mon inscription</a>
                     </div>
                 </div>
 
@@ -174,14 +175,14 @@
                             <button type="submit" class="btn-submit" id="btn-submit" disabled>
                                 M'inscrire
                             </button>
-                            <a href="<?= url('/membre/mes_inscriptions_asso') ?>" class="btn btn-secondary">Mes inscriptions</a>
+                            <a href="<?= url(ROUTE_INSCRIPTIONS_ASSO) ?>" class="btn btn-secondary">Mes inscriptions</a>
                         </div>
                     </form>
                 <?php else: ?>
                     <h2>Inscription impossible</h2>
                     <p>Les inscriptions sont closes pour cet événement.</p>
                     <div class="form-actions">
-                        <a href="<?= url('/membre/mes_inscriptions_asso') ?>" class="btn btn-secondary">Mes inscriptions</a>
+                        <a href="<?= url(ROUTE_INSCRIPTIONS_ASSO) ?>" class="btn btn-secondary">Mes inscriptions</a>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>

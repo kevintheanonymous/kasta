@@ -375,7 +375,7 @@
     // Calcul automatique du tarif du membre principal au chargement
     const membreTarifDisplay = document.querySelector('.tarif-membre-principal');
     if (membreTarifDisplay) {
-        const email = membreTarifDisplay.getAttribute('data-email');
+        const email = membreTarifDisplay.dataset.email;
         calculerTarif(email, 'membre', true);
     }
 
@@ -498,27 +498,27 @@
             });
 
             // met a jour quand les champs changent
+            function resetTarifAccompagnateur() {
+                if (!accompagnateursData[index].tarifCalcule) { return; }
+                accompagnateursData[index].tarifCalcule = false;
+                accompagnateursData[index].tarif = 0;
+
+                const btn = row.querySelector('.btn-calculer');
+                const tarifDisplay = row.querySelector('.tarif-display .tarif-montant');
+
+                btn.textContent = 'Calculer';
+                btn.classList.remove('calculated');
+                btn.disabled = false;
+
+                tarifDisplay.textContent = '—';
+                tarifDisplay.classList.remove('calculated');
+
+                updateTotal();
+                checkFormValidity();
+            }
+
             row.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', function() {
-                    // si les infos changent apres calcul, on reset le tarif
-                    if (accompagnateursData[index].tarifCalcule) {
-                        accompagnateursData[index].tarifCalcule = false;
-                        accompagnateursData[index].tarif = 0;
-
-                        const btn = row.querySelector('.btn-calculer');
-                        const tarifDisplay = row.querySelector('.tarif-display .tarif-montant');
-
-                        btn.textContent = 'Calculer';
-                        btn.classList.remove('calculated');
-                        btn.disabled = false;
-
-                        tarifDisplay.textContent = '—';
-                        tarifDisplay.classList.remove('calculated');
-
-                        updateTotal();
-                        checkFormValidity();
-                    }
-                });
+                input.addEventListener('input', resetTarifAccompagnateur);
             });
         });
 
@@ -527,10 +527,10 @@
     }
 
     // si mode edition, charger les accompagnateurs existants
-    const formMode = form ? form.getAttribute('data-mode') : null;
+    const formMode = form ? form.dataset.mode : null;
     if (formMode === 'edition') {
         // recuperer le tarif du membre depuis l'attribut data
-        const tarifMembreStr = form.getAttribute('data-tarif-membre');
+        const tarifMembreStr = form.dataset.tarifMembre;
         if (tarifMembreStr) {
             membreTarif = parseFloat(tarifMembreStr);
             membreTarifCalcule = true;
@@ -549,7 +549,7 @@
         }
 
         // recuperer les accompagnateurs depuis l'attribut data
-        const accompagnateursStr = form.getAttribute('data-accompagnateurs');
+        const accompagnateursStr = form.dataset.accompagnateurs;
         if (accompagnateursStr) {
             try {
                 const accompagnateurs = JSON.parse(accompagnateursStr);

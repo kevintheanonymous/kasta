@@ -5,6 +5,12 @@
 // et ca marche avec gmail
 class EmailService
 {
+    private const MODEL_CRENEAU = self::MODEL_CRENEAU;
+    private const MODEL_EVENEMENT_SPORT = self::MODEL_EVENEMENT_SPORT;
+    private const MODEL_EVENEMENT_ASSO = self::MODEL_EVENEMENT_ASSO;
+    private const MODEL_PARTICIPATION = self::MODEL_PARTICIPATION;
+    private const LIEN_PROFIL_PATH = self::LIEN_PROFIL_PATH;
+    private const DATE_FORMAT_FR = self::DATE_FORMAT_FR;
     // envoie un email
     // retourne true si ca a marché, false sinon
     public static function envoyer(string $destinataire, string $sujet, string $message, ?string $destinataireNom = null): bool
@@ -66,9 +72,9 @@ class EmailService
     private static function envoyerNotificationCreneau(int $idCreneau, int $idMembre, string $template, string $sujet): bool
     {
         try {
-            require_once __DIR__ . '/../models/Creneau.php';
+            require_once __DIR__ . self::MODEL_CRENEAU;
             require_once __DIR__ . '/../models/Membre.php';
-            require_once __DIR__ . '/../models/EvenementSport.php';
+            require_once __DIR__ . self::MODEL_EVENEMENT_SPORT;
 
             // Récupération des données du créneau
             $creneau = Creneau::findById($idCreneau);
@@ -107,7 +113,7 @@ class EmailService
             $code_postal = $evenement['code_postal'] ?? $evenement['Code_postal'] ?? '';
             $ville = $evenement['ville'] ?? $evenement['Ville'] ?? '';
             $lieu_maps = $evenement['lieu_maps'] ?? $evenement['Lieu_maps'] ?? '';
-            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
+            $lien_profil = getBaseUrl() . self::LIEN_PROFIL_PATH;
             $lien_evenements = getBaseUrl() . 'index.php?path=/membre/tableau_de_bord';
 
             // Génération du contenu HTML
@@ -134,7 +140,7 @@ class EmailService
     {
         try {
             require_once __DIR__ . '/../models/Membre.php';
-            require_once __DIR__ . '/../models/EvenementAsso.php';
+            require_once __DIR__ . self::MODEL_EVENEMENT_ASSO;
 
             // Récupération de l'événement
             $evenement = EvenementAsso::findById($idEventAsso);
@@ -155,13 +161,13 @@ class EmailService
             $nom = $membre['Nom'];
             $type_inscription = 'evenement';
             $titre_evenement = $evenement['titre'] ?? '';
-            $date_evenement = !empty($evenement['date_event_asso']) ? date('d/m/Y à H:i', strtotime($evenement['date_event_asso'])) : 'À confirmer';
+            $date_evenement = !empty($evenement['date_event_asso']) ? date(self::DATE_FORMAT_FR, strtotime($evenement['date_event_asso'])) : 'À confirmer';
             $nb_invites = $nbInvites;
             $adresse = $evenement['adresse'] ?? '';
             $code_postal = $evenement['code_postal'] ?? '';
             $ville = $evenement['ville'] ?? '';
             $lieu_maps = $evenement['lieu_maps'] ?? '';
-            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
+            $lien_profil = getBaseUrl() . self::LIEN_PROFIL_PATH;
             $lien_evenements = getBaseUrl() . 'index.php?path=/membre/tableau_de_bord';
 
             // Génération du contenu HTML
@@ -234,9 +240,9 @@ class EmailService
     public static function envoyerRappelCreneau(int $idCreneau): int
     {
         try {
-            require_once __DIR__ . '/../models/Creneau.php';
-            require_once __DIR__ . '/../models/EvenementSport.php';
-            require_once __DIR__ . '/../models/Participation.php';
+            require_once __DIR__ . self::MODEL_CRENEAU;
+            require_once __DIR__ . self::MODEL_EVENEMENT_SPORT;
+            require_once __DIR__ . self::MODEL_PARTICIPATION;
 
             // Récupération du créneau
             $creneau = Creneau::findById($idCreneau);
@@ -273,7 +279,7 @@ class EmailService
             $descriptif = $evenement['Descriptif'] ?? '';
             $nb_inscrits = count($inscrits);
             $contact_organisateur = '';
-            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
+            $lien_profil = getBaseUrl() . self::LIEN_PROFIL_PATH;
 
             $nbEnvoyes = 0;
 
@@ -306,33 +312,37 @@ class EmailService
         }
     }
 
+    // charge l'événement et la liste des inscrits selon le type
+    private static function chargerEvenementEtInscrits(int $idEvent, string $typeEvent): array
+    {
+        if ($typeEvent === 'sport') {
+            $evenement = EvenementSport::findById($idEvent);
+            if (!$evenement) {
+                return [null, []];
+            }
+            return [$evenement, Participation::obtenirInscritsPourEvenement($idEvent)];
+        }
+        $evenement = EvenementAsso::findById($idEvent);
+        if (!$evenement) {
+            return [null, []];
+        }
+        return [$evenement, Participation::getParticipants($idEvent)];
+    }
+
     // notif modification event
     public static function notifierModificationEvent(int $idEvent, string $typeEvent, array $modifications = [], string $messageOrganisateur = ''): int
     {
         try {
-            require_once __DIR__ . '/../models/EvenementSport.php';
-            require_once __DIR__ . '/../models/EvenementAsso.php';
-            require_once __DIR__ . '/../models/Participation.php';
-            require_once __DIR__ . '/../models/Creneau.php';
+            require_once __DIR__ . self::MODEL_EVENEMENT_SPORT;
+            require_once __DIR__ . self::MODEL_EVENEMENT_ASSO;
+            require_once __DIR__ . self::MODEL_PARTICIPATION;
+            require_once __DIR__ . self::MODEL_CRENEAU;
 
-            $inscrits = [];
-
-            if ($typeEvent === 'sport') {
-                $evenement = EvenementSport::findById($idEvent);
-                if (!$evenement) return 0;
-
-                // Récupérer tous les inscrits de tous les créneaux
-                $inscrits = Participation::obtenirInscritsPourEvenement($idEvent);
-            } else {
-                $evenement = EvenementAsso::findById($idEvent);
-                if (!$evenement) return 0;
-
-                $inscrits = Participation::getParticipants($idEvent);
+            [$evenement, $inscrits] = self::chargerEvenementEtInscrits($idEvent, $typeEvent);
+            if ($evenement === null || empty($inscrits)) {
+                return 0;
             }
 
-            if (empty($inscrits)) return 0;
-
-            // Préparation des données
             $titre_evenement = $evenement['Titre'];
             $adresse = $evenement['Adresse'];
             $code_postal = $evenement['Code_postal'];
@@ -340,7 +350,7 @@ class EmailService
             $lieu_maps = $evenement['Lieu_maps'] ?? '';
             $descriptif = $evenement['Descriptif'] ?? '';
             $message_organisateur = $messageOrganisateur;
-            $lien_profil = getBaseUrl() . 'index.php?path=/membre/profil';
+            $lien_profil = getBaseUrl() . self::LIEN_PROFIL_PATH;
 
             $nbEnvoyes = 0;
 
@@ -348,28 +358,16 @@ class EmailService
                 $prenom = $inscrit['Prenom'];
                 $nom = $inscrit['Nom'];
                 $type_inscription = $typeEvent === 'sport' ? 'creneau' : 'evenement';
-
-                if ($typeEvent === 'sport') {
-                    $date_evenement = '';
-                    $type_creneau = '';
-                    $date_creneau = '';
-                    $heure_debut = '';
-                    $heure_fin = '';
-                    $commentaire_creneau = '';
-                } else {
-                    $date_evenement = date('d/m/Y à H:i', strtotime($evenement['Date_event_asso']));
-                }
+                $type_creneau = $date_creneau = $heure_debut = $heure_fin = $commentaire_creneau = '';
+                $date_evenement = $typeEvent !== 'sport'
+                    ? date(self::DATE_FORMAT_FR, strtotime($evenement['Date_event_asso']))
+                    : '';
 
                 ob_start();
                 require __DIR__ . '/../templates/email_modification_event.php';
                 $message = ob_get_clean();
 
-                if (self::envoyer(
-                    $inscrit['Mail'],
-                    "Modification - {$titre_evenement}",
-                    $message,
-                    "{$prenom} {$nom}"
-                )) {
+                if (self::envoyer($inscrit['Mail'], "Modification - {$titre_evenement}", $message, "{$prenom} {$nom}")) {
                     $nbEnvoyes++;
                 }
             }
@@ -386,27 +384,15 @@ class EmailService
     public static function notifierAnnulationEvent(int $idEvent, string $typeEvent, string $raisonAnnulation = ''): int
     {
         try {
-            require_once __DIR__ . '/../models/EvenementSport.php';
-            require_once __DIR__ . '/../models/EvenementAsso.php';
-            require_once __DIR__ . '/../models/Participation.php';
+            require_once __DIR__ . self::MODEL_EVENEMENT_SPORT;
+            require_once __DIR__ . self::MODEL_EVENEMENT_ASSO;
+            require_once __DIR__ . self::MODEL_PARTICIPATION;
 
-            $inscrits = [];
-
-            if ($typeEvent === 'sport') {
-                $evenement = EvenementSport::findById($idEvent);
-                if (!$evenement) return 0;
-
-                $inscrits = Participation::obtenirInscritsPourEvenement($idEvent);
-            } else {
-                $evenement = EvenementAsso::findById($idEvent);
-                if (!$evenement) return 0;
-
-                $inscrits = Participation::getParticipants($idEvent);
+            [$evenement, $inscrits] = self::chargerEvenementEtInscrits($idEvent, $typeEvent);
+            if ($evenement === null || empty($inscrits)) {
+                return 0;
             }
 
-            if (empty($inscrits)) return 0;
-
-            // Préparation des données
             $titre_evenement = $evenement['titre'] ?? '';
             $adresse = $evenement['adresse'] ?? '';
             $code_postal = $evenement['code_postal'] ?? '';
@@ -422,29 +408,16 @@ class EmailService
                 $nom = $inscrit['Nom'] ?? $inscrit['nom'] ?? '';
                 $email = $inscrit['Mail'] ?? $inscrit['mail'] ?? '';
                 $type_inscription = $typeEvent === 'sport' ? 'creneau' : 'evenement';
-
-                if ($typeEvent === 'sport') {
-                    $date_creneau = '';
-                    $heure_debut = '';
-                    $heure_fin = '';
-                    $type_creneau = '';
-                    $date_evenement = '';
-                } else {
-                    $date_evenement = !empty($evenement['date_event_asso'])
-                        ? date('d/m/Y à H:i', strtotime($evenement['date_event_asso']))
-                        : '';
-                }
+                $type_creneau = $date_creneau = $heure_debut = $heure_fin = '';
+                $date_evenement = (!empty($evenement['date_event_asso']) && $typeEvent !== 'sport')
+                    ? date(self::DATE_FORMAT_FR, strtotime($evenement['date_event_asso']))
+                    : '';
 
                 ob_start();
                 require __DIR__ . '/../templates/email_annulation_event.php';
                 $message = ob_get_clean();
 
-                if (self::envoyer(
-                    $email,
-                    "Annulation - {$titre_evenement}",
-                    $message,
-                    "{$prenom} {$nom}"
-                )) {
+                if (self::envoyer($email, "Annulation - {$titre_evenement}", $message, "{$prenom} {$nom}")) {
                     $nbEnvoyes++;
                 }
             }

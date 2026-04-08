@@ -82,15 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     cb.checked = selectAllCheckbox.checked;
                 });
             });
-            
-            // Mettre à jour la case "Tout cocher" si toutes les cases individuelles sont cochées/décochées
+
+            function updateSelectAll() {
+                const allChecked = Array.from(posteCheckboxes).every(cb => cb.checked);
+                const noneChecked = Array.from(posteCheckboxes).every(cb => !cb.checked);
+                selectAllCheckbox.checked = allChecked;
+                selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+            }
+
             posteCheckboxes.forEach(cb => {
-                cb.addEventListener('change', () => {
-                    const allChecked = Array.from(posteCheckboxes).every(c => c.checked);
-                    const noneChecked = Array.from(posteCheckboxes).every(c => !c.checked);
-                    selectAllCheckbox.checked = allChecked;
-                    selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
-                });
+                cb.addEventListener('change', updateSelectAll);
             });
         }
 
@@ -183,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (h1 && h1.nextSibling) {
             h1.parentNode.insertBefore(alertDiv, h1.nextSibling);
         } else if (formContainer && form) {
-            formContainer.insertBefore(alertDiv, form);
+            form.before(alertDiv);
         } else if (form) {
             form.parentNode.insertBefore(alertDiv, form);
         }
@@ -192,49 +193,46 @@ document.addEventListener('DOMContentLoaded', () => {
         alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
+    function toISODate(val) { return window.toISODateFromFr ? (window.toISODateFromFr(val) || val) : val; }
+    function toISOTime(val) { return window.toISOTimeFromFr ? (window.toISOTimeFromFr(val) || val) : val; }
+
+    function validateSlot(row, index, cloture) {
+        const dateVal = row.querySelector('input[name*="[date_creneau]"]').value;
+        const hStart = row.querySelector('input[name*="[heure_debut]"]').value;
+        const hEnd = row.querySelector('input[name*="[heure_fin]"]').value;
+        const prefix = `Créneau ${index + 1} : `;
+
+        if (!dateVal || !hStart || !hEnd) {
+            showError(prefix + 'tous les champs sont requis.');
+            return false;
+        }
+
+        const start = new Date(toISODate(dateVal) + 'T' + toISOTime(hStart));
+        const end = new Date(toISODate(dateVal) + 'T' + toISOTime(hEnd));
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            showError(prefix + 'date ou heure invalide.');
+            return false;
+        }
+        if (start >= end) {
+            showError(prefix + "l'heure de début doit être strictement inférieure à l'heure de fin.");
+            return false;
+        }
+        if (cloture && start < cloture) {
+            showError(prefix + 'doit commencer après la date de clôture des inscriptions.');
+            return false;
+        }
+        return true;
+    }
+
     function validateSlots() {
         const rows = Array.from(container.querySelectorAll('.slot-row'));
         if (rows.length === 0) {
             showError('Ajoutez au moins un créneau.');
             return false;
         }
-
         const cloture = getClotureDate();
-
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            const dateVal = row.querySelector('input[name*="[date_creneau]"]').value;
-            const hStart = row.querySelector('input[name*="[heure_debut]"]').value;
-            const hEnd = row.querySelector('input[name*="[heure_fin]"]').value;
-
-            if (!dateVal || !hStart || !hEnd) {
-                showError(`Créneau ${i + 1} : tous les champs sont requis.`);
-                return false;
-            }
-
-            const isoDate = window.toISODateFromFr ? (window.toISODateFromFr(dateVal) || dateVal) : dateVal;
-            const isoStart = window.toISOTimeFromFr ? (window.toISOTimeFromFr(hStart) || hStart) : hStart;
-            const isoEnd = window.toISOTimeFromFr ? (window.toISOTimeFromFr(hEnd) || hEnd) : hEnd;
-            const start = new Date(isoDate + 'T' + isoStart);
-            const end = new Date(isoDate + 'T' + isoEnd);
-
-            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-                showError(`Créneau ${i + 1} : date ou heure invalide.`);
-                return false;
-            }
-
-            if (start >= end) {
-                showError(`Créneau ${i + 1} : l'heure de début doit être strictement inférieure à l'heure de fin.`);
-                return false;
-            }
-
-            if (cloture && start < cloture) {
-                showError(`Créneau ${i + 1} : doit commencer après la date de clôture des inscriptions.`);
-                return false;
-            }
-        }
-
-        return true;
+        return rows.every((row, i) => validateSlot(row, i, cloture));
     }
 
     if (addBtn) {
