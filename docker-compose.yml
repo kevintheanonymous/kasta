@@ -12,27 +12,77 @@ services:
     environment:
       - APP_ENV=${APP_ENV}
       - APP_DEBUG=${APP_DEBUG}
+      - APP_URL=${APP_URL}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - DB_NAME_FILE=/run/secrets/db_name
+      - DB_USER_FILE=/run/secrets/db_user
+      - DB_PASSWORD_FILE=/run/secrets/db_password
+      - DB_CHARSET=${DB_CHARSET}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME_FILE=/run/secrets/mail_username
+      - MAIL_PASSWORD_FILE=/run/secrets/mail_password
+      - MAIL_ENCRYPTION=${MAIL_ENCRYPTION}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME}
+      - CONTACT_EMAIL=${CONTACT_EMAIL}
+      - RATE_LIMIT_MAX_ATTEMPTS=${RATE_LIMIT_MAX_ATTEMPTS}
+      - RATE_LIMIT_WINDOW_SECONDS=${RATE_LIMIT_WINDOW_SECONDS}
+    restart: always
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - mail_username
+      - mail_password
+
   db:
     image: mysql:8.0
     container_name: kastasso_db
     restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 10
     environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_FILE: /run/secrets/db_name
+      MYSQL_USER_FILE: /run/secrets/db_user
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - mysql_root_password
     volumes:
       - db_data:/var/lib/mysql
       - ./db-init:/docker-entrypoint-initdb.d
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: kastasso_db_admin
     restart: always
     ports:
-      - "8081:80"            
+      - "8081:80"
     environment:
-      PMA_HOST: db            
+      PMA_HOST: db
     depends_on:
       - db
+
+secrets:
+  db_name:
+    file: ./secrets/db_name.txt
+  db_user:
+    file: ./secrets/db_user.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt
+  mail_username:
+    file: ./secrets/mail_username.txt
+  mail_password:
+    file: ./secrets/mail_password.txt
+
 volumes:
   db_data:

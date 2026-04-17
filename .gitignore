@@ -4,6 +4,9 @@
 *.env.*.local
 !.env.example
 
+# Secrets Docker (nouveau)
+secrets/
+
 # Dependances
 /vendor/
 
@@ -35,6 +38,3 @@ Thumbs.db
 # Fichiers de build
 /node_modules/
 /.dist/
-
-# Base de donnees init/backup
-/db-init/

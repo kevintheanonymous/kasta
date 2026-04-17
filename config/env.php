@@ -53,7 +53,15 @@ class Env {
             self::load();
         }
 
-        // Priorite: $_ENV > getenv() > default
+        // 1. Vérifier si une variable _FILE existe (Docker Secrets)
+        $fileKey = $key . '_FILE';
+        $filePath = getenv($fileKey) ?: ($_ENV[$fileKey] ?? null);
+
+        if ($filePath && file_exists($filePath)) {
+            return trim(file_get_contents($filePath));
+        }
+
+        // 2. Sinon lire la variable d'environnement classique
         if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
             return $_ENV[$key];
         }
